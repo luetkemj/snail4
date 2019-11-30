@@ -5,9 +5,9 @@ const render = function systemRender(entities) {
   ECS.game.grid.clear();
 
   Object.keys(entities).forEach(key => {
-    const entity = entities[key];
-    const { components } = entity;
-    const { appearance, position } = components;
+    const {
+      components: { appearance, position }
+    } = entities[key];
 
     if (appearance && position) {
       ECS.game.grid.writeCell(

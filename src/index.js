@@ -1,8 +1,8 @@
 import ECS from "./ECS/ECS";
 
-const player = new ECS.Entity();
-player.addComponent(new ECS.components.appearance());
-player.addComponent(new ECS.components.position());
+const player = ECS.Entity();
+player.addComponent(ECS.components.appearance());
+player.addComponent(ECS.components.position());
 
 ECS.entities[player.id] = player;
 
