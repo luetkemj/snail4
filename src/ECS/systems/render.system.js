@@ -7,7 +7,7 @@ const render = entities => {
 
   ECS.cache.entityIds.forEach(key => {
     const {
-      components: { appearance, position, fov, playerControlled }
+      components: { appearance, position, fov, playerControlled, brain }
     } = entities[key];
 
     if (appearance && position && fov) {
@@ -21,6 +21,10 @@ const render = entities => {
           Cell(appearance.char, appearance.color.hsla)
         );
       }
+
+      // if it's got a brain it is some sort of living entity
+      // and should only render if in fov.
+      if (brain) return;
 
       // If it's been revealed but not in the current fov
       if (fov.revealed && !fov.inFov) {

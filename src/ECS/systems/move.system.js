@@ -17,8 +17,8 @@ const attemptMove = (entity, x, y) => {
   const mx = Math.min(width - 1, Math.max(0, position.x + x));
   const my = Math.min(height - 1, Math.max(0, position.y + y));
 
-  const entitiesAtGoal = readCacheEntitiesAtLocation({ x: mx, y: my });
-  if (some(entitiesAtGoal, entity => entity.components.blocking)) {
+  const entitiesAtGoalIds = readCacheEntitiesAtLocation({ x: mx, y: my });
+  if (some(entitiesAtGoalIds, id => ECS.entities[id].components.blocking)) {
     return;
   }
 

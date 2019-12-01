@@ -21,6 +21,8 @@ function update() {
     gameTick();
     ECS.game.userInput = null;
     ECS.game.playerTurn = false;
+
+    console.log(ECS);
   }
 
   if (!ECS.game.playerTurn) {

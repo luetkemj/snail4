@@ -1,3 +1,4 @@
+import ECS from "../ECS/ECS";
 import { some } from "lodash";
 import { readCacheEntitiesAtLocation } from "../ECS/cache";
 import { distance, idToCell } from "./grid";
@@ -18,8 +19,8 @@ const octantTransforms = [
 export default function createFOV(width, height, originX, originY, radius) {
   const visible = new Set();
   const isOpaque = (x, y) => {
-    const entities = readCacheEntitiesAtLocation({ x, y });
-    return !!some(entities, x => x.components.opaque);
+    const entityIds = readCacheEntitiesAtLocation({ x, y });
+    return !!some(entityIds, id => ECS.entities[id].components.opaque);
   };
   const reveal = (x, y) => {
     return visible.add(`${x},${y}`);

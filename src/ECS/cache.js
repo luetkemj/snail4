@@ -8,24 +8,14 @@ export const cache = {
   openTiles: []
 };
 
-export const setCacheEntityAtLocation = (entity, position) => {
-  let loc;
-  if (position) {
-    loc = `${position.x},${position.y}`;
-  } else {
-    loc = `${entity.components.position.x},${entity.components.position.y}`;
-  }
-  cache.entityLocations[loc] = [] || cache.entityLocations[loc];
-  cache.entityLocations[loc].push(entity);
+export const setCacheEntityAtLocation = (id, position) => {
+  const loc = `${position.x},${position.y}`;
+  cache.entityLocations[loc] = cache.entityLocations[loc] || [];
+  cache.entityLocations[loc].push(id);
 };
 
-export const readCacheEntitiesAtLocation = (position, entity) => {
-  let loc;
-  if (position) {
-    loc = `${position.x},${position.y}`;
-  } else {
-    loc = `${entity.components.position.x},${entity.components.position.y}`;
-  }
+export const readCacheEntitiesAtLocation = position => {
+  const loc = `${position.x},${position.y}`;
   return cache.entityLocations[loc] || [];
 };
 

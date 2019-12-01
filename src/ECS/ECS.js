@@ -8,6 +8,7 @@ const canvas = document.querySelector("#game");
 // components
 import appearance from "./components/appearance.component";
 import blocking from "./components/blocking.component";
+import brain from "./components/brain.component";
 import fov from "./components/fov.component";
 import opaque from "./components/opaque.component";
 import playerControlled from "./components/player-controlled.component";
@@ -24,7 +25,15 @@ const FONT_SIZE = 15;
 
 const ECS = {
   entities: {},
-  components: { appearance, blocking, fov, opaque, playerControlled, position },
+  components: {
+    appearance,
+    blocking,
+    brain,
+    fov,
+    opaque,
+    playerControlled,
+    position
+  },
   systems: [moveSystem, fovSystem, renderSystem],
   game: {
     userInput: null,

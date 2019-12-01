@@ -50,7 +50,7 @@ const initGame = () => {
 
     ECS.entities[entity.id] = entity;
     // add to cache
-    setCacheEntityAtLocation(entity);
+    setCacheEntityAtLocation(entity.id, entity.components.position);
     if (!currTile.blocking) {
       setCacheId(entity.id, "openTiles");
     }
@@ -60,7 +60,7 @@ const initGame = () => {
   times(10, () => {
     const id = sample(ECS.cache.openTiles);
     const { position } = ECS.entities[id].components;
-    const entity = ECS.Entity();
+    const entity = ECS.Entity(["movable"]);
     const type = random(0, 1) ? "rat" : "goblin";
 
     entity.addComponent(
@@ -70,10 +70,11 @@ const initGame = () => {
       ECS.components.position({ x: position.x, y: position.y })
     );
     entity.addComponent(ECS.components.fov());
+    entity.addComponent(ECS.components.brain());
     entity.addComponent(ECS.components.blocking());
 
     ECS.entities[entity.id] = entity;
-    setCacheEntityAtLocation(entity);
+    setCacheEntityAtLocation(entity.id, entity.components.position);
   });
 
   // Create player
