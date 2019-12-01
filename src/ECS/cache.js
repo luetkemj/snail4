@@ -3,7 +3,8 @@ import { findIndex } from "lodash";
 export const cache = {
   entityLocations: {},
   entityIds: [],
-  movable: []
+  movable: [],
+  player: []
 };
 
 export const setCacheEntityAtLocation = (entity, position) => {

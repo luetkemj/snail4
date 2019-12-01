@@ -30,16 +30,21 @@ const initGame = () => {
       color = colors.wall;
     }
     if (currTile.sprite === "CAVERN_FLOOR") {
-      char = "ʘ";
+      char = "•";
       color = colors.cavernFloor;
     }
     entity.addComponent(ECS.components.appearance({ char, color }));
+    entity.addComponent(ECS.components.fov());
     entity.addComponent(
       ECS.components.position({ x: currTile.x, y: currTile.y })
     );
 
     if (currTile.blocking) {
       entity.addComponent(ECS.components.blocking());
+    }
+
+    if (currTile.opaque) {
+      entity.addComponent(ECS.components.opaque());
     }
 
     ECS.entities[entity.id] = entity;
@@ -50,14 +55,16 @@ const initGame = () => {
   // Create player
   const player = ECS.Entity();
   player.addComponent(
-    ECS.components.appearance({ char: "@", color: "#daa520" })
+    ECS.components.appearance({ char: "@", color: colors.player })
   );
   player.addComponent(ECS.components.playerControlled());
   player.addComponent(
     ECS.components.position({ x: dungeon.start.x, y: dungeon.start.y })
   );
+  player.addComponent(ECS.components.fov({ inFov: true }));
   ECS.entities[player.id] = player;
   setCacheId(player.id, "movable");
+  setCacheId(player.id, "player");
 };
 
 export default initGame;

@@ -1,12 +1,6 @@
 import ECS from "../ECS/ECS";
 import { sample } from "lodash";
 
-const {
-  game: {
-    grid: { width, height }
-  }
-} = ECS;
-
 const CARDINAL = [
   { x: -1, y: 0 },
   { x: 1, y: 0 },
@@ -69,8 +63,8 @@ export const cellToId = ({ x, y }) => `${x},${y}`;
 export const isOnMapEdge = (x, y) => {
   if (x === 0) return true; // north edge
   if (y === 0) return true; // west edge
-  if (x === width - 1) return true; // south edge
-  if (y === height - 1) return true; // east edge
+  if (x === ECS.game.grid.width - 1) return true; // south edge
+  if (y === ECS.game.grid.height - 1) return true; // east edge
   return false;
 };
 
@@ -83,9 +77,9 @@ export const getNeighbors = (x, y) => {
     };
     if (
       candidate.x >= 0 &&
-      candidate.x < width &&
+      candidate.x < ECS.game.grid.width &&
       candidate.y >= 0 &&
-      candidate.y < height
+      candidate.y < ECS.game.grid.height
     ) {
       points.push(candidate);
     }
