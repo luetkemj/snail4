@@ -4,7 +4,8 @@ export const cache = {
   entityLocations: {},
   entityIds: [],
   movable: [],
-  player: []
+  player: [],
+  openTiles: []
 };
 
 export const setCacheEntityAtLocation = (entity, position) => {

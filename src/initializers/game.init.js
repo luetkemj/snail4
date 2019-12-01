@@ -1,3 +1,4 @@
+import { random, sample, times } from "lodash";
 import ECS from "../ECS/ECS";
 import { setCacheEntityAtLocation, setCacheId } from "../ECS/cache";
 
@@ -49,6 +50,29 @@ const initGame = () => {
 
     ECS.entities[entity.id] = entity;
     // add to cache
+    setCacheEntityAtLocation(entity);
+    if (!currTile.blocking) {
+      setCacheId(entity.id, "openTiles");
+    }
+  });
+
+  // add monsters!
+  times(10, () => {
+    const id = sample(ECS.cache.openTiles);
+    const { position } = ECS.entities[id].components;
+    const entity = ECS.Entity();
+    const type = random(0, 1) ? "rat" : "goblin";
+
+    entity.addComponent(
+      ECS.components.appearance({ char: chars[type], color: colors[type] })
+    );
+    entity.addComponent(
+      ECS.components.position({ x: position.x, y: position.y })
+    );
+    entity.addComponent(ECS.components.fov());
+    entity.addComponent(ECS.components.blocking());
+
+    ECS.entities[entity.id] = entity;
     setCacheEntityAtLocation(entity);
   });
 
