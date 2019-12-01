@@ -4,7 +4,7 @@ import Cell from "overprint/overprint/cell";
 const render = entities => {
   ECS.game.grid.clear();
 
-  Object.keys(entities).forEach(key => {
+  ECS.cache.entityIds.forEach(key => {
     const {
       components: { appearance, position }
     } = entities[key];

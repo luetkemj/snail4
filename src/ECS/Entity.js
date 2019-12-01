@@ -1,3 +1,5 @@
+import { setCacheId } from "./cache";
+
 const Entity = () => {
   const id =
     (+new Date()).toString(16) + ((Math.random() * 100000000) | 0).toString(16);
@@ -15,6 +17,8 @@ const Entity = () => {
   const print = function print() {
     console.log(JSON.stringify(this, null, 2));
   };
+
+  setCacheId(id, "entityIds");
 
   return {
     id,

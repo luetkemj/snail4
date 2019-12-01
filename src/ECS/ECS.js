@@ -1,11 +1,13 @@
 import TextGrid from "overprint/overprint/text-grid";
 import Font from "overprint/overprint/font";
 import Entity from "./Entity";
+import { cache } from "./cache";
 
 const canvas = document.querySelector("#game");
 
 // components
 import appearance from "./components/appearance.component";
+import blocking from "./components/blocking.component";
 import playerControlled from "./components/player-controlled.component";
 import position from "./components/position.component";
 
@@ -19,7 +21,7 @@ const FONT_SIZE = 15;
 
 const ECS = {
   entities: {},
-  components: { appearance, playerControlled, position },
+  components: { appearance, blocking, playerControlled, position },
   systems: [move, render],
   game: {
     userInput: null,
@@ -30,7 +32,8 @@ const ECS = {
       font: Font("Menlo", false, FONT_SIZE)
     })
   },
-  Entity
+  Entity,
+  cache
 };
 
 export default ECS;

@@ -1,4 +1,6 @@
 import ECS from "../ECS";
+import { some } from "lodash";
+import { readCacheEntitiesAtLocation } from "../cache";
 
 const attemptMove = (entity, x, y) => {
   const {
@@ -15,12 +17,17 @@ const attemptMove = (entity, x, y) => {
   const mx = Math.min(width - 1, Math.max(0, position.x + x));
   const my = Math.min(height - 1, Math.max(0, position.y + y));
 
+  const entitiesAtGoal = readCacheEntitiesAtLocation({ x: mx, y: my });
+  if (some(entitiesAtGoal, entity => entity.components.blocking)) {
+    return;
+  }
+
   position.x = mx;
   position.y = my;
 };
 
 const move = entities => {
-  Object.keys(entities).forEach(key => {
+  ECS.cache.movable.forEach(key => {
     const {
       components: { position, playerControlled }
     } = entities[key];

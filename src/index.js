@@ -1,4 +1,6 @@
 import ECS from "./ECS/ECS";
+import { setCacheEntityAtLocation, setCacheId } from "./ECS/cache";
+
 import userInput from "./lib/key-bindings";
 import { generateDungeon } from "./lib/dungeon";
 import { colors } from "./lib/graphics";
@@ -35,7 +37,13 @@ Object.keys(dungeon.tiles).forEach(tileId => {
     ECS.components.position({ x: currTile.x, y: currTile.y })
   );
 
+  if (currTile.blocking) {
+    entity.addComponent(ECS.components.blocking());
+  }
+
   ECS.entities[entity.id] = entity;
+  // add to cache
+  setCacheEntityAtLocation(entity);
 });
 
 const player = ECS.Entity();
@@ -45,6 +53,7 @@ player.addComponent(
   ECS.components.position({ x: dungeon.start.x, y: dungeon.start.y })
 );
 ECS.entities[player.id] = player;
+setCacheId(player.id, "movable");
 
 document.addEventListener("keydown", ev => userInput(ev.key));
 
@@ -59,6 +68,7 @@ gameTick();
 
 function update() {
   if (ECS.game.userInput && ECS.game.playerTurn) {
+    // console.error("PLAYER TURN");
     gameTick();
     ECS.game.userInput = null;
     ECS.game.playerTurn = false;
@@ -71,7 +81,9 @@ function update() {
 }
 
 function gameLoop() {
+  // console.time("tick");
   update();
+  // console.timeEnd("tick");
   requestAnimationFrame(gameLoop);
 }
 
