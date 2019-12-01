@@ -13,7 +13,7 @@ const render = entities => {
     if (appearance && position && fov) {
       // If it's in the Field Of Vision
       if (fov.inFov) {
-        const dl = 50 - fov.distance * 8;
+        const dl = 50 - fov.distance * 8.5;
 
         ECS.game.grid.writeCell(
           position.x,
