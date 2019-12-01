@@ -2,7 +2,7 @@ import ECS from "../ECS/ECS";
 import { setCacheEntityAtLocation, setCacheId } from "../ECS/cache";
 
 import { generateDungeon } from "../lib/dungeon";
-import { colors } from "../lib/graphics";
+import { colors, chars } from "../lib/graphics";
 
 const initGame = () => {
   // create dungeon level
@@ -22,15 +22,15 @@ const initGame = () => {
     let char;
     let color;
     if (currTile.sprite === "FLOOR") {
-      char = "•";
+      char = chars.floor;
       color = colors.floor;
     }
     if (currTile.sprite === "WALL") {
-      char = "#";
+      char = chars.wall;
       color = colors.wall;
     }
     if (currTile.sprite === "CAVERN_FLOOR") {
-      char = "•";
+      char = chars.cavernFloor;
       color = colors.cavernFloor;
     }
     entity.addComponent(ECS.components.appearance({ char, color }));
@@ -55,7 +55,7 @@ const initGame = () => {
   // Create player
   const player = ECS.Entity();
   player.addComponent(
-    ECS.components.appearance({ char: "@", color: colors.player })
+    ECS.components.appearance({ char: chars.player, color: colors.player })
   );
   player.addComponent(ECS.components.playerControlled());
   player.addComponent(
