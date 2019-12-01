@@ -1,4 +1,4 @@
-import ECS from "./ECS";
+import ECS from "../ECS/ECS";
 
 export default function input(key) {
   switch (key) {
