@@ -6,9 +6,11 @@ const canvas = document.querySelector("#game");
 
 // components
 import appearance from "./components/appearance.component";
+import playerControlled from "./components/player-controlled.component";
 import position from "./components/position.component";
 
 // systems
+import move from "./systems/move.system";
 import render from "./systems/render.system";
 
 const WIDTH = 80;
@@ -17,9 +19,11 @@ const FONT_SIZE = 15;
 
 const ECS = {
   entities: {},
-  components: { appearance, position },
-  systems: [render],
+  components: { appearance, playerControlled, position },
+  systems: [move, render],
   game: {
+    userInput: null,
+    playerTurn: true,
     grid: new TextGrid(canvas, {
       width: WIDTH,
       height: HEIGHT,

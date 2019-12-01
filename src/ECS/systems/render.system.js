@@ -1,7 +1,7 @@
 import ECS from "../ECS";
 import Cell from "overprint/overprint/cell";
 
-const render = function systemRender(entities) {
+const render = entities => {
   ECS.game.grid.clear();
 
   Object.keys(entities).forEach(key => {
