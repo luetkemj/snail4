@@ -77,7 +77,7 @@ const initGame = () => {
   });
 
   // Create player
-  const player = ECS.Entity();
+  const player = ECS.Entity(["movable", "player"]);
   player.addComponent(
     ECS.components.appearance({ char: chars.player, color: colors.player })
   );
@@ -87,8 +87,6 @@ const initGame = () => {
   );
   player.addComponent(ECS.components.fov({ inFov: true }));
   ECS.entities[player.id] = player;
-  setCacheId(player.id, "movable");
-  setCacheId(player.id, "player");
 };
 
 export default initGame;
