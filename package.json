@@ -2,13 +2,17 @@
   "name": "snail4",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "start": "parcel src/index.html",
-    "build": "parcel build src/index.html --public-url /snail4/",
+    "build": "parcel build src/index.html",
     "test": "echo \"Error: no test specified\" && exit 1",
     "predeploy": "rm -rf dist && npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist/default"
+  },
+  "targets": {
+    "default": {
+      "publicUrl": "/snail4/"
+    }
   },
   "author": "",
   "license": "ISC",
