@@ -1,11 +1,9 @@
 import { colors } from "../../lib/graphics";
 
 const componentAppearance = (params = {}) => {
-  const name = "appearance";
-  const { color = color.defaultColor, char = "?" } = params;
+  const { color = colors.defaultColor, char = "?" } = params;
 
   return {
-    name,
     color,
     char
   };

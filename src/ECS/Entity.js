@@ -11,7 +11,7 @@ const Entity = (cacheKeys = []) => {
 
   const addComponent = (componentName, args = {}) => {
     const component = ECS.components[componentName](args);
-    components[component.name] = component;
+    components[componentName] = component;
   };
 
   const removeComponent = componentName => {

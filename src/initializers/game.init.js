@@ -2,6 +2,10 @@ import { random, sample, times } from "lodash";
 import ECS from "../ECS/ECS";
 import { setCacheEntityAtLocation, setCacheId } from "../ECS/cache";
 
+import createPlayer from "../ECS/assemblages/player.assemblage";
+import createGoblin from "../ECS/assemblages/goblin.assemblage";
+import createRat from "../ECS/assemblages/rat.assemblage";
+
 import { generateDungeon } from "../lib/dungeon";
 import { colors, chars } from "../lib/graphics";
 
@@ -58,33 +62,14 @@ const initGame = () => {
   times(10, () => {
     const id = sample(ECS.cache.openTiles);
     const { position } = ECS.entities[id].components;
-    const entity = ECS.Entity(["movable"]);
+
     const type = random(0, 1) ? "rat" : "goblin";
-
-    entity.addComponent("appearance", {
-      char: chars[type],
-      color: colors[type]
-    });
-    entity.addComponent("position", { x: position.x, y: position.y });
-    entity.addComponent("fov");
-    entity.addComponent("brain");
-    entity.addComponent("blocking");
-
-    ECS.entities[entity.id] = entity;
-    setCacheEntityAtLocation(entity.id, entity.components.position);
+    if (type === "rat") createRat(position.x, position.y);
+    if (type === "goblin") createGoblin(position.x, position.y);
   });
 
   // Create player
-  const player = ECS.Entity(["movable", "player"]);
-  player.addComponent("appearance", {
-    char: chars.player,
-    color: colors.player
-  });
-  player.addComponent("playerControlled");
-  player.addComponent("position", { x: dungeon.start.x, y: dungeon.start.y });
-  player.addComponent("fov", { inFov: true });
-  player.addComponent("blocking");
-  ECS.entities[player.id] = player;
+  createPlayer(dungeon.start.x, dungeon.start.y);
 };
 
 export default initGame;

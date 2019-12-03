@@ -1,7 +1,5 @@
 const componentBrain = (params = {}) => {
-  const name = "brain";
   return {
-    name,
     goalStack: [],
     desires: {
       bored: 0,
