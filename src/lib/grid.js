@@ -1,7 +1,7 @@
 import ECS from "../ECS/ECS";
 import { sample } from "lodash";
 
-const CARDINAL = [
+export const CARDINAL = [
   { x: -1, y: 0 },
   { x: 1, y: 0 },
   { x: 0, y: -1 },

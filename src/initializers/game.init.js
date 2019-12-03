@@ -87,6 +87,7 @@ const initGame = () => {
     ECS.components.position({ x: dungeon.start.x, y: dungeon.start.y })
   );
   player.addComponent(ECS.components.fov({ inFov: true }));
+  player.addComponent(ECS.components.blocking());
   ECS.entities[player.id] = player;
 };
 

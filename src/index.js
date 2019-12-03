@@ -17,12 +17,9 @@ gameTick();
 
 function update() {
   if (ECS.game.userInput && ECS.game.playerTurn) {
-    // console.error("PLAYER TURN");
     gameTick();
     ECS.game.userInput = null;
     ECS.game.playerTurn = false;
-
-    console.log(ECS);
   }
 
   if (!ECS.game.playerTurn) {

@@ -1,6 +1,15 @@
 import ECS from "../ECS";
-import { some } from "lodash";
-import { readCacheEntitiesAtLocation } from "../cache";
+import { some, sample } from "lodash";
+import {
+  readCacheEntitiesAtLocation,
+  removeCacheEntityAtLocation,
+  setCacheEntityAtLocation
+} from "../cache";
+import { CARDINAL } from "../../lib/grid";
+
+const drunkenWalk = () => {
+  return sample(CARDINAL);
+};
 
 const attemptMove = (entity, x, y) => {
   const {
@@ -21,6 +30,8 @@ const attemptMove = (entity, x, y) => {
   if (some(entitiesAtGoalIds, id => ECS.entities[id].components.blocking)) {
     return;
   }
+  removeCacheEntityAtLocation(entity.id, { x: position.x, y: position.y });
+  setCacheEntityAtLocation(entity.id, { x: mx, y: my });
 
   position.x = mx;
   position.y = my;
@@ -29,15 +40,19 @@ const attemptMove = (entity, x, y) => {
 const move = entities => {
   ECS.cache.movable.forEach(key => {
     const {
-      components: { position, playerControlled }
+      components: { brain, position, playerControlled }
     } = entities[key];
 
-    if (position && playerControlled) {
+    if (ECS.game.playerTurn && position && playerControlled) {
       if (ECS.game.userInput && ECS.game.userInput.type === "MOVE") {
         const { x, y } = ECS.game.userInput.payload;
-
         attemptMove(entities[key], x, y);
       }
+    }
+
+    if (!ECS.game.playerTurn && position && brain) {
+      const { x, y } = drunkenWalk();
+      attemptMove(entities[key], x, y);
     }
   });
 };
