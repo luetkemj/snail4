@@ -1,3 +1,4 @@
+import ECS from "./ECS";
 import uniq from "lodash";
 import { setCacheId } from "./cache";
 
@@ -8,7 +9,8 @@ const Entity = (cacheKeys = []) => {
 
   const components = {};
 
-  const addComponent = component => {
+  const addComponent = (componentName, args = {}) => {
+    const component = ECS.components[componentName](args);
     components[component.name] = component;
   };
 

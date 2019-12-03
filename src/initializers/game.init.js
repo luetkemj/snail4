@@ -34,18 +34,16 @@ const initGame = () => {
       char = chars.cavernFloor;
       color = colors.cavernFloor;
     }
-    entity.addComponent(ECS.components.appearance({ char, color }));
-    entity.addComponent(ECS.components.fov());
-    entity.addComponent(
-      ECS.components.position({ x: currTile.x, y: currTile.y })
-    );
+    entity.addComponent("appearance", { char, color });
+    entity.addComponent("fov");
+    entity.addComponent("position", { x: currTile.x, y: currTile.y });
 
     if (currTile.blocking) {
-      entity.addComponent(ECS.components.blocking());
+      entity.addComponent("blocking");
     }
 
     if (currTile.opaque) {
-      entity.addComponent(ECS.components.opaque());
+      entity.addComponent("opaque");
     }
 
     ECS.entities[entity.id] = entity;
@@ -63,15 +61,14 @@ const initGame = () => {
     const entity = ECS.Entity(["movable"]);
     const type = random(0, 1) ? "rat" : "goblin";
 
-    entity.addComponent(
-      ECS.components.appearance({ char: chars[type], color: colors[type] })
-    );
-    entity.addComponent(
-      ECS.components.position({ x: position.x, y: position.y })
-    );
-    entity.addComponent(ECS.components.fov());
-    entity.addComponent(ECS.components.brain());
-    entity.addComponent(ECS.components.blocking());
+    entity.addComponent("appearance", {
+      char: chars[type],
+      color: colors[type]
+    });
+    entity.addComponent("position", { x: position.x, y: position.y });
+    entity.addComponent("fov");
+    entity.addComponent("brain");
+    entity.addComponent("blocking");
 
     ECS.entities[entity.id] = entity;
     setCacheEntityAtLocation(entity.id, entity.components.position);
@@ -79,15 +76,14 @@ const initGame = () => {
 
   // Create player
   const player = ECS.Entity(["movable", "player"]);
-  player.addComponent(
-    ECS.components.appearance({ char: chars.player, color: colors.player })
-  );
-  player.addComponent(ECS.components.playerControlled());
-  player.addComponent(
-    ECS.components.position({ x: dungeon.start.x, y: dungeon.start.y })
-  );
-  player.addComponent(ECS.components.fov({ inFov: true }));
-  player.addComponent(ECS.components.blocking());
+  player.addComponent("appearance", {
+    char: chars.player,
+    color: colors.player
+  });
+  player.addComponent("playerControlled");
+  player.addComponent("position", { x: dungeon.start.x, y: dungeon.start.y });
+  player.addComponent("fov", { inFov: true });
+  player.addComponent("blocking");
   ECS.entities[player.id] = player;
 };
 
