@@ -29,14 +29,17 @@ const initGame = () => {
     if (currTile.sprite === "FLOOR") {
       char = chars.floor;
       color = colors.floor;
+      entity.addComponent("labels", { name: "floor" });
     }
     if (currTile.sprite === "WALL") {
       char = chars.wall;
       color = colors.wall;
+      entity.addComponent("labels", { name: "wall" });
     }
     if (currTile.sprite === "CAVERN_FLOOR") {
       char = chars.cavernFloor;
       color = colors.cavernFloor;
+      entity.addComponent("labels", { name: "cavern floor" });
     }
     entity.addComponent("appearance", { char, color });
     entity.addComponent("fov");

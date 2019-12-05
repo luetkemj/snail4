@@ -18,7 +18,7 @@ export const chars = {
   // maps
   wall: "#",
   floor: "•",
-  cavernFloor: "ʘ",
+  cavernFloor: "•",
   // player
   player: "@",
   // monsters

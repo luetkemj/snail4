@@ -27,7 +27,17 @@ const attemptMove = (entity, x, y) => {
   const my = Math.min(height - 1, Math.max(0, position.y + y));
 
   const entitiesAtGoalIds = readCacheEntitiesAtLocation({ x: mx, y: my });
-  if (some(entitiesAtGoalIds, id => ECS.entities[id].components.blocking)) {
+  const blockers = entitiesAtGoalIds.filter(
+    id => ECS.entities[id].components.blocking
+  );
+  if (blockers.length) {
+    blockers.forEach(id => {
+      if (entity.components.playerControlled) {
+        console.log(
+          `There is a ${ECS.entities[id].components.labels.name} there!`
+        );
+      }
+    });
     return;
   }
   removeCacheEntityAtLocation(entity.id, { x: position.x, y: position.y });

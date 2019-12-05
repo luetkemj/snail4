@@ -6,7 +6,7 @@ import { chars, colors } from "../../lib/graphics";
 const playerAssemblage = (x, y) => {
   const entity = createCreature();
 
-  entity.components.label.label = "player";
+  entity.components.labels.name = "player";
 
   entity.components.appearance.char = chars.player;
   entity.components.appearance.color = colors.player;

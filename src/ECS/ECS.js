@@ -10,7 +10,7 @@ import appearance from "./components/appearance.component";
 import blocking from "./components/blocking.component";
 import brain from "./components/brain.component";
 import fov from "./components/fov.component";
-import label from "./components/label.component";
+import labels from "./components/labels.component";
 import opaque from "./components/opaque.component";
 import playerControlled from "./components/player-controlled.component";
 import position from "./components/position.component";
@@ -31,7 +31,7 @@ const ECS = {
     blocking,
     brain,
     fov,
-    label,
+    labels,
     opaque,
     playerControlled,
     position
