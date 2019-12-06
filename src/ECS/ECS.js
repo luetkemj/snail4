@@ -14,10 +14,13 @@ import labels from "./components/labels.component";
 import opaque from "./components/opaque.component";
 import playerControlled from "./components/player-controlled.component";
 import position from "./components/position.component";
+import target from "./components/target.component";
 
 // systems
 import moveSystem from "./systems/move.system";
+import behaviorSystem from "./systems/behavior.system";
 import fovSystem from "./systems/fov.system";
+import needsSystem from "./systems/needs.system";
 import renderSystem from "./systems/render.system";
 
 const WIDTH = 80;
@@ -34,9 +37,10 @@ const ECS = {
     labels,
     opaque,
     playerControlled,
-    position
+    position,
+    target
   },
-  systems: [moveSystem, fovSystem, renderSystem],
+  systems: [needsSystem, moveSystem, behaviorSystem, fovSystem, renderSystem],
   game: {
     userInput: null,
     playerTurn: true,

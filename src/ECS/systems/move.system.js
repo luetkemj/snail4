@@ -26,17 +26,15 @@ const attemptMove = (entity, x, y) => {
   const mx = Math.min(width - 1, Math.max(0, position.x + x));
   const my = Math.min(height - 1, Math.max(0, position.y + y));
 
+  // check for blocking entities in taget location
   const entitiesAtGoalIds = readCacheEntitiesAtLocation({ x: mx, y: my });
   const blockers = entitiesAtGoalIds.filter(
     id => ECS.entities[id].components.blocking
   );
+  // set blocking entity as target
   if (blockers.length) {
     blockers.forEach(id => {
-      if (entity.components.playerControlled) {
-        console.log(
-          `There is a ${ECS.entities[id].components.labels.name} there!`
-        );
-      }
+      entity.addComponent("target", { id });
     });
     return;
   }
