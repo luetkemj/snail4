@@ -7,6 +7,7 @@ const creatureAssemblage = () => {
   entity.addComponent("position");
   entity.addComponent("fov");
   entity.addComponent("blocking");
+  entity.addComponent("health");
 
   return entity;
 };

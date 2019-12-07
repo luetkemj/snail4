@@ -10,6 +10,7 @@ import appearance from "./components/appearance.component";
 import blocking from "./components/blocking.component";
 import dijkstra from "./components/dijkstra.component";
 import fov from "./components/fov.component";
+import health from "./components/health.component";
 import labels from "./components/labels.component";
 import opaque from "./components/opaque.component";
 import playerControlled from "./components/player-controlled.component";
@@ -33,6 +34,7 @@ const ECS = {
     blocking,
     dijkstra,
     fov,
+    health,
     labels,
     moveToPlayer,
     opaque,

@@ -13,6 +13,20 @@ export const bump = (entity, targetId) => {
   );
 };
 
+export const attack = (entity, targetId) => {
+  const targetEntity = ECS.entities[targetId];
+
+  targetEntity.components.health.health -= 5;
+
+  if (targetEntity.components.health.health <= 0) {
+    console.log(`${targetEntity.components.labels.name} is dead.`);
+    targetEntity.components.appearance.char = "%";
+    targetEntity.removeComponent("moveToPlayer");
+    targetEntity.removeComponent("playerControlled");
+    targetEntity.removeComponent("blocking");
+  }
+};
+
 export const drunkenWalk = () => {
   return sample(CARDINAL);
 };

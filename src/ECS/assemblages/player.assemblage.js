@@ -16,7 +16,7 @@ const playerAssemblage = (x, y) => {
 
   entity.addComponent("playerControlled");
 
-  entity.removeComponent("brain");
+  entity.components.health.health = 30;
 
   ECS.entities[entity.id] = entity;
   setCacheId(entity.id, "player");
