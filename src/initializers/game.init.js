@@ -31,15 +31,19 @@ const initGame = () => {
     const currTile = dungeon.tiles[tileId];
     let char;
     let color;
-    if (currTile.sprite === "FLOOR") {
-      char = chars.floor;
-      color = colors.floor;
-      entity.addComponent("labels", { name: "floor" });
-    }
+
+    entity.addComponent("trackableLoc");
+
     if (currTile.sprite === "WALL") {
       char = chars.wall;
       color = colors.wall;
       entity.addComponent("labels", { name: "wall" });
+      entity.removeComponent("trackableLoc");
+    }
+    if (currTile.sprite === "FLOOR") {
+      char = chars.floor;
+      color = colors.floor;
+      entity.addComponent("labels", { name: "floor" });
     }
     if (currTile.sprite === "CAVERN_FLOOR") {
       char = chars.cavernFloor;
@@ -82,7 +86,6 @@ const initGame = () => {
   createPlayer(dungeon.start.x, dungeon.start.y);
 
   // build dijkstra Maps
-  const { x, y } = dungeon.start;
   const playerDijkstra = dijkstra([{ x: dungeon.start.x, y: dungeon.start.y }]);
   Object.keys(playerDijkstra).forEach(loc => {
     const eId = ECS.cache.tileLocations[loc];

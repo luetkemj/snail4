@@ -17,6 +17,11 @@ import opaque from "./components/opaque.component";
 import playerControlled from "./components/player-controlled.component";
 import position from "./components/position.component";
 import target from "./components/target.component";
+
+import track from "./components/track.component";
+import trackable from "./components/trackable.component";
+import trackableLoc from "./components/trackable-loc.component";
+
 import moveToPlayer from "./components/moveToPlayer.component";
 
 // systems
@@ -42,10 +47,14 @@ const ECS = {
     opaque,
     playerControlled,
     position,
-    target
+    target,
+    track,
+    trackable,
+    trackableLoc
   },
   systems: [brainSystem, fovSystem, renderSystem],
   game: {
+    turn: 0,
     userInput: null,
     playerTurn: true,
     grid: new TextGrid(canvas, {

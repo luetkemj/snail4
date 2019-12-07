@@ -26,6 +26,7 @@ function update() {
       return;
     }
 
+    ECS.game.turn = ECS.game.turn += 1;
     ECS.game.playerTurn = false;
   }
 
