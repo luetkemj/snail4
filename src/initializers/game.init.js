@@ -1,12 +1,17 @@
 import { random, sample, times } from "lodash";
 import ECS from "../ECS/ECS";
-import { setCacheEntityAtLocation, setCacheId } from "../ECS/cache";
+import {
+  setCacheEntityAtLocation,
+  setCacheId,
+  setCacheTileLocations
+} from "../ECS/cache";
 
 import createPlayer from "../ECS/assemblages/player.assemblage";
 import createGoblin from "../ECS/assemblages/goblin.assemblage";
 import createRat from "../ECS/assemblages/rat.assemblage";
 
 import { generateDungeon } from "../lib/dungeon";
+import { dijkstra } from "../lib/dijkstra";
 import { colors, chars } from "../lib/graphics";
 
 const initGame = () => {
@@ -44,6 +49,7 @@ const initGame = () => {
     entity.addComponent("appearance", { char, color });
     entity.addComponent("fov");
     entity.addComponent("position", { x: currTile.x, y: currTile.y });
+    entity.addComponent("dijkstra");
 
     if (currTile.blocking) {
       entity.addComponent("blocking");
@@ -55,6 +61,7 @@ const initGame = () => {
 
     ECS.entities[entity.id] = entity;
     // add to cache
+    setCacheTileLocations(entity.id, entity.components.position);
     setCacheEntityAtLocation(entity.id, entity.components.position);
     if (!currTile.blocking) {
       setCacheId(entity.id, "openTiles");
@@ -73,6 +80,14 @@ const initGame = () => {
 
   // Create player
   createPlayer(dungeon.start.x, dungeon.start.y);
+
+  // build dijkstra Maps
+  const { x, y } = dungeon.start;
+  const playerDijkstra = dijkstra([{ x: dungeon.start.x, y: dungeon.start.y }]);
+  Object.keys(playerDijkstra).forEach(loc => {
+    const eId = ECS.cache.tileLocations[loc];
+    ECS.entities[eId].components.dijkstra.player = playerDijkstra[loc];
+  });
 };
 
 export default initGame;

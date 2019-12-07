@@ -9,6 +9,7 @@ const canvas = document.querySelector("#game");
 import appearance from "./components/appearance.component";
 import blocking from "./components/blocking.component";
 import brain from "./components/brain.component";
+import dijkstra from "./components/dijkstra.component";
 import fov from "./components/fov.component";
 import labels from "./components/labels.component";
 import opaque from "./components/opaque.component";
@@ -33,6 +34,7 @@ const ECS = {
     appearance,
     blocking,
     brain,
+    dijkstra,
     fov,
     labels,
     opaque,
