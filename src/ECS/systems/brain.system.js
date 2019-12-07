@@ -2,11 +2,7 @@ import ECS from "../ECS";
 import { attemptMove, bump, walkDijkstra, attack } from "../../lib/movement";
 import { dijkstra } from "../../lib/dijkstra";
 
-import {
-  readCacheEntitiesAtLocation,
-  removeCacheEntityAtLocation,
-  setCacheEntityAtLocation
-} from "../cache";
+import { readCacheEntitiesAtLocation } from "../cache";
 
 const brainSystem = entities => {
   ECS.cache.movable.forEach(key => {

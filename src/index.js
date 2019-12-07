@@ -1,6 +1,7 @@
 import ECS from "./ECS/ECS";
 import userInput from "./lib/key-bindings";
 import initGame from "./initializers/game.init";
+import { playerId } from "./ECS/cache";
 
 document.addEventListener("keydown", ev => userInput(ev.key));
 
@@ -19,6 +20,12 @@ function update() {
   if (ECS.game.userInput && ECS.game.playerTurn) {
     gameTick();
     ECS.game.userInput = null;
+
+    if (ECS.entities[playerId()].components.dead) {
+      console.log("GAME OVER");
+      return;
+    }
+
     ECS.game.playerTurn = false;
   }
 

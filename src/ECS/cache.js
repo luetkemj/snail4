@@ -9,6 +9,8 @@ export const cache = {
   openTiles: []
 };
 
+export const playerId = () => cache.player[0];
+
 // set single entity id at cache.tileLocations[loc]
 export const setCacheTileLocations = (id, position) => {
   const loc = `${position.x},${position.y}`;

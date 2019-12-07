@@ -8,6 +8,7 @@ const canvas = document.querySelector("#game");
 // components
 import appearance from "./components/appearance.component";
 import blocking from "./components/blocking.component";
+import dead from "./components/dead.component";
 import dijkstra from "./components/dijkstra.component";
 import fov from "./components/fov.component";
 import health from "./components/health.component";
@@ -32,6 +33,7 @@ const ECS = {
   components: {
     appearance,
     blocking,
+    dead,
     dijkstra,
     fov,
     health,

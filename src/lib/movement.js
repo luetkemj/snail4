@@ -20,6 +20,7 @@ export const attack = (entity, targetId) => {
 
   if (targetEntity.components.health.health <= 0) {
     console.log(`${targetEntity.components.labels.name} is dead.`);
+    targetEntity.addComponent("dead");
     targetEntity.components.appearance.char = "%";
     targetEntity.removeComponent("moveToPlayer");
     targetEntity.removeComponent("playerControlled");
