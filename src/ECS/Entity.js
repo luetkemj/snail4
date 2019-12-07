@@ -19,7 +19,7 @@ const Entity = (cacheKeys = []) => {
   };
 
   const print = function print() {
-    console.log(JSON.stringify(this, null, 2));
+    console.log(JSON.parse(JSON.stringify(this, null, 2)));
   };
 
   // set caches

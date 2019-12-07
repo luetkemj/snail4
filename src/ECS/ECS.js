@@ -57,7 +57,6 @@ const ECS = {
 ECS.game.grid.onClick((x, y) => {
   const locId = `${x},${y}`;
   const eIds = ECS.cache.entityLocations[locId];
-  console.log(eIds);
   eIds.forEach(id => ECS.entities[id].print());
 });
 

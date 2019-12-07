@@ -1,5 +1,5 @@
 import ECS from "../ECS";
-import { attemptMove, walkDijkstra } from "../../lib/movement";
+import { attemptMove, bump, walkDijkstra } from "../../lib/movement";
 import { dijkstra } from "../../lib/dijkstra";
 
 import {
@@ -12,13 +12,9 @@ const brainSystem = entities => {
   ECS.cache.movable.forEach(key => {
     const entity = entities[key];
 
-    const {
-      components: { brain, moveToPlayer, position, playerControlled }
-    } = entity;
-
     // process player input
     if (ECS.game.playerTurn) {
-      if (position && playerControlled) {
+      if (entity.components.position && entity.components.playerControlled) {
         if (ECS.game.userInput && ECS.game.userInput.type === "MOVE") {
           const { x, y } = ECS.game.userInput.payload;
 
@@ -40,7 +36,7 @@ const brainSystem = entities => {
     }
 
     if (!ECS.game.playerTurn) {
-      if (moveToPlayer) {
+      if (entity.components.moveToPlayer) {
         const entityIds = readCacheEntitiesAtLocation(
           entity.components.position
         );
@@ -50,10 +46,17 @@ const brainSystem = entities => {
         const distanceFromPlayer =
           entities[tileId].components.dijkstra.player || 1000000;
 
-        if (moveToPlayer.aggro > distanceFromPlayer) {
+        if (entity.components.moveToPlayer.aggro > distanceFromPlayer) {
           const { x, y } = walkDijkstra(entities[key], "player");
           attemptMove(entities[key], x, y);
         }
+      }
+
+      if (entity.components.target) {
+        const targetId = entity.components.target.id;
+        // TODO: check that target is a neighbor before bumping
+        bump(entity, targetId);
+        entity.removeComponent("target");
       }
     }
   });

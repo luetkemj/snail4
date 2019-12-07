@@ -7,6 +7,12 @@ import {
 
 import { CARDINAL, getNeighbors } from "./grid";
 
+export const bump = (entity, targetId) => {
+  console.log(
+    `${entity.components.labels.name} bumps into ${ECS.entities[targetId].components.labels.name}`
+  );
+};
+
 export const drunkenWalk = () => {
   return sample(CARDINAL);
 };
