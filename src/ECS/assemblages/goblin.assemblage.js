@@ -13,6 +13,8 @@ const goblinAssemblage = (x, y) => {
   entity.components.position.x = x;
   entity.components.position.y = y;
 
+  entity.addComponent("moveToPlayer", { aggro: 10 });
+
   ECS.entities[entity.id] = entity;
   setCacheEntityAtLocation(entity.id, { x, y });
 };

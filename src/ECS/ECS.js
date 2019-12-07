@@ -8,7 +8,6 @@ const canvas = document.querySelector("#game");
 // components
 import appearance from "./components/appearance.component";
 import blocking from "./components/blocking.component";
-import brain from "./components/brain.component";
 import dijkstra from "./components/dijkstra.component";
 import fov from "./components/fov.component";
 import labels from "./components/labels.component";
@@ -16,12 +15,11 @@ import opaque from "./components/opaque.component";
 import playerControlled from "./components/player-controlled.component";
 import position from "./components/position.component";
 import target from "./components/target.component";
+import moveToPlayer from "./components/moveToPlayer.component";
 
 // systems
-import moveSystem from "./systems/move.system";
-import behaviorSystem from "./systems/behavior.system";
+import brainSystem from "./systems/brain.system";
 import fovSystem from "./systems/fov.system";
-import needsSystem from "./systems/needs.system";
 import renderSystem from "./systems/render.system";
 
 const WIDTH = 80;
@@ -33,16 +31,16 @@ const ECS = {
   components: {
     appearance,
     blocking,
-    brain,
     dijkstra,
     fov,
     labels,
+    moveToPlayer,
     opaque,
     playerControlled,
     position,
     target
   },
-  systems: [needsSystem, moveSystem, behaviorSystem, fovSystem, renderSystem],
+  systems: [brainSystem, fovSystem, renderSystem],
   game: {
     userInput: null,
     playerTurn: true,
