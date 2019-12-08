@@ -1,10 +1,13 @@
 import ECS from "../ECS";
 import { readCacheEntitiesAtLocation } from "../cache";
 import Cell from "overprint/overprint/cell";
+
 import { updateHSLA } from "../../lib/hsla";
 
+import { clearCanvas, renderCanvas } from "../../lib/canvas";
+
 function render(entities) {
-  ECS.game.grid.clear();
+  clearCanvas();
 
   ECS.cache.entityIds.forEach(key => {
     const entity = entities[key];
@@ -83,7 +86,7 @@ function render(entities) {
     }
   });
 
-  ECS.game.grid.render();
+  renderCanvas(entities);
 }
 
 export default render;

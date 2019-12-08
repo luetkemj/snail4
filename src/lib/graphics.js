@@ -2,6 +2,7 @@ import { hexToHSLA } from "./hsla";
 
 export const colors = {
   defaultColor: hexToHSLA("#ff0077"),
+  defaultBGColor: hexToHSLA("#000"),
   // maps
   wall: hexToHSLA("#AAA"),
   floor: hexToHSLA("#555"),

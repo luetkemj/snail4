@@ -51,7 +51,7 @@ const initGame = () => {
       entity.addComponent("labels", { name: "cavern floor" });
     }
     entity.addComponent("appearance", { char, color });
-    entity.addComponent("fov");
+    entity.addComponent("fov", { showIfRevealed: true });
     entity.addComponent("position", { x: currTile.x, y: currTile.y });
     entity.addComponent("dijkstra");
 
