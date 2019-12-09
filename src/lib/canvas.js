@@ -1,13 +1,26 @@
+import ECS from "../ECS/ECS";
 const pixelRatio = window.devicePixelRatio || 1;
 const canvas = document.querySelector("#game");
 const ctx = canvas.getContext("2d");
 import { updateHSLA } from "./hsla";
 
-const cellWidth = 14 * pixelRatio;
-const cellHeight = 14 * pixelRatio;
-const fontSize = 14 * pixelRatio;
+const WIDTH = 80;
+const HEIGHT = 50;
+const FONT_SIZE = 15;
+const FONT = "Menlo";
 
-ctx.font = `normal ${fontSize}px Menlo`;
+const cellWidth = FONT_SIZE * pixelRatio;
+const cellHeight = FONT_SIZE * pixelRatio;
+const fontSize = FONT_SIZE * pixelRatio;
+
+canvas.style.cssText = `width: ${FONT_SIZE * WIDTH}; height: ${FONT_SIZE *
+  HEIGHT}`;
+canvas.width = cellWidth * WIDTH;
+canvas.height = cellHeight * HEIGHT;
+
+ctx.font = `normal ${fontSize}px ${FONT}`;
+ctx.textAlign = "center";
+ctx.textBaseline = "middle";
 
 const drawBackground = (color, position) => {
   if (color === "transparent") return;
@@ -66,5 +79,29 @@ export const renderCanvas = entities => {
         drawCell(entity, { char: { da: -75, ds: 0 } });
       }
     }
+  });
+};
+
+export const pxToCell = ev => {
+  const bounds = canvas.getBoundingClientRect();
+  const relativeX = ev.clientX - bounds.left;
+  const relativeY = ev.clientY - bounds.top;
+  const colPos = Math.trunc((relativeX / cellWidth) * pixelRatio);
+  const rowPos = Math.trunc((relativeY / cellHeight) * pixelRatio);
+
+  return [colPos, rowPos];
+};
+
+export const onClick = handler => {
+  canvas.addEventListener("click", ev => {
+    const cell = pxToCell(ev);
+    handler(cell[0], cell[1]);
+  });
+};
+
+export const onMouseMove = handler => {
+  canvas.addEventListener("mousemove", ev => {
+    const cell = pxToCell(ev);
+    handler(cell[0], cell[1]);
   });
 };

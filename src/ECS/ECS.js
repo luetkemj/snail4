@@ -1,9 +1,6 @@
-import TextGrid from "overprint/overprint/text-grid";
-import Font from "overprint/overprint/font";
 import Entity from "./Entity";
 import { cache } from "./cache";
-
-const canvas = document.querySelector("#game");
+import { pxToCell } from "../lib/canvas";
 
 // components
 import appearance from "./components/appearance.component";
@@ -57,20 +54,25 @@ const ECS = {
     turn: 0,
     userInput: null,
     playerTurn: true,
-    grid: new TextGrid(canvas, {
+    grid: {
       width: WIDTH,
       height: HEIGHT,
-      font: Font("Menlo", false, FONT_SIZE)
-    })
+      font: "Menlo",
+      fontSize: FONT_SIZE
+    }
   },
   Entity,
   cache
 };
 
-ECS.game.grid.onClick((x, y) => {
+const canvas = document.querySelector("#game");
+
+canvas.onclick = e => {
+  console.log("hellooooo");
+  const [x, y] = pxToCell(e);
   const locId = `${x},${y}`;
   const eIds = ECS.cache.entityLocations[locId];
   eIds.forEach(id => ECS.entities[id].print());
-});
+};
 
 export default ECS;
