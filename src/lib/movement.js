@@ -1,9 +1,12 @@
+import { sample } from "lodash";
 import ECS from "../ECS/ECS";
 import {
   readCacheEntitiesAtLocation,
   removeCacheEntityAtLocation,
   setCacheEntityAtLocation
 } from "../ECS/cache";
+
+import createTrack from "../ECS/assemblages/track.assemblage";
 
 import { CARDINAL, getNeighbors } from "./grid";
 
@@ -28,8 +31,14 @@ export const attack = (entity, targetId) => {
   }
 };
 
-export const drunkenWalk = () => {
-  return sample(CARDINAL);
+export const drunkenWalk = entity => {
+  const { position } = entity.components;
+  const dir = sample(CARDINAL);
+
+  const mx = position.x + dir.x;
+  const my = position.y + dir.y;
+
+  return { x: mx, y: my };
 };
 
 export const walkDijkstra = (entity, dMapName) => {
@@ -76,6 +85,8 @@ export const attemptMove = (entity, x, y) => {
   }
   removeCacheEntityAtLocation(entity.id, { x: position.x, y: position.y });
   setCacheEntityAtLocation(entity.id, { x: mx, y: my });
+
+  createTrack({ position: { x, y }, eId: entity.id });
 
   position.x = mx;
   position.y = my;

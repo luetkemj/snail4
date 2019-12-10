@@ -1,5 +1,11 @@
 import ECS from "../ECS";
-import { attemptMove, bump, walkDijkstra, attack } from "../../lib/movement";
+import {
+  attack,
+  attemptMove,
+  bump,
+  drunkenWalk,
+  walkDijkstra
+} from "../../lib/movement";
 import { dijkstra } from "../../lib/dijkstra";
 
 import { readCacheEntitiesAtLocation } from "../cache";
@@ -57,6 +63,9 @@ const brainSystem = entities => {
 
         if (entity.components.moveToPlayer.aggro > distanceFromPlayer) {
           const { x, y } = walkDijkstra(entities[key], "player");
+          attemptMove(entities[key], x, y);
+        } else {
+          const { x, y } = drunkenWalk(entities[key]);
           attemptMove(entities[key], x, y);
         }
       }

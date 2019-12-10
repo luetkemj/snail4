@@ -1,5 +1,3 @@
-import { groupBy } from "lodash";
-
 const pixelRatio = window.devicePixelRatio || 1;
 const canvas = document.querySelector("#game");
 const ctx = canvas.getContext("2d");
@@ -53,7 +51,7 @@ const drawChar = (char, color, position) => {
   );
 };
 
-const drawCell = (entity, HSLAOptions = { bg: {}, char: {} }) => {
+export const drawCell = (entity, HSLAOptions = { bg: {}, char: {} }) => {
   const {
     components: {
       appearance: { char, color, background },
@@ -74,26 +72,31 @@ const drawCell = (entity, HSLAOptions = { bg: {}, char: {} }) => {
 export const clearCanvas = () =>
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-export const renderCanvas = entities => {
-  const layerGroups = groupBy(entities, "components.appearance.layer");
-  const layerCake = Object.keys(layerGroups);
+// export const renderCanvas = entities => {
+//   const layerGroups = groupBy(entities, "components.appearance.layer");
+//   const layerCake = Object.keys(layerGroups);
 
-  layerCake.forEach(layer => {
-    Object.values(layerGroups[layer]).forEach(entity => {
-      const { appearance, position, revealed, fov } = entity.components;
+//   layerCake.forEach(layer => {
+//     Object.values(layerGroups[layer]).forEach(entity => {
+//       const { appearance, position, revealed, fov } = entity.components;
+//       if (appearance && position) {
+//         if (fov.inFov) {
+//           if (entity.components.track) {
+//             const trackAge = ECS.game.turn - entity.components.track.createdAt;
+//             const da = trackAge * 5;
+//             drawCell(entity, { char: { da: -da } });
+//           } else {
+//             drawCell(entity);
+//           }
+//         }
 
-      if (appearance && position) {
-        if (fov.inFov) {
-          drawCell(entity);
-        }
-
-        if (fov.showIfRevealed && fov.revealed && !fov.inFov) {
-          drawCell(entity, { char: { da: -75, ds: 0 } });
-        }
-      }
-    });
-  });
-};
+//         if (fov.showIfRevealed && fov.revealed && !fov.inFov) {
+//           drawCell(entity, { char: { da: -75, ds: 0 } });
+//         }
+//       }
+//     });
+//   });
+// };
 
 export const pxToCell = ev => {
   const bounds = canvas.getBoundingClientRect();

@@ -15,7 +15,8 @@ const fovSystem = entities => {
   const FOV = createFOV(WIDTH, HEIGHT, originX, originY, ECS.game.grid.width);
 
   ECS.cache.entityIds.forEach(id => {
-    const entity = entities[id];
+    const entity = ECS.entities[id];
+
     const locId = `${entity.components.position.x},${entity.components.position.y}`;
     if (FOV.fov.includes(locId)) {
       entities[id].components.fov.inFov = true;

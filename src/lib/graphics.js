@@ -20,6 +20,8 @@ export const chars = {
   wall: "#",
   floor: "•",
   cavernFloor: "•",
+  // tracks
+  track: "•",
   // player
   player: "@",
   // monsters

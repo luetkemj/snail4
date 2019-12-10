@@ -8,6 +8,7 @@ import blocking from "./components/blocking.component";
 import dead from "./components/dead.component";
 import dijkstra from "./components/dijkstra.component";
 import fov from "./components/fov.component";
+import garbage from "./components/garbage.component";
 import health from "./components/health.component";
 import labels from "./components/labels.component";
 import opaque from "./components/opaque.component";
@@ -24,6 +25,7 @@ import moveToPlayer from "./components/moveToPlayer.component";
 // systems
 import brainSystem from "./systems/brain.system";
 import fovSystem from "./systems/fov.system";
+import garbageSystem from "./systems/garbage.system";
 import renderSystem from "./systems/render.system";
 
 const WIDTH = 80;
@@ -38,6 +40,7 @@ const ECS = {
     dead,
     dijkstra,
     fov,
+    garbage,
     health,
     labels,
     moveToPlayer,
@@ -49,7 +52,7 @@ const ECS = {
     trackable,
     trackableLoc
   },
-  systems: [brainSystem, fovSystem, renderSystem],
+  systems: [garbageSystem, brainSystem, fovSystem, renderSystem],
   game: {
     turn: 0,
     userInput: null,
