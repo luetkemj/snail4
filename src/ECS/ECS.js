@@ -68,7 +68,6 @@ const ECS = {
 const canvas = document.querySelector("#game");
 
 canvas.onclick = e => {
-  console.log("hellooooo");
   const [x, y] = pxToCell(e);
   const locId = `${x},${y}`;
   const eIds = ECS.cache.entityLocations[locId];

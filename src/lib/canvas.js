@@ -1,8 +1,18 @@
-import ECS from "../ECS/ECS";
+import { groupBy } from "lodash";
+
 const pixelRatio = window.devicePixelRatio || 1;
 const canvas = document.querySelector("#game");
 const ctx = canvas.getContext("2d");
 import { updateHSLA } from "./hsla";
+
+export const layers = {
+  ground: 100,
+  tracks: 200,
+  items: 300,
+  player: 400,
+  abovePlayer: 500,
+  sky: 600
+};
 
 const WIDTH = 80;
 const HEIGHT = 50;
@@ -65,20 +75,23 @@ export const clearCanvas = () =>
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 export const renderCanvas = entities => {
-  Object.keys(entities).forEach(eId => {
-    const entity = entities[eId];
+  const layerGroups = groupBy(entities, "components.appearance.layer");
+  const layerCake = Object.keys(layerGroups);
 
-    const { appearance, position, revealed, fov } = entity.components;
+  layerCake.forEach(layer => {
+    Object.values(layerGroups[layer]).forEach(entity => {
+      const { appearance, position, revealed, fov } = entity.components;
 
-    if (appearance && position) {
-      if (fov.inFov) {
-        drawCell(entity);
+      if (appearance && position) {
+        if (fov.inFov) {
+          drawCell(entity);
+        }
+
+        if (fov.showIfRevealed && fov.revealed && !fov.inFov) {
+          drawCell(entity, { char: { da: -75, ds: 0 } });
+        }
       }
-
-      if (fov.showIfRevealed && fov.revealed && !fov.inFov) {
-        drawCell(entity, { char: { da: -75, ds: 0 } });
-      }
-    }
+    });
   });
 };
 
