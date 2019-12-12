@@ -1,6 +1,6 @@
 import Entity from "./Entity";
 import { cache } from "./cache";
-import { pxToCell } from "../lib/canvas";
+import { grid, pxToCell } from "../lib/canvas";
 
 // components
 import appearance from "./components/appearance.component";
@@ -28,10 +28,6 @@ import fovSystem from "./systems/fov.system";
 import garbageSystem from "./systems/garbage.system";
 import renderSystem from "./systems/render.system";
 
-const WIDTH = 80;
-const HEIGHT = 50;
-const FONT_SIZE = 15;
-
 const ECS = {
   entities: {},
   components: {
@@ -57,18 +53,13 @@ const ECS = {
     turn: 0,
     userInput: null,
     playerTurn: true,
-    grid: {
-      width: WIDTH,
-      height: HEIGHT,
-      font: "Menlo",
-      fontSize: FONT_SIZE
-    }
+    grid
   },
   Entity,
   cache
 };
 
-const canvas = document.querySelector("#game");
+const canvas = document.querySelector("#map");
 
 canvas.onclick = e => {
   const [x, y] = pxToCell(e);

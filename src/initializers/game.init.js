@@ -19,8 +19,8 @@ const initGame = () => {
   const dungeon = generateDungeon({
     x: 0,
     y: 0,
-    width: ECS.game.grid.width,
-    height: ECS.game.grid.height,
+    width: ECS.game.grid.mapWidth,
+    height: ECS.game.grid.mapHeight,
     maxRoomCount: 30,
     minRoomSize: 6,
     maxRoomSize: 12

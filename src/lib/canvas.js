@@ -1,6 +1,6 @@
 const pixelRatio = window.devicePixelRatio || 1;
-const canvas = document.querySelector("#game");
-const ctx = canvas.getContext("2d");
+const canvasMap = document.querySelector("#map");
+const ctx = canvasMap.getContext("2d");
 import { updateHSLA } from "./hsla";
 
 export const layers = {
@@ -12,21 +12,37 @@ export const layers = {
   sky: 600
 };
 
-const WIDTH = 80;
-const HEIGHT = 50;
-const FONT_SIZE = 15;
-const FONT = "Menlo";
+export const grid = {
+  width: 100,
+  height: 34,
 
-const cellWidth = FONT_SIZE * pixelRatio;
-const cellHeight = FONT_SIZE * pixelRatio;
-const fontSize = FONT_SIZE * pixelRatio;
+  mapWidth: 79,
+  mapHeight: 29,
 
-canvas.style.cssText = `width: ${FONT_SIZE * WIDTH}; height: ${FONT_SIZE *
-  HEIGHT}`;
-canvas.width = cellWidth * WIDTH;
-canvas.height = cellHeight * HEIGHT;
+  hudWidth: 21,
+  hudHeight: 34,
 
-ctx.font = `normal ${fontSize}px ${FONT}`;
+  hud2Height: 2,
+  hud2Width: 79,
+
+  logHeight: 79,
+  logWidth: 79,
+
+  font: "Menlo",
+  fontSize: 15,
+  lineHeight: 1.2
+};
+
+const cellWidth = grid.fontSize * pixelRatio;
+const cellHeight = grid.fontSize * grid.lineHeight * pixelRatio;
+const fontSize = grid.fontSize * pixelRatio;
+
+canvasMap.style.cssText = `width: ${grid.fontSize *
+  grid.width}; height: ${grid.fontSize * grid.lineHeight * grid.height}`;
+canvasMap.width = cellWidth * grid.width;
+canvasMap.height = cellHeight * grid.height;
+
+ctx.font = `normal ${fontSize}px ${grid.font}`;
 ctx.textAlign = "center";
 ctx.textBaseline = "middle";
 
@@ -70,36 +86,10 @@ export const drawCell = (entity, HSLAOptions = { bg: {}, char: {} }) => {
 };
 
 export const clearCanvas = () =>
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-// export const renderCanvas = entities => {
-//   const layerGroups = groupBy(entities, "components.appearance.layer");
-//   const layerCake = Object.keys(layerGroups);
-
-//   layerCake.forEach(layer => {
-//     Object.values(layerGroups[layer]).forEach(entity => {
-//       const { appearance, position, revealed, fov } = entity.components;
-//       if (appearance && position) {
-//         if (fov.inFov) {
-//           if (entity.components.track) {
-//             const trackAge = ECS.game.turn - entity.components.track.createdAt;
-//             const da = trackAge * 5;
-//             drawCell(entity, { char: { da: -da } });
-//           } else {
-//             drawCell(entity);
-//           }
-//         }
-
-//         if (fov.showIfRevealed && fov.revealed && !fov.inFov) {
-//           drawCell(entity, { char: { da: -75, ds: 0 } });
-//         }
-//       }
-//     });
-//   });
-// };
+  ctx.clearRect(0, 0, canvasMap.width, canvasMap.height);
 
 export const pxToCell = ev => {
-  const bounds = canvas.getBoundingClientRect();
+  const bounds = canvasMap.getBoundingClientRect();
   const relativeX = ev.clientX - bounds.left;
   const relativeY = ev.clientY - bounds.top;
   const colPos = Math.trunc((relativeX / cellWidth) * pixelRatio);
@@ -109,14 +99,14 @@ export const pxToCell = ev => {
 };
 
 export const onClick = handler => {
-  canvas.addEventListener("click", ev => {
+  canvasMap.addEventListener("click", ev => {
     const cell = pxToCell(ev);
     handler(cell[0], cell[1]);
   });
 };
 
 export const onMouseMove = handler => {
-  canvas.addEventListener("mousemove", ev => {
+  canvasMap.addEventListener("mousemove", ev => {
     const cell = pxToCell(ev);
     handler(cell[0], cell[1]);
   });
