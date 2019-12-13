@@ -29,6 +29,9 @@ import garbageSystem from "./systems/garbage.system";
 import renderSystem from "./systems/render.system";
 
 const ECS = {
+  cheats: {
+    omniscience: true
+  },
   entities: {},
   components: {
     appearance,
@@ -55,11 +58,16 @@ const ECS = {
     playerTurn: true,
     grid
   },
+  log: [
+    "Welcome, adventurer, to the Dungeons of Doom!",
+    "Delve to the 26th floor and return with the Amulet of Yendor.",
+    "You cannot escape without it - if it even exists - for you are DOOMED!"
+  ],
   Entity,
   cache
 };
 
-const canvas = document.querySelector("#map");
+const canvas = document.querySelector("#canvas");
 
 canvas.onclick = e => {
   const [x, y] = pxToCell(e);

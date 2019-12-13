@@ -18,7 +18,7 @@ const fovSystem = entities => {
     const entity = ECS.entities[id];
 
     const locId = `${entity.components.position.x},${entity.components.position.y}`;
-    if (FOV.fov.includes(locId)) {
+    if (ECS.cheats.omniscience || FOV.fov.includes(locId)) {
       entities[id].components.fov.inFov = true;
       entities[id].components.fov.revealed = true;
       entities[id].components.fov.distance = FOV.distance[locId];

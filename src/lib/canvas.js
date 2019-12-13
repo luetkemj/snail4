@@ -1,7 +1,7 @@
-const pixelRatio = window.devicePixelRatio || 1;
-const canvasMap = document.querySelector("#map");
-const ctx = canvasMap.getContext("2d");
 import { updateHSLA } from "./hsla";
+const pixelRatio = window.devicePixelRatio || 1;
+const canvas = document.querySelector("#canvas");
+const ctx = canvas.getContext("2d");
 
 export const layers = {
   ground: 100,
@@ -16,17 +16,25 @@ export const grid = {
   width: 100,
   height: 34,
 
-  mapWidth: 79,
-  mapHeight: 29,
+  map: {
+    width: 79,
+    height: 29,
+    x: 21,
+    y: 3
+  },
+
+  log: {
+    width: 79,
+    height: 3,
+    x: 21,
+    y: 0
+  },
 
   hudWidth: 21,
   hudHeight: 34,
 
   hud2Height: 2,
   hud2Width: 79,
-
-  logHeight: 79,
-  logWidth: 79,
 
   font: "Menlo",
   fontSize: 15,
@@ -37,10 +45,10 @@ const cellWidth = grid.fontSize * pixelRatio;
 const cellHeight = grid.fontSize * grid.lineHeight * pixelRatio;
 const fontSize = grid.fontSize * pixelRatio;
 
-canvasMap.style.cssText = `width: ${grid.fontSize *
+canvas.style.cssText = `width: ${grid.fontSize *
   grid.width}; height: ${grid.fontSize * grid.lineHeight * grid.height}`;
-canvasMap.width = cellWidth * grid.width;
-canvasMap.height = cellHeight * grid.height;
+canvas.width = cellWidth * grid.width;
+canvas.height = cellHeight * grid.height;
 
 ctx.font = `normal ${fontSize}px ${grid.font}`;
 ctx.textAlign = "center";
@@ -86,10 +94,10 @@ export const drawCell = (entity, HSLAOptions = { bg: {}, char: {} }) => {
 };
 
 export const clearCanvas = () =>
-  ctx.clearRect(0, 0, canvasMap.width, canvasMap.height);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 export const pxToCell = ev => {
-  const bounds = canvasMap.getBoundingClientRect();
+  const bounds = canvas.getBoundingClientRect();
   const relativeX = ev.clientX - bounds.left;
   const relativeY = ev.clientY - bounds.top;
   const colPos = Math.trunc((relativeX / cellWidth) * pixelRatio);
@@ -99,14 +107,14 @@ export const pxToCell = ev => {
 };
 
 export const onClick = handler => {
-  canvasMap.addEventListener("click", ev => {
+  canvas.addEventListener("click", ev => {
     const cell = pxToCell(ev);
     handler(cell[0], cell[1]);
   });
 };
 
 export const onMouseMove = handler => {
-  canvasMap.addEventListener("mousemove", ev => {
+  canvas.addEventListener("mousemove", ev => {
     const cell = pxToCell(ev);
     handler(cell[0], cell[1]);
   });

@@ -1,6 +1,7 @@
 import ECS from "../ECS";
 import { groupBy } from "lodash";
 import { clearCanvas, drawCell } from "../../lib/canvas";
+import { colors } from "../../lib/graphics";
 
 function render() {
   clearCanvas();
@@ -39,6 +40,27 @@ function render() {
           drawCell(entity, { char: { da: -75, ds: 0 } });
         }
       }
+    });
+  });
+
+  const logs = ECS.log.slice(ECS.log.length - 3);
+  logs.forEach((entry, entryIdx) => {
+    entry.split("").forEach((char, charIdx) => {
+      const charEntity = {
+        components: {
+          appearance: {
+            char,
+            color: colors.player,
+            background: colors.defaultBGColor
+          },
+          position: {
+            x: charIdx + ECS.game.grid.log.x,
+            y: entryIdx + ECS.game.grid.log.y
+          }
+        }
+      };
+      const opacity = entryIdx * 75 || 50;
+      drawCell(charEntity, { char: { a: opacity } });
     });
   });
 }
