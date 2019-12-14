@@ -95,7 +95,8 @@ export const generateDungeon = ({
   }
 
   const processedTiles = { ...tiles, ...roomTiles };
-  let digLoc = { x: width / 2, y: height / 2 };
+  let digLoc = { x: x + Math.floor(width / 2), y: Math.floor(y + height / 2) };
+
   for (let i = 0; i < 1000; i++) {
     digLoc = digDrunkenWalk(digLoc.x, digLoc.y, processedTiles);
   }
