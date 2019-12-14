@@ -1,7 +1,7 @@
-const pixelRatio = window.devicePixelRatio || 1;
-const canvas = document.querySelector("#game");
-const ctx = canvas.getContext("2d");
 import { updateHSLA } from "./hsla";
+const pixelRatio = window.devicePixelRatio || 1;
+const canvas = document.querySelector("#canvas");
+const ctx = canvas.getContext("2d");
 
 export const layers = {
   ground: 100,
@@ -12,21 +12,49 @@ export const layers = {
   sky: 600
 };
 
-const WIDTH = 80;
-const HEIGHT = 50;
-const FONT_SIZE = 15;
-const FONT = "Menlo";
+export const grid = {
+  width: 100,
+  height: 34,
 
-const cellWidth = FONT_SIZE * pixelRatio;
-const cellHeight = FONT_SIZE * pixelRatio;
-const fontSize = FONT_SIZE * pixelRatio;
+  map: {
+    width: 79,
+    height: 29,
+    x: 21,
+    y: 3
+  },
 
-canvas.style.cssText = `width: ${FONT_SIZE * WIDTH}; height: ${FONT_SIZE *
-  HEIGHT}`;
-canvas.width = cellWidth * WIDTH;
-canvas.height = cellHeight * HEIGHT;
+  log: {
+    width: 79,
+    height: 3,
+    x: 21,
+    y: 0
+  },
 
-ctx.font = `normal ${fontSize}px ${FONT}`;
+  hud: {
+    width: 20,
+    height: 34,
+    x: 0,
+    y: 0
+  },
+
+  hud2Height: 2,
+  hud2Width: 79,
+
+  font: "Menlo",
+  fontSize: 15,
+  lineHeight: 1.2
+};
+
+const cellWidth = grid.fontSize * pixelRatio;
+const cellHeight = grid.fontSize * grid.lineHeight * pixelRatio;
+const fontSize = grid.fontSize * pixelRatio;
+
+canvas.style.cssText = `width: ${grid.fontSize *
+  grid.width}; height: ${grid.fontSize * grid.lineHeight * grid.height}`;
+canvas.width = cellWidth * grid.width;
+canvas.height = cellHeight * grid.height;
+
+ctx.font = `normal ${fontSize}px ${grid.font}`;
 ctx.textAlign = "center";
 ctx.textBaseline = "middle";
 
@@ -71,32 +99,6 @@ export const drawCell = (entity, HSLAOptions = { bg: {}, char: {} }) => {
 
 export const clearCanvas = () =>
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-// export const renderCanvas = entities => {
-//   const layerGroups = groupBy(entities, "components.appearance.layer");
-//   const layerCake = Object.keys(layerGroups);
-
-//   layerCake.forEach(layer => {
-//     Object.values(layerGroups[layer]).forEach(entity => {
-//       const { appearance, position, revealed, fov } = entity.components;
-//       if (appearance && position) {
-//         if (fov.inFov) {
-//           if (entity.components.track) {
-//             const trackAge = ECS.game.turn - entity.components.track.createdAt;
-//             const da = trackAge * 5;
-//             drawCell(entity, { char: { da: -da } });
-//           } else {
-//             drawCell(entity);
-//           }
-//         }
-
-//         if (fov.showIfRevealed && fov.revealed && !fov.inFov) {
-//           drawCell(entity, { char: { da: -75, ds: 0 } });
-//         }
-//       }
-//     });
-//   });
-// };
 
 export const pxToCell = ev => {
   const bounds = canvas.getBoundingClientRect();

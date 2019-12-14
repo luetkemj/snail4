@@ -53,15 +53,14 @@ export const generateDungeon = ({
     { sprite: "WALL", blocking: true, opaque: true }
   );
 
-  // const rng = rung();
   const rooms = [];
   let roomTiles = {};
 
   for (let r of Array(maxRoomCount).keys()) {
     let rw = random(minRoomSize, maxRoomSize);
     let rh = random(minRoomSize, maxRoomSize);
-    let rx = random(1, width - rw - 1);
-    let ry = random(1, height - rh - 1);
+    let rx = random(x, width - rw - 1);
+    let ry = random(y, height - rh - 1);
 
     // create a candidate room
     // todo: perf - don't bother filling this in here - wait till it's accepted
@@ -96,7 +95,8 @@ export const generateDungeon = ({
   }
 
   const processedTiles = { ...tiles, ...roomTiles };
-  let digLoc = { x: width / 2, y: height / 2 };
+  let digLoc = { x: x + Math.floor(width / 2), y: Math.floor(y + height / 2) };
+
   for (let i = 0; i < 1000; i++) {
     digLoc = digDrunkenWalk(digLoc.x, digLoc.y, processedTiles);
   }

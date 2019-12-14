@@ -17,10 +17,10 @@ import { colors, chars } from "../lib/graphics";
 const initGame = () => {
   // create dungeon level
   const dungeon = generateDungeon({
-    x: 0,
-    y: 0,
-    width: ECS.game.grid.width,
-    height: ECS.game.grid.height,
+    x: ECS.game.grid.map.x,
+    y: ECS.game.grid.map.y,
+    width: ECS.game.grid.map.width,
+    height: ECS.game.grid.map.height,
     maxRoomCount: 30,
     minRoomSize: 6,
     maxRoomSize: 12

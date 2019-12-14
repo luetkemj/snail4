@@ -5,24 +5,38 @@ import {
   removeCacheEntityAtLocation,
   setCacheEntityAtLocation
 } from "../ECS/cache";
+import { printToLog } from "./gui";
 
 import createTrack from "../ECS/assemblages/track.assemblage";
 
 import { CARDINAL, getNeighbors } from "./grid";
 
 export const bump = (entity, targetId) => {
-  console.log(
-    `${entity.components.labels.name} bumps into ${ECS.entities[targetId].components.labels.name}`
-  );
+  // only print player bumps
+  if (ECS.cache.player[0] === entity.id) {
+    printToLog(
+      `${entity.components.labels.name} bumps into ${ECS.entities[targetId].components.labels.name}`
+    );
+  }
 };
 
 export const attack = (entity, targetId) => {
   const targetEntity = ECS.entities[targetId];
 
-  targetEntity.components.health.health -= 5;
+  // only print attacks if the player is involved
+  if (ECS.cache.player[0] === entity.id || ECS.cache.player[0] === targetId) {
+    printToLog(
+      `${entity.components.labels.name} attacks ${targetEntity.components.labels.name}.`
+    );
+  }
+  targetEntity.components.health.current -= 3;
 
-  if (targetEntity.components.health.health <= 0) {
-    console.log(`${targetEntity.components.labels.name} is dead.`);
+  if (targetEntity.components.health.current <= 0) {
+    // only print deaths if the player is involved
+    if (ECS.cache.player[0] === entity.id || ECS.cache.player[0] === targetId) {
+      printToLog(`${targetEntity.components.labels.name} is dead.`);
+    }
+
     targetEntity.addComponent("dead");
     targetEntity.components.appearance.char = "%";
     targetEntity.removeComponent("moveToPlayer");

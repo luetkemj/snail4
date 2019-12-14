@@ -1,6 +1,7 @@
-const componentHealth = ({ health = 10 }) => {
+const componentHealth = ({ max = 10, current = 10 }) => {
   return {
-    health
+    max,
+    current
   };
 };
 

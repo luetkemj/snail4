@@ -12,13 +12,13 @@ const fovSystem = entities => {
   const originX = entities[playerId].components.position.x;
   const originY = entities[playerId].components.position.y;
 
-  const FOV = createFOV(WIDTH, HEIGHT, originX, originY, ECS.game.grid.width);
+  const FOV = createFOV(WIDTH, HEIGHT, originX, originY, 8);
 
   ECS.cache.entityIds.forEach(id => {
     const entity = ECS.entities[id];
 
     const locId = `${entity.components.position.x},${entity.components.position.y}`;
-    if (FOV.fov.includes(locId)) {
+    if (ECS.cheats.omniscience || FOV.fov.includes(locId)) {
       entities[id].components.fov.inFov = true;
       entities[id].components.fov.revealed = true;
       entities[id].components.fov.distance = FOV.distance[locId];

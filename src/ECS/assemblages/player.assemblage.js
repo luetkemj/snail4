@@ -16,7 +16,8 @@ const playerAssemblage = (x, y) => {
 
   entity.addComponent("playerControlled");
 
-  entity.components.health.health = 100;
+  entity.components.health.max = 100;
+  entity.components.health.current = 100;
 
   ECS.entities[entity.id] = entity;
   setCacheId(entity.id, "player");

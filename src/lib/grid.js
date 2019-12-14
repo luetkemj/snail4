@@ -61,10 +61,12 @@ export const idToCell = id => {
 export const cellToId = ({ x, y }) => `${x},${y}`;
 
 export const isOnMapEdge = (x, y) => {
-  if (x === 0) return true; // north edge
-  if (y === 0) return true; // west edge
-  if (x === ECS.game.grid.width - 1) return true; // south edge
-  if (y === ECS.game.grid.height - 1) return true; // east edge
+  const { width, height, x: mapX, y: mapY } = ECS.game.grid.map;
+
+  if (x === mapX) return true; // west edge
+  if (y === mapY) return true; // north edge
+  if (x === mapX + width - 1) return true; // east edge
+  if (y === mapY + height - 1) return true; // south edge
   return false;
 };
 

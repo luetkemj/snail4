@@ -1,10 +1,127 @@
 import ECS from "../ECS";
-import { groupBy } from "lodash";
+import { groupBy, remove } from "lodash";
 import { clearCanvas, drawCell } from "../../lib/canvas";
+import { colors } from "../../lib/graphics";
+
+const renderLog = () => {
+  const logs = ECS.log.slice(ECS.log.length - 3);
+  logs.forEach((entry, entryIdx) => {
+    entry.split("").forEach((char, charIdx) => {
+      const charEntity = {
+        components: {
+          appearance: {
+            char,
+            color: colors.player,
+            background: colors.defaultBGColor
+          },
+          position: {
+            x: charIdx + ECS.game.grid.log.x,
+            y: entryIdx + ECS.game.grid.log.y
+          }
+        }
+      };
+      const opacity = entryIdx * 75 || 50;
+      drawCell(charEntity, { char: { a: opacity } });
+    });
+  });
+};
+
+// render hud
+const renderHudText = (msg, y) => {
+  msg.split("").forEach((char, charIdx) => {
+    const charEntity = {
+      components: {
+        appearance: {
+          char,
+          color: colors.hudText,
+          background: "transparent"
+        },
+        position: {
+          x: charIdx + ECS.game.grid.hud.x,
+          y: y + ECS.game.grid.hud.y
+        }
+      }
+    };
+    drawCell(charEntity);
+  });
+};
+
+// const renderHealth
+const renderBar = (current, max, color, y) => {
+  const curr = current > -1 ? current : 0;
+  const width = ECS.game.grid.hud.width;
+  const percent = (curr / max) * width;
+  const bars = Math.ceil(percent);
+  const remainder = percent % 1;
+
+  if (!bars) {
+    return;
+  }
+
+  Array(bars)
+    .fill(0)
+    .forEach((bar, idx) => {
+      const charEntity = {
+        components: {
+          appearance: {
+            char: "",
+            color: "transparent",
+            background: color
+          },
+          position: {
+            x: idx + ECS.game.grid.hud.x,
+            y: y + ECS.game.grid.hud.y
+          }
+        }
+      };
+      drawCell(charEntity);
+    });
+
+  if (remainder) {
+    const charEntity = {
+      components: {
+        appearance: {
+          char: "",
+          color: "transparent",
+          background: colors.player
+        },
+        position: {
+          x: bars.length + ECS.game.grid.hud.x,
+          y: y + ECS.game.grid.hud.y
+        }
+      }
+    };
+    drawCell(charEntity);
+  }
+};
+
+const renderHud = entities => {
+  entities.forEach((entity, idx) => {
+    const {
+      components: {
+        appearance: { char, color },
+        labels: { name }
+      }
+    } = entity;
+
+    const displayName = entity.components.dead ? `${name} corpse` : name;
+    renderHudText(`${char}: ${displayName}`, idx * 3);
+    renderBar(
+      entity.components.health.current,
+      entity.components.health.max,
+      colors.defaultColor,
+      idx * 3 + 1
+    );
+
+    const status = entity.components.dead ? "Dead" : "Health";
+    renderHudText(status, idx * 3 + 1);
+  });
+};
 
 function render() {
   clearCanvas();
 
+  // render map
   const entities = ECS.cache.entityIds.reduce((acc, val) => {
     acc[val] = ECS.entities[val];
     return acc;
@@ -12,9 +129,13 @@ function render() {
 
   const layerGroups = groupBy(entities, "components.appearance.layer");
   const layerCake = Object.keys(layerGroups);
+  const hudEntities = [];
 
   layerCake.forEach(layer => {
     Object.values(layerGroups[layer]).forEach(entity => {
+      if (entity.components.hud && entity.components.fov.inFov) {
+        hudEntities.push(entity);
+      }
       const { appearance, position, fov } = entity.components;
       if (appearance && position) {
         if (fov.inFov) {
@@ -41,6 +162,12 @@ function render() {
       }
     });
   });
+
+  // put player at top of hud entities array
+  const player = remove(hudEntities, x => x.id === ECS.cache.player[0]);
+
+  renderLog();
+  renderHud([...player, ...hudEntities]);
 }
 
 export default render;

@@ -1,6 +1,6 @@
 import Entity from "./Entity";
 import { cache } from "./cache";
-import { pxToCell } from "../lib/canvas";
+import { grid, pxToCell } from "../lib/canvas";
 
 // components
 import appearance from "./components/appearance.component";
@@ -10,6 +10,7 @@ import dijkstra from "./components/dijkstra.component";
 import fov from "./components/fov.component";
 import garbage from "./components/garbage.component";
 import health from "./components/health.component";
+import hud from "./components/hud.component";
 import labels from "./components/labels.component";
 import opaque from "./components/opaque.component";
 import playerControlled from "./components/player-controlled.component";
@@ -28,11 +29,10 @@ import fovSystem from "./systems/fov.system";
 import garbageSystem from "./systems/garbage.system";
 import renderSystem from "./systems/render.system";
 
-const WIDTH = 80;
-const HEIGHT = 50;
-const FONT_SIZE = 15;
-
 const ECS = {
+  cheats: {
+    omniscience: false
+  },
   entities: {},
   components: {
     appearance,
@@ -42,6 +42,7 @@ const ECS = {
     fov,
     garbage,
     health,
+    hud,
     labels,
     moveToPlayer,
     opaque,
@@ -57,18 +58,18 @@ const ECS = {
     turn: 0,
     userInput: null,
     playerTurn: true,
-    grid: {
-      width: WIDTH,
-      height: HEIGHT,
-      font: "Menlo",
-      fontSize: FONT_SIZE
-    }
+    grid
   },
+  log: [
+    "Welcome, adventurer, to the Dungeons of Doom!",
+    "Delve to the 26th floor and return with the Amulet of Yendor.",
+    "You cannot escape without it - if it even exists - for you are DOOMED!"
+  ],
   Entity,
   cache
 };
 
-const canvas = document.querySelector("#game");
+const canvas = document.querySelector("#canvas");
 
 canvas.onclick = e => {
   const [x, y] = pxToCell(e);
