@@ -30,8 +30,12 @@ export const grid = {
     y: 0
   },
 
-  hudWidth: 21,
-  hudHeight: 34,
+  hud: {
+    width: 20,
+    height: 34,
+    x: 0,
+    y: 0
+  },
 
   hud2Height: 2,
   hud2Width: 79,

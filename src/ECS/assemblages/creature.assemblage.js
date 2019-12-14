@@ -15,6 +15,8 @@ const creatureAssemblage = () => {
   entity.addComponent("health");
   entity.addComponent("trackable");
 
+  entity.addComponent("hud");
+
   return entity;
 };
 

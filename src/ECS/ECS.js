@@ -10,6 +10,7 @@ import dijkstra from "./components/dijkstra.component";
 import fov from "./components/fov.component";
 import garbage from "./components/garbage.component";
 import health from "./components/health.component";
+import hud from "./components/hud.component";
 import labels from "./components/labels.component";
 import opaque from "./components/opaque.component";
 import playerControlled from "./components/player-controlled.component";
@@ -30,7 +31,7 @@ import renderSystem from "./systems/render.system";
 
 const ECS = {
   cheats: {
-    omniscience: true
+    omniscience: false
   },
   entities: {},
   components: {
@@ -41,6 +42,7 @@ const ECS = {
     fov,
     garbage,
     health,
+    hud,
     labels,
     moveToPlayer,
     opaque,

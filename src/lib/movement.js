@@ -29,9 +29,9 @@ export const attack = (entity, targetId) => {
       `${entity.components.labels.name} attacks ${targetEntity.components.labels.name}.`
     );
   }
-  targetEntity.components.health.health -= 5;
+  targetEntity.components.health.current -= 3;
 
-  if (targetEntity.components.health.health <= 0) {
+  if (targetEntity.components.health.current <= 0) {
     // only print deaths if the player is involved
     if (ECS.cache.player[0] === entity.id || ECS.cache.player[0] === targetId) {
       printToLog(`${targetEntity.components.labels.name} is dead.`);
