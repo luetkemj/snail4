@@ -18,6 +18,10 @@ gameTick();
 
 function update() {
   if (ECS.game.userInput && ECS.game.playerTurn) {
+    if (ECS.game.userInput.type === "TOGGLE_OMNISCIENCE") {
+      ECS.cheats.omniscience = !ECS.cheats.omniscience;
+    }
+
     gameTick();
     ECS.game.userInput = null;
 
