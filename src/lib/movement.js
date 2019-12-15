@@ -40,6 +40,11 @@ export const attack = (entity, targetId) => {
     targetEntity.addComponent("dead", { timeOfDeath: ECS.game.turn });
     targetEntity.components.labels.name =
       targetEntity.components.labels.name + " corpse";
+
+    if (targetEntity.components.description) {
+      targetEntity.components.description.text = `You see a crumpled ${targetEntity.components.labels.name} on the floor.`;
+    }
+
     targetEntity.addComponent("storable");
     targetEntity.components.appearance.char = "%";
     targetEntity.removeComponent("moveToPlayer");

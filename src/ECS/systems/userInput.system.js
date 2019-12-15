@@ -44,6 +44,8 @@ function userInput(entities) {
         // remove storable entity from map
         removeCacheEntityAtLocation(item.id, item.components.position);
         item.removeComponent("position");
+        //  remove from hud
+        item.removeComponent("hud");
 
         pickedUp.push(item.id);
 

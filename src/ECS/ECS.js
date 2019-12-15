@@ -6,6 +6,7 @@ import { grid, pxToCell } from "../lib/canvas";
 import appearance from "./components/appearance.component";
 import blocking from "./components/blocking.component";
 import dead from "./components/dead.component";
+import description from "./components/description.component";
 import dijkstra from "./components/dijkstra.component";
 import fov from "./components/fov.component";
 import garbage from "./components/garbage.component";
@@ -41,6 +42,7 @@ const ECS = {
     appearance,
     blocking,
     dead,
+    description,
     dijkstra,
     fov,
     garbage,

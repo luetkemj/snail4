@@ -39,16 +39,25 @@ const initGame = () => {
       color = colors.wall;
       entity.addComponent("labels", { name: "wall" });
       entity.removeComponent("trackableLoc");
+      entity.addComponent("description", {
+        text: `You see a solid stone wall. Cold and unmoving.`
+      });
     }
     if (currTile.sprite === "FLOOR") {
       char = chars.floor;
       color = colors.floor;
       entity.addComponent("labels", { name: "floor" });
+      entity.addComponent("description", {
+        text: `The flagstone floor is worn with age.`
+      });
     }
     if (currTile.sprite === "CAVERN_FLOOR") {
       char = chars.cavernFloor;
       color = colors.cavernFloor;
       entity.addComponent("labels", { name: "cavern floor" });
+      entity.addComponent("description", {
+        text: `The cavern floor is scarred by unknown tools of some bygone age.`
+      });
     }
     entity.addComponent("appearance", { char, color });
     entity.addComponent("fov", { showIfRevealed: true });
