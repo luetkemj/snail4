@@ -37,7 +37,10 @@ export const attack = (entity, targetId) => {
       printToLog(`${targetEntity.components.labels.name} is dead.`);
     }
 
-    targetEntity.addComponent("dead");
+    targetEntity.addComponent("dead", { timeOfDeath: ECS.game.turn });
+    targetEntity.components.labels.name =
+      targetEntity.components.labels.name + " corpse";
+    targetEntity.addComponent("storable");
     targetEntity.components.appearance.char = "%";
     targetEntity.removeComponent("moveToPlayer");
     targetEntity.removeComponent("playerControlled");

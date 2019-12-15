@@ -16,6 +16,7 @@ const fovSystem = entities => {
 
   ECS.cache.entityIds.forEach(id => {
     const entity = ECS.entities[id];
+    if (!entity.components.position) return;
 
     const locId = `${entity.components.position.x},${entity.components.position.y}`;
     if (ECS.cheats.omniscience || FOV.fov.includes(locId)) {

@@ -4,6 +4,7 @@ import { layers } from "../../lib/canvas";
 
 const creatureAssemblage = () => {
   const entity = ECS.Entity(["movable"]);
+  entity.addComponent("inventory");
   entity.addComponent("labels");
   entity.addComponent("appearance", {
     background: colors.defaultBGColor,

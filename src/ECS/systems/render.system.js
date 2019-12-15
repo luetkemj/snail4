@@ -105,8 +105,7 @@ const renderHud = entities => {
       }
     } = entity;
 
-    const displayName = entity.components.dead ? `${name} corpse` : name;
-    renderHudText(`${char}: ${displayName}`, idx * 3);
+    renderHudText(`${char}: ${name}`, idx * 3);
 
     renderBar(
       ECS.game.grid.hud.width,

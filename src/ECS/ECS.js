@@ -11,10 +11,12 @@ import fov from "./components/fov.component";
 import garbage from "./components/garbage.component";
 import health from "./components/health.component";
 import hud from "./components/hud.component";
+import inventory from "./components/inventory.component";
 import labels from "./components/labels.component";
 import opaque from "./components/opaque.component";
 import playerControlled from "./components/player-controlled.component";
 import position from "./components/position.component";
+import storable from "./components/storable.component";
 import target from "./components/target.component";
 
 import track from "./components/track.component";
@@ -28,6 +30,7 @@ import brainSystem from "./systems/brain.system";
 import fovSystem from "./systems/fov.system";
 import garbageSystem from "./systems/garbage.system";
 import renderSystem from "./systems/render.system";
+import userInput from "./systems/userInput.system";
 
 const ECS = {
   cheats: {
@@ -43,17 +46,19 @@ const ECS = {
     garbage,
     health,
     hud,
+    inventory,
     labels,
     moveToPlayer,
     opaque,
     playerControlled,
     position,
+    storable,
     target,
     track,
     trackable,
     trackableLoc
   },
-  systems: [garbageSystem, brainSystem, fovSystem, renderSystem],
+  systems: [garbageSystem, userInput, brainSystem, fovSystem, renderSystem],
   game: {
     turn: 0,
     userInput: null,
