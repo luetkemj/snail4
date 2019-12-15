@@ -37,8 +37,12 @@ export const grid = {
     y: 0
   },
 
-  hud2Height: 2,
-  hud2Width: 79,
+  hud2: {
+    width: 79,
+    height: 2,
+    x: 21,
+    y: 32
+  },
 
   font: "Menlo",
   fontSize: 15,

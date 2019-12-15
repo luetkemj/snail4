@@ -10,7 +10,7 @@ const trackAssemblage = ({ position, eId }) => {
   const color = ECS.entities[eId].components.appearance.color;
 
   entity.addComponent("appearance", {
-    layer: layers.track,
+    layer: layers.tracks,
     color: color,
     char: chars.track
   });

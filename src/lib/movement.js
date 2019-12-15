@@ -6,6 +6,7 @@ import {
   setCacheEntityAtLocation
 } from "../ECS/cache";
 import { printToLog } from "./gui";
+import { layers } from "../lib/canvas";
 
 import createTrack from "../ECS/assemblages/track.assemblage";
 
@@ -46,6 +47,7 @@ export const attack = (entity, targetId) => {
     }
 
     targetEntity.addComponent("storable");
+    targetEntity.components.appearance.layer = layers.items;
     targetEntity.components.appearance.char = "%";
     targetEntity.removeComponent("moveToPlayer");
     targetEntity.removeComponent("playerControlled");

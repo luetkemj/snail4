@@ -1,8 +1,9 @@
 import ECS from "../ECS";
 import { groupBy, remove } from "lodash";
-import { clearCanvas, drawCell } from "../../lib/canvas";
+import { clearCanvas, drawCell, layers } from "../../lib/canvas";
 import { colors } from "../../lib/graphics";
 import { updateHSLA } from "../../lib/hsla";
+import { getEntitiesAtLoc, getPlayer } from "../../lib/getters";
 
 const renderLog = () => {
   const logs = ECS.log.slice(ECS.log.length - 3);
@@ -40,6 +41,25 @@ const renderHudText = (msg, y) => {
         position: {
           x: charIdx + ECS.game.grid.hud.x,
           y: y + ECS.game.grid.hud.y
+        }
+      }
+    };
+    drawCell(charEntity);
+  });
+};
+
+const renderHud2Text = (msg, y = 0) => {
+  msg.split("").forEach((char, charIdx) => {
+    const charEntity = {
+      components: {
+        appearance: {
+          char,
+          color: colors.hudText,
+          background: "transparent"
+        },
+        position: {
+          x: charIdx + ECS.game.grid.hud2.x,
+          y: y + ECS.game.grid.hud2.y
         }
       }
     };
@@ -93,6 +113,38 @@ const renderBar = (current, max, color, y) => {
       }
     };
     drawCell(charEntity);
+  }
+};
+
+const renderHud2 = () => {
+  // get entities at player loc
+  const entities = getEntitiesAtLoc(getPlayer().components.position);
+  // sort by layer
+  const layerGroups = groupBy(entities, "components.appearance.layer");
+
+  // print item descriptions
+  if (layerGroups[layers.items]) {
+    return renderHud2Text(
+      layerGroups[layers.items][0].components.description.text
+    );
+  }
+
+  // print track descriptions
+  if (layerGroups[layers.tracks]) {
+    // filter out the player tracks
+    const nonPlayerTracks = layerGroups[layers.tracks].filter(
+      entity => entity.components.track.eId !== getPlayer().id
+    );
+    if (nonPlayerTracks.length) {
+      return renderHud2Text(nonPlayerTracks[0].components.description.text);
+    }
+  }
+
+  // print ground descriptions
+  if (layerGroups[layers.ground]) {
+    return renderHud2Text(
+      layerGroups[layers.ground][0].components.description.text
+    );
   }
 };
 
@@ -176,6 +228,7 @@ function render() {
 
   renderLog();
   renderHud([...player, ...hudEntities]);
+  renderHud2();
 }
 
 export default render;
