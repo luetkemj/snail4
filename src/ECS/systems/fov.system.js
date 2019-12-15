@@ -12,7 +12,11 @@ const fovSystem = entities => {
   const originX = entities[playerId].components.position.x;
   const originY = entities[playerId].components.position.y;
 
+<<<<<<< Updated upstream
   const FOV = createFOV(WIDTH, HEIGHT, originX, originY, 8);
+=======
+  const FOV = createFOV(WIDTH, HEIGHT, originX, originY, 10);
+>>>>>>> Stashed changes
 
   ECS.cache.entityIds.forEach(id => {
     const entity = ECS.entities[id];

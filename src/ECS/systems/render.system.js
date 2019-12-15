@@ -2,6 +2,7 @@ import ECS from "../ECS";
 import { groupBy, remove } from "lodash";
 import { clearCanvas, drawCell } from "../../lib/canvas";
 import { colors } from "../../lib/graphics";
+import { updateHSLA } from "../../lib/hsla";
 
 const renderLog = () => {
   const logs = ECS.log.slice(ECS.log.length - 3);
@@ -11,7 +12,7 @@ const renderLog = () => {
         components: {
           appearance: {
             char,
-            color: colors.player,
+            color: colors.hudText,
             background: colors.defaultBGColor
           },
           position: {
@@ -83,7 +84,7 @@ const renderBar = (current, max, color, y) => {
         appearance: {
           char: "",
           color: "transparent",
-          background: colors.player
+          background: color
         },
         position: {
           x: bars.length + ECS.game.grid.hud.x,
@@ -106,10 +107,18 @@ const renderHud = entities => {
 
     const displayName = entity.components.dead ? `${name} corpse` : name;
     renderHudText(`${char}: ${displayName}`, idx * 3);
+
+    renderBar(
+      ECS.game.grid.hud.width,
+      ECS.game.grid.hud.width,
+      updateHSLA(colors.healthBar, { a: 15 }),
+      idx * 3 + 1
+    );
+
     renderBar(
       entity.components.health.current,
       entity.components.health.max,
-      colors.defaultColor,
+      colors.healthBar,
       idx * 3 + 1
     );
 

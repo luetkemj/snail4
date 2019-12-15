@@ -5,6 +5,7 @@ export const colors = {
   defaultBGColor: hexToHSLA("#000"),
   // log
   hudText: hexToHSLA("#fff"),
+  healthBar: hexToHSLA("#B91906"),
   // maps
   wall: hexToHSLA("#AAA"),
   floor: hexToHSLA("#555"),
