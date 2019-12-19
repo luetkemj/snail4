@@ -4,6 +4,7 @@ import { clearCanvas, drawCell, layers } from "../../lib/canvas";
 import { colors } from "../../lib/graphics";
 import { updateHSLA } from "../../lib/hsla";
 import { getEntitiesAtLoc, getPlayer } from "../../lib/getters";
+import { rectangle } from "../../lib/grid";
 
 const renderLog = () => {
   const logs = ECS.log.slice(ECS.log.length - 3);
@@ -176,6 +177,35 @@ const renderHud = entities => {
     const status = entity.components.dead ? "Dead" : "Health";
     renderHudText(status, idx * 3 + 1);
   });
+};
+
+export const renderInventory = () => {
+  if (ECS.game.showInventory) {
+    const menuGrid = rectangle({
+      x: ECS.game.grid.menu.x,
+      y: ECS.game.grid.menu.y,
+      width: ECS.game.grid.menu.width,
+      height: ECS.game.grid.menu.height
+    });
+
+    console.log(menuGrid.tiles);
+
+    Object.values(menuGrid.tiles).forEach(position => {
+      const charEntity = {
+        components: {
+          appearance: {
+            char: "",
+            color: "transparent",
+            background: colors.defaultColor
+          },
+          position
+        }
+      };
+      drawCell(charEntity);
+    });
+  } else {
+    render();
+  }
 };
 
 function render() {

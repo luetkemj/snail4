@@ -2,14 +2,17 @@ import ECS from "./ECS/ECS";
 import userInput from "./lib/key-bindings";
 import initGame from "./initializers/game.init";
 import { playerId } from "./ECS/cache";
+import { renderInventory } from "./ECS/systems/render.system";
 
 document.addEventListener("keydown", ev => userInput(ev.key));
 
 initGame();
 
 function gameTick() {
-  for (let i = 0; i < ECS.systems.length; i++) {
-    ECS.systems[i](ECS.entities);
+  if (!ECS.game.paused) {
+    for (let i = 0; i < ECS.systems.length; i++) {
+      ECS.systems[i](ECS.entities);
+    }
   }
 }
 
@@ -17,6 +20,17 @@ function gameTick() {
 gameTick();
 
 function update() {
+  if (ECS.game.userInput && ECS.game.userInput.type === "INVENTORY") {
+    ECS.game.paused = !ECS.game.paused;
+    ECS.game.showInventory = !ECS.game.showInventory;
+    ECS.game.playerTurn = true;
+    ECS.game.userInput = null;
+
+    renderInventory();
+
+    return;
+  }
+
   if (ECS.game.userInput && ECS.game.playerTurn) {
     gameTick();
     ECS.game.userInput = null;

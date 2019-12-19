@@ -2,6 +2,11 @@ import ECS from "../ECS/ECS";
 
 export default function input(key) {
   switch (key) {
+    case "i": {
+      ECS.game.userInput = { key, type: "INVENTORY", payload: {} };
+      break;
+    }
+
     case "g": {
       ECS.game.userInput = { key, type: "GET", payload: {} };
       break;

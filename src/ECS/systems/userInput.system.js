@@ -6,6 +6,10 @@ import { printToLog } from "../../lib/gui";
 function userInput(entities) {
   if (!ECS.game.userInput) return;
 
+  if (ECS.game.userInput.type === "INVENTORY") {
+    ECS.game.paused = !ECS.game.paused;
+  }
+
   if (ECS.game.userInput.type === "GET") {
     // check if there is anything to get on current cell
     const player = getPlayer();

@@ -44,6 +44,13 @@ export const grid = {
     y: 32
   },
 
+  menu: {
+    width: 34,
+    height: 29,
+    x: 65,
+    y: 3
+  },
+
   font: "Menlo",
   fontSize: 15,
   lineHeight: 1.2

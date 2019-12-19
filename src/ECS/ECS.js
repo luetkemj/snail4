@@ -62,6 +62,8 @@ const ECS = {
   },
   systems: [garbageSystem, userInput, brainSystem, fovSystem, renderSystem],
   game: {
+    paused: false,
+    showInventory: false,
     turn: 0,
     userInput: null,
     playerTurn: true,
