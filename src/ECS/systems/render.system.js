@@ -6,70 +6,44 @@ import { updateHSLA } from "../../lib/hsla";
 import { getEntitiesAtLoc, getPlayer } from "../../lib/getters";
 import { rectangle } from "../../lib/grid";
 
-const renderLog = () => {
-  const logs = ECS.log.slice(ECS.log.length - 3);
-  logs.forEach((entry, entryIdx) => {
-    entry.split("").forEach((char, charIdx) => {
-      const charEntity = {
-        components: {
-          appearance: {
-            char,
-            color: colors.hudText,
-            background: colors.defaultBGColor
-          },
-          position: {
-            x: charIdx + ECS.game.grid.log.x,
-            y: entryIdx + ECS.game.grid.log.y
-          }
-        }
-      };
-      const opacity = entryIdx * 75 || 50;
-      drawCell(charEntity, { char: { a: opacity } });
+const buildCharEntity = ({
+  char,
+  color = colors.hudText,
+  background = colors.defaultBGColor,
+  x,
+  y
+}) => ({
+  components: {
+    appearance: {
+      char,
+      color,
+      background
+    },
+    position: {
+      x,
+      y
+    }
+  }
+});
+
+const drawText = (
+  text,
+  { color = colors.hudText, background = "transparent", x, y, charAlpha = 100 }
+) => {
+  text.split("").forEach((char, charIdx) => {
+    const charEntity = buildCharEntity({
+      char,
+      color,
+      background,
+      x: charIdx + x,
+      y: y
     });
-  });
-};
-
-// render hud
-const renderHudText = (msg, y) => {
-  msg.split("").forEach((char, charIdx) => {
-    const charEntity = {
-      components: {
-        appearance: {
-          char,
-          color: colors.hudText,
-          background: "transparent"
-        },
-        position: {
-          x: charIdx + ECS.game.grid.hud.x,
-          y: y + ECS.game.grid.hud.y
-        }
-      }
-    };
-    drawCell(charEntity);
-  });
-};
-
-const renderHud2Text = (msg, y = 0) => {
-  msg.split("").forEach((char, charIdx) => {
-    const charEntity = {
-      components: {
-        appearance: {
-          char,
-          color: colors.hudText,
-          background: "transparent"
-        },
-        position: {
-          x: charIdx + ECS.game.grid.hud2.x,
-          y: y + ECS.game.grid.hud2.y
-        }
-      }
-    };
-    drawCell(charEntity);
+    drawCell(charEntity, { char: { a: charAlpha } });
   });
 };
 
 // const renderHealth
-const renderBar = (current, max, color, y) => {
+const drawBar = (current, max, color, y) => {
   const curr = current > -1 ? current : 0;
   const width = ECS.game.grid.hud.width;
   const percent = (curr / max) * width;
@@ -83,38 +57,91 @@ const renderBar = (current, max, color, y) => {
   Array(bars)
     .fill(0)
     .forEach((bar, idx) => {
-      const charEntity = {
-        components: {
-          appearance: {
-            char: "",
-            color: "transparent",
-            background: color
-          },
-          position: {
-            x: idx + ECS.game.grid.hud.x,
-            y: y + ECS.game.grid.hud.y
-          }
-        }
-      };
+      const charEntity = buildCharEntity({
+        char: "",
+        color: "transparent",
+        background: color,
+        x: idx + ECS.game.grid.hud.x,
+        y: y + ECS.game.grid.hud.y
+      });
       drawCell(charEntity);
     });
 
   if (remainder) {
-    const charEntity = {
-      components: {
-        appearance: {
-          char: "",
-          color: "transparent",
-          background: color
-        },
-        position: {
-          x: bars.length + ECS.game.grid.hud.x,
-          y: y + ECS.game.grid.hud.y
-        }
-      }
-    };
+    const charEntity = buildCharEntity({
+      char: "",
+      color: "transparent",
+      background: color,
+      x: bars.length + ECS.game.grid.hud.x,
+      y: y + ECS.game.grid.hud.y
+    });
     drawCell(charEntity);
   }
+};
+
+const drawRectangle = ({ x, y, width, height, color }) => {
+  const rect = rectangle({ x, y, width, height });
+
+  Object.values(rect.tiles).forEach(position => {
+    const charEntity = buildCharEntity({
+      char: "",
+      color: "transparent",
+      background: color,
+      ...position
+    });
+    drawCell(charEntity);
+  });
+};
+
+const renderLog = () => {
+  const logs = ECS.log.slice(ECS.log.length - 3);
+  logs.forEach((entry, entryIdx) => {
+    drawText(entry, {
+      color: colors.hudText,
+      background: colors.defaultBGColor,
+      x: ECS.game.grid.log.x,
+      y: entryIdx + ECS.game.grid.log.y,
+      charAlpha: entryIdx * 75 || 50
+    });
+  });
+};
+
+const renderHud = entities => {
+  const drawTextHud = (msg, y) =>
+    drawText(msg, {
+      color: colors.hudText,
+      background: "transparent",
+      x: ECS.game.grid.hud.x,
+      y: y + ECS.game.grid.hud.y
+    });
+
+  entities.forEach((entity, idx) => {
+    const {
+      components: {
+        appearance: { char, color },
+        labels: { name }
+      }
+    } = entity;
+
+    drawTextHud(`${char}: ${name}`, idx * 3);
+
+    drawBar(
+      ECS.game.grid.hud.width,
+      ECS.game.grid.hud.width,
+      updateHSLA(colors.healthBar, { a: 15 }),
+      idx * 3 + 1
+    );
+
+    drawBar(
+      entity.components.health.current,
+      entity.components.health.max,
+      colors.healthBar,
+      idx * 3 + 1
+    );
+
+    const status = entity.components.dead ? "Dead" : "Health";
+    drawTextHud(status, idx * 3 + 1);
+  });
 };
 
 const renderHud2 = () => {
@@ -123,9 +150,17 @@ const renderHud2 = () => {
   // sort by layer
   const layerGroups = groupBy(entities, "components.appearance.layer");
 
+  const drawTextHud2 = msg =>
+    drawText(msg, {
+      color: colors.hudText,
+      background: "transparent",
+      x: ECS.game.grid.hud2.x,
+      y: ECS.game.grid.hud2.y
+    });
+
   // print item descriptions
   if (layerGroups[layers.items]) {
-    return renderHud2Text(
+    return drawTextHud2(
       layerGroups[layers.items][0].components.description.text
     );
   }
@@ -137,75 +172,48 @@ const renderHud2 = () => {
       entity => entity.components.track.eId !== getPlayer().id
     );
     if (nonPlayerTracks.length) {
-      return renderHud2Text(nonPlayerTracks[0].components.description.text);
+      return drawTextHud2(nonPlayerTracks[0].components.description.text);
     }
   }
 
   // print ground descriptions
   if (layerGroups[layers.ground]) {
-    return renderHud2Text(
+    return drawTextHud2(
       layerGroups[layers.ground][0].components.description.text
     );
   }
 };
 
-const renderHud = entities => {
-  entities.forEach((entity, idx) => {
-    const {
-      components: {
-        appearance: { char, color },
-        labels: { name }
-      }
-    } = entity;
-
-    renderHudText(`${char}: ${name}`, idx * 3);
-
-    renderBar(
-      ECS.game.grid.hud.width,
-      ECS.game.grid.hud.width,
-      updateHSLA(colors.healthBar, { a: 15 }),
-      idx * 3 + 1
-    );
-
-    renderBar(
-      entity.components.health.current,
-      entity.components.health.max,
-      colors.healthBar,
-      idx * 3 + 1
-    );
-
-    const status = entity.components.dead ? "Dead" : "Health";
-    renderHudText(status, idx * 3 + 1);
-  });
-};
-
 export const renderInventory = () => {
-  if (ECS.game.showInventory) {
-    const menuGrid = rectangle({
+  // backgroung overlay
+  drawRectangle({
+    x: 0,
+    y: 0,
+    width: ECS.game.grid.width,
+    height: ECS.game.grid.height,
+    color: updateHSLA(colors.defaultBGColor, { a: 75 })
+  });
+
+  // inventory background
+  drawRectangle({
+    x: ECS.game.grid.menu.x,
+    y: ECS.game.grid.menu.y,
+    width: ECS.game.grid.menu.width,
+    height: ECS.game.grid.menu.height,
+    color: colors.defaultBGColor
+  });
+
+  drawText("Inventory", { x: ECS.game.grid.menu.x, y: ECS.game.grid.menu.y });
+  const inventory = getPlayer().components.inventory.items;
+  console.log(inventory);
+  const inventoryItemNames = Object.keys(inventory);
+  inventoryItemNames.forEach((name, idx) => {
+    console.log(inventory[name]);
+    drawText(`${inventory[name].eIds.length} ${name}`, {
       x: ECS.game.grid.menu.x,
-      y: ECS.game.grid.menu.y,
-      width: ECS.game.grid.menu.width,
-      height: ECS.game.grid.menu.height
+      y: ECS.game.grid.menu.y + 2 + idx
     });
-
-    console.log(menuGrid.tiles);
-
-    Object.values(menuGrid.tiles).forEach(position => {
-      const charEntity = {
-        components: {
-          appearance: {
-            char: "",
-            color: "transparent",
-            background: colors.defaultColor
-          },
-          position
-        }
-      };
-      drawCell(charEntity);
-    });
-  } else {
-    render();
-  }
+  });
 };
 
 function render() {
@@ -259,6 +267,9 @@ function render() {
   renderLog();
   renderHud([...player, ...hudEntities]);
   renderHud2();
+  if (ECS.game.showInventory) {
+    renderInventory();
+  }
 }
 
 export default render;

@@ -1,13 +1,23 @@
-import ECS from "../ECS";
-import { removeCacheEntityAtLocation } from "../cache";
-import { getStorablesAtLoc, getPlayer, getEntity } from "../../lib/getters";
-import { printToLog } from "../../lib/gui";
+import ECS from "../ECS/ECS";
+import { renderInventory } from "../ECS/systems/render.system";
+import { removeCacheEntityAtLocation } from "../ECS/cache";
+import { getStorablesAtLoc, getPlayer, getEntity } from "./getters";
+import { printToLog } from "./gui";
 
-function userInput(entities) {
-  if (!ECS.game.userInput) return;
+function processUserInput() {
+  if (!ECS.game.userInput) {
+    return;
+  }
 
   if (ECS.game.userInput.type === "INVENTORY") {
     ECS.game.paused = !ECS.game.paused;
+    ECS.game.showInventory = !ECS.game.showInventory;
+    ECS.game.playerTurn = true;
+    ECS.game.userInput = null;
+
+    renderInventory();
+
+    return;
   }
 
   if (ECS.game.userInput.type === "GET") {
@@ -32,7 +42,7 @@ function userInput(entities) {
         ) {
           printToLog(`You cannot carry any more`);
           // break out of loop
-          return false;
+          return;
         }
 
         // initialize pocket if none exists
@@ -60,11 +70,16 @@ function userInput(entities) {
         printToLog(`You pick up a ${getEntity(eId).components.labels.name}.`)
       );
     }
+
+    return;
   }
 
   if (ECS.game.userInput.type === "TOGGLE_OMNISCIENCE") {
     ECS.cheats.omniscience = !ECS.cheats.omniscience;
+    return;
   }
+
+  return;
 }
 
-export default userInput;
+export default processUserInput;

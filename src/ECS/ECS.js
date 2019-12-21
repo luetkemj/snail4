@@ -31,7 +31,6 @@ import brainSystem from "./systems/brain.system";
 import fovSystem from "./systems/fov.system";
 import garbageSystem from "./systems/garbage.system";
 import renderSystem from "./systems/render.system";
-import userInput from "./systems/userInput.system";
 
 const ECS = {
   cheats: {
@@ -60,7 +59,7 @@ const ECS = {
     trackable,
     trackableLoc
   },
-  systems: [garbageSystem, userInput, brainSystem, fovSystem, renderSystem],
+  systems: [garbageSystem, brainSystem, fovSystem, renderSystem],
   game: {
     paused: false,
     showInventory: false,
