@@ -16,6 +16,8 @@ const playerAssemblage = (x, y) => {
 
   entity.addComponent("playerControlled");
 
+  entity.addComponent("description", { text: "You" });
+
   entity.components.health.max = 100;
   entity.components.health.current = 100;
 

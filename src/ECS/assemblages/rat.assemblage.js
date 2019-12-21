@@ -15,6 +15,10 @@ const ratAssemblage = (x, y) => {
 
   entity.addComponent("moveToPlayer", { aggro: 5 });
 
+  entity.addComponent("description", {
+    text: `You see a filthy rat with matted fur and carnage in it's beady little eyes.`
+  });
+
   ECS.entities[entity.id] = entity;
   setCacheEntityAtLocation(entity.id, { x, y });
 };

@@ -1,15 +1,19 @@
 import ECS from "./ECS/ECS";
 import userInput from "./lib/key-bindings";
 import initGame from "./initializers/game.init";
+import processUserInput from "./lib/process-user-input";
 import { playerId } from "./ECS/cache";
+import { renderInventory } from "./ECS/systems/render.system";
 
 document.addEventListener("keydown", ev => userInput(ev.key));
 
 initGame();
 
 function gameTick() {
-  for (let i = 0; i < ECS.systems.length; i++) {
-    ECS.systems[i](ECS.entities);
+  if (!ECS.game.paused) {
+    for (let i = 0; i < ECS.systems.length; i++) {
+      ECS.systems[i](ECS.entities);
+    }
   }
 }
 
@@ -17,19 +21,15 @@ function gameTick() {
 gameTick();
 
 function update() {
-  if (ECS.game.userInput && ECS.game.playerTurn) {
-    if (ECS.game.userInput.type === "TOGGLE_OMNISCIENCE") {
-      ECS.cheats.omniscience = !ECS.cheats.omniscience;
-    }
+  if (ECS.entities[playerId()].components.dead) {
+    console.log("GAME OVER");
+    return;
+  }
 
+  if (ECS.game.userInput && ECS.game.playerTurn) {
+    processUserInput();
     gameTick();
     ECS.game.userInput = null;
-
-    if (ECS.entities[playerId()].components.dead) {
-      console.log("GAME OVER");
-      return;
-    }
-
     ECS.game.turn = ECS.game.turn += 1;
     ECS.game.playerTurn = false;
   }

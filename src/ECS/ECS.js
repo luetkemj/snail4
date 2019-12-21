@@ -6,15 +6,18 @@ import { grid, pxToCell } from "../lib/canvas";
 import appearance from "./components/appearance.component";
 import blocking from "./components/blocking.component";
 import dead from "./components/dead.component";
+import description from "./components/description.component";
 import dijkstra from "./components/dijkstra.component";
 import fov from "./components/fov.component";
 import garbage from "./components/garbage.component";
 import health from "./components/health.component";
 import hud from "./components/hud.component";
+import inventory from "./components/inventory.component";
 import labels from "./components/labels.component";
 import opaque from "./components/opaque.component";
 import playerControlled from "./components/player-controlled.component";
 import position from "./components/position.component";
+import storable from "./components/storable.component";
 import target from "./components/target.component";
 
 import track from "./components/track.component";
@@ -38,16 +41,19 @@ const ECS = {
     appearance,
     blocking,
     dead,
+    description,
     dijkstra,
     fov,
     garbage,
     health,
     hud,
+    inventory,
     labels,
     moveToPlayer,
     opaque,
     playerControlled,
     position,
+    storable,
     target,
     track,
     trackable,
@@ -55,6 +61,8 @@ const ECS = {
   },
   systems: [garbageSystem, brainSystem, fovSystem, renderSystem],
   game: {
+    paused: false,
+    showInventory: false,
     turn: 0,
     userInput: null,
     playerTurn: true,

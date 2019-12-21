@@ -1,6 +1,7 @@
-const componentDead = () => {
+const componentDead = ({ isDead = true, timeOfDeath = null }) => {
   return {
-    isDead: true
+    isDead,
+    timeOfDeath
   };
 };
 

@@ -6,6 +6,7 @@ import {
   setCacheEntityAtLocation
 } from "../ECS/cache";
 import { printToLog } from "./gui";
+import { layers } from "../lib/canvas";
 
 import createTrack from "../ECS/assemblages/track.assemblage";
 
@@ -37,7 +38,16 @@ export const attack = (entity, targetId) => {
       printToLog(`${targetEntity.components.labels.name} is dead.`);
     }
 
-    targetEntity.addComponent("dead");
+    targetEntity.addComponent("dead", { timeOfDeath: ECS.game.turn });
+    targetEntity.components.labels.name =
+      targetEntity.components.labels.name + " corpse";
+
+    if (targetEntity.components.description) {
+      targetEntity.components.description.text = `You see a crumpled ${targetEntity.components.labels.name} on the floor.`;
+    }
+
+    targetEntity.addComponent("storable");
+    targetEntity.components.appearance.layer = layers.items;
     targetEntity.components.appearance.char = "%";
     targetEntity.removeComponent("moveToPlayer");
     targetEntity.removeComponent("playerControlled");

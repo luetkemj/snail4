@@ -15,6 +15,10 @@ const goblinAssemblage = (x, y) => {
 
   entity.addComponent("moveToPlayer", { aggro: 10 });
 
+  entity.addComponent("description", {
+    text: `You see a greedy little goblin bent on cruel revenge.`
+  });
+
   ECS.entities[entity.id] = entity;
   setCacheEntityAtLocation(entity.id, { x, y });
 };
