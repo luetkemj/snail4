@@ -46,15 +46,22 @@ export const grid = {
 
   menu: {
     width: 40,
-    height: 33,
+    height: 30,
     x: 20,
-    y: 0
+    y: 3
   },
 
   menu2: {
     width: 40,
-    height: 33,
+    height: 30,
     x: 60,
+    y: 3
+  },
+
+  menu3: {
+    width: 79,
+    height: 34,
+    x: 20,
     y: 0
   },
 

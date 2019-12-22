@@ -117,8 +117,11 @@ function processUserInput() {
         }
 
         // place item on map
+        player.components.inventory.total -= 1;
         entity.addComponent("position", { ...player.components.position });
         setCacheEntityAtLocation(entity.id, entity.components.position);
+
+        printToLog(`You drop a ${getEntity(eId).components.labels.name}.`);
       }
 
       return;
