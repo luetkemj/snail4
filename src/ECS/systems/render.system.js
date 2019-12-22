@@ -159,7 +159,7 @@ const renderHud2 = () => {
     });
 
   // draw menu
-  drawText(`(i)Inventory`, {
+  drawText(`(?)Help (i)Inventory`, {
     color: updateHSLA(colors.hudText, { l: 50 }),
     background: "transparent",
     x: ECS.game.grid.hud2.x,
@@ -192,7 +192,7 @@ const renderHud2 = () => {
   }
 };
 
-export const renderInventory = () => {
+const renderInventory = () => {
   // inventory background
   drawRectangle({
     x: ECS.game.grid.menu.x,
@@ -246,7 +246,7 @@ export const renderInventory = () => {
   }
 
   // draw inventory
-  drawText("INVENTORY", {
+  drawText("-- INVENTORY --", {
     x: ECS.game.grid.menu.x + 1,
     y: ECS.game.grid.menu.y + 1
   });
@@ -256,6 +256,56 @@ export const renderInventory = () => {
       x: ECS.game.grid.menu.x + 1,
       y: ECS.game.grid.menu.y + 3 + idx
     });
+  });
+};
+
+const renderHelp = () => {
+  drawRectangle({
+    x: ECS.game.grid.menu3.x,
+    y: ECS.game.grid.menu3.y,
+    width: ECS.game.grid.menu3.width,
+    height: ECS.game.grid.menu3.height,
+    color: colors.defaultBGColor
+  });
+
+  drawText("-- COMMANDS --", {
+    x: ECS.game.grid.menu3.x + 7,
+    y: ECS.game.grid.menu3.y + 1
+  });
+
+  drawText("Arrow keys   Move or attack", {
+    x: ECS.game.grid.menu3.x + 1,
+    y: ECS.game.grid.menu3.y + 3
+  });
+
+  drawText("g   Pick up item", {
+    x: ECS.game.grid.menu3.x + 10,
+    y: ECS.game.grid.menu3.y + 4
+  });
+
+  drawText("z   Rest for 1 turn", {
+    x: ECS.game.grid.menu3.x + 10,
+    y: ECS.game.grid.menu3.y + 5
+  });
+
+  drawText("?   Help", {
+    x: ECS.game.grid.menu3.x + 10,
+    y: ECS.game.grid.menu3.y + 7
+  });
+
+  drawText("i   Inventory", {
+    x: ECS.game.grid.menu3.x + 10,
+    y: ECS.game.grid.menu3.y + 8
+  });
+
+  drawText("esc   Return to game", {
+    x: ECS.game.grid.menu3.x + 8,
+    y: ECS.game.grid.menu3.y + 9
+  });
+
+  drawText("O   Toggle omniscience", {
+    x: ECS.game.grid.menu3.x + 10,
+    y: ECS.game.grid.menu3.y + 11
   });
 };
 
@@ -312,6 +362,10 @@ function render() {
   renderHud2();
   if (ECS.game.mode === "INVENTORY") {
     renderInventory();
+  }
+
+  if (ECS.game.mode === "HELP") {
+    renderHelp();
   }
 }
 

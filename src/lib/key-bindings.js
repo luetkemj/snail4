@@ -1,7 +1,12 @@
 import ECS from "../ECS/ECS";
 
 export default function input(key) {
+  console.log(key);
   switch (key) {
+    case "?": {
+      ECS.game.userInput = { key, type: "HELP", payload: {} };
+      break;
+    }
     case "d": {
       ECS.game.userInput = { key, type: "DROP", payload: {} };
       break;
@@ -34,8 +39,8 @@ export default function input(key) {
     case "ArrowRight":
       ECS.game.userInput = { key, type: "MOVE", payload: { x: 1, y: 0 } };
       break;
-    case "Enter": {
-      ECS.game.userInput = { key, type: "ENTER", payload: {} };
+    case "Escape": {
+      ECS.game.userInput = { key, type: "ESCAPE", payload: {} };
       break;
     }
   }

@@ -63,7 +63,7 @@ const ECS = {
   },
   systems: [garbageSystem, brainSystem, fovSystem, renderSystem],
   game: {
-    mode: "GAME", // [GAME | INVENTORY]
+    mode: "GAME", // [GAME | INVENTORY | HELP]
     paused: false,
     turn: 0,
     userInput: null,

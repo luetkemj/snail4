@@ -70,20 +70,46 @@ function processUserInput() {
     return;
   }
 
-  if (ECS.game.mode === "INVENTORY") {
-    const player = getPlayer();
-    const { inventory } = player.components;
-    const itemNames = Object.keys(inventory.items);
-
-    // close inventory
-    if (ECS.game.userInput.key === "i") {
-      ECS.game.paused = !ECS.game.paused;
-      ECS.game.mode = ECS.game.mode === "INVENTORY" ? "GAME" : "INVENTORY";
+  // return to game
+  if (ECS.game.userInput.key === "Escape") {
+    if (ECS.game.mode !== "GAME") {
+      ECS.game.paused = false;
+      ECS.game.mode = "GAME";
       ECS.game.playerTurn = true;
       ECS.game.userInput = null;
 
       return;
     }
+  }
+
+  // open inventory
+  if (ECS.game.userInput.key === "i" && ECS.game.mode !== "INVENTORY") {
+    ECS.game.paused = true;
+    ECS.game.mode = ECS.game.mode === "INVENTORY" ? "GAME" : "INVENTORY";
+    ECS.game.playerTurn = true;
+    ECS.game.userInput = null;
+
+    const player = getPlayer();
+    player.components.inventory.currentSelected =
+      Object.keys(player.components.inventory.items)[0] || "";
+
+    return;
+  }
+
+  // open help
+  if (ECS.game.userInput.key === "?" && ECS.game.mode !== "HELP") {
+    ECS.game.paused = true;
+    ECS.game.mode = ECS.game.mode === "HELP" ? "GAME" : "HELP";
+    ECS.game.playerTurn = true;
+    ECS.game.userInput = null;
+
+    return;
+  }
+
+  if (ECS.game.mode === "INVENTORY") {
+    const player = getPlayer();
+    const { inventory } = player.components;
+    const itemNames = Object.keys(inventory.items);
 
     // select next item
     if (ECS.game.userInput.key === "ArrowDown") {
@@ -129,19 +155,6 @@ function processUserInput() {
   }
 
   if (ECS.game.mode === "GAME") {
-    if (ECS.game.userInput.type === "INVENTORY") {
-      ECS.game.paused = !ECS.game.paused;
-      ECS.game.mode = ECS.game.mode === "INVENTORY" ? "GAME" : "INVENTORY";
-      ECS.game.playerTurn = true;
-      ECS.game.userInput = null;
-
-      const player = getPlayer();
-      player.components.inventory.currentSelected =
-        Object.keys(player.components.inventory.items)[0] || "";
-
-      return;
-    }
-
     if (ECS.game.userInput.type === "GET") {
       // check if there is anything to get on current cell
       const player = getPlayer();
