@@ -18,8 +18,8 @@ const playerAssemblage = (x, y) => {
 
   entity.addComponent("description", { text: "You" });
 
-  entity.components.health.max = 100;
-  entity.components.health.current = 100;
+  entity.components.health.max = 50;
+  entity.components.health.current = 50;
 
   ECS.entities[entity.id] = entity;
   setCacheId(entity.id, "player");

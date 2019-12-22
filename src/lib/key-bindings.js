@@ -7,6 +7,10 @@ export default function input(key) {
       ECS.game.userInput = { key, type: "HELP", payload: {} };
       break;
     }
+    case "c": {
+      ECS.game.userInput = { key, type: "CONSUME", payload: {} };
+      break;
+    }
     case "d": {
       ECS.game.userInput = { key, type: "DROP", payload: {} };
       break;

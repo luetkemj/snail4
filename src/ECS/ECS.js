@@ -5,6 +5,7 @@ import { grid, pxToCell } from "../lib/canvas";
 // components
 import appearance from "./components/appearance.component";
 import blocking from "./components/blocking.component";
+import consumable from "./components/consumable.component";
 import dead from "./components/dead.component";
 import description from "./components/description.component";
 import dijkstra from "./components/dijkstra.component";
@@ -41,6 +42,7 @@ const ECS = {
   components: {
     appearance,
     blocking,
+    consumable,
     dead,
     description,
     dijkstra,

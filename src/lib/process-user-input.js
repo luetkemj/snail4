@@ -34,11 +34,11 @@ const setNextSelectedItem = () => {
     name => name === inventory.currentSelected
   );
 
-  // if we are at the first item set to last
-  if (index === 0) {
-    inventory.currentSelected = itemNames[itemNames.length - 1];
+  // if we are at the last item set to first
+  if (index === itemNames.length - 1) {
+    inventory.currentSelected = itemNames[0];
   } else {
-    inventory.currentSelected = itemNames[index - 1];
+    inventory.currentSelected = itemNames[index + 1];
   }
 };
 
@@ -148,6 +148,47 @@ function processUserInput() {
         setCacheEntityAtLocation(entity.id, entity.components.position);
 
         printToLog(`You drop a ${getEntity(eId).components.labels.name}.`);
+      }
+
+      return;
+    }
+
+    // drop item
+    if (ECS.game.userInput.key === "c") {
+      if (!itemNames.length) {
+        return;
+      }
+
+      const currentSelected = inventory.items[inventory.currentSelected];
+      const eId = currentSelected.eIds[0];
+      const entity = ECS.entities[eId];
+
+      if (entity.components.consumable) {
+        // remove inventory item
+        pull(inventory.items[inventory.currentSelected].eIds, eId);
+
+        if (!inventory.items[inventory.currentSelected].eIds.length) {
+          setNextSelectedItem();
+          tidyInventoryKeys();
+        }
+
+        // consume item and take it's effects
+        entity.components.consumable.effects.forEach(effect => {
+          if (effect.buff) {
+            if (player.components[effect.buff.component]) {
+              const delta = effect.buff.delta;
+              const { current, max } = player.components[effect.buff.component];
+
+              player.components[effect.buff.component].current = Math.min(
+                current + delta,
+                max
+              );
+            }
+          }
+        });
+        player.components.inventory.total -= 1;
+
+        printToLog(`You consume a ${getEntity(eId).components.labels.name}.`);
       }
 
       return;

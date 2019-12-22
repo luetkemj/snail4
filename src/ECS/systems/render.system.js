@@ -125,22 +125,24 @@ const renderHud = entities => {
 
     drawTextHud(`${char}: ${name}`, idx * 3);
 
-    drawBar(
-      ECS.game.grid.hud.width,
-      ECS.game.grid.hud.width,
-      updateHSLA(colors.healthBar, { a: 15 }),
-      idx * 3 + 1
-    );
+    if (entity.components.health) {
+      drawBar(
+        ECS.game.grid.hud.width,
+        ECS.game.grid.hud.width,
+        updateHSLA(colors.healthBar, { a: 15 }),
+        idx * 3 + 1
+      );
 
-    drawBar(
-      entity.components.health.current,
-      entity.components.health.max,
-      colors.healthBar,
-      idx * 3 + 1
-    );
+      drawBar(
+        entity.components.health.current,
+        entity.components.health.max,
+        colors.healthBar,
+        idx * 3 + 1
+      );
 
-    const status = entity.components.dead ? "Dead" : "Health";
-    drawTextHud(status, idx * 3 + 1);
+      const status = entity.components.dead ? "Dead" : "Health";
+      drawTextHud(status, idx * 3 + 1);
+    }
   });
 };
 
@@ -235,7 +237,11 @@ const renderInventory = () => {
       let actions = "";
 
       if (entity.components.droppable) {
-        actions = "(d)Drop ";
+        actions = `${actions}(d)Drop `;
+      }
+
+      if (entity.components.consumable) {
+        actions = `${actions}(c)Consume `;
       }
 
       drawText(actions, {

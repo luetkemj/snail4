@@ -3,6 +3,8 @@ import { hexToHSLA } from "./hsla";
 export const colors = {
   defaultColor: hexToHSLA("#ff0077"),
   defaultBGColor: hexToHSLA("#000"),
+  // items:
+  potion: hexToHSLA("#DAA520"),
   // log
   hudText: hexToHSLA("#fff"),
   healthBar: hexToHSLA("#B91906"),
@@ -19,6 +21,8 @@ export const colors = {
 
 export const chars = {
   defaultChar: "?",
+  // items
+  potion: "!",
   // maps
   wall: "#",
   floor: "•",

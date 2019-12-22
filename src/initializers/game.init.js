@@ -9,6 +9,8 @@ import {
 import createPlayer from "../ECS/assemblages/player.assemblage";
 import createGoblin from "../ECS/assemblages/goblin.assemblage";
 import createRat from "../ECS/assemblages/rat.assemblage";
+import createHealthPotion from "../ECS/assemblages/health-potion.assemblage";
+import createPoisonPotion from "../ECS/assemblages/poison-potion.assemblage";
 
 import { generateDungeon } from "../lib/dungeon";
 import { dijkstra } from "../lib/dijkstra";
@@ -89,6 +91,15 @@ const initGame = () => {
     const type = random(0, 1) ? "rat" : "goblin";
     if (type === "rat") createRat(position.x, position.y);
     if (type === "goblin") createGoblin(position.x, position.y);
+  });
+
+  times(10, () => {
+    const id = sample(ECS.cache.openTiles);
+    const { position } = ECS.entities[id].components;
+
+    const type = random(0, 1) ? "poison" : "health";
+    if (type === "poison") createPoisonPotion(position.x, position.y);
+    if (type === "health") createHealthPotion(position.x, position.y);
   });
 
   // Create player
