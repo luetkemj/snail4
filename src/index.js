@@ -3,7 +3,7 @@ import userInput from "./lib/key-bindings";
 import initGame from "./initializers/game.init";
 import processUserInput from "./lib/process-user-input";
 import { playerId } from "./ECS/cache";
-import { renderInventory } from "./ECS/systems/render.system";
+import renderSystem from "./ECS/systems/render.system";
 
 document.addEventListener("keydown", ev => userInput(ev.key));
 
@@ -14,6 +14,8 @@ function gameTick() {
     for (let i = 0; i < ECS.systems.length; i++) {
       ECS.systems[i](ECS.entities);
     }
+  } else {
+    renderSystem(ECS.entities);
   }
 }
 

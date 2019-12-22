@@ -45,10 +45,17 @@ export const grid = {
   },
 
   menu: {
-    width: 34,
-    height: 29,
-    x: 65,
-    y: 3
+    width: 40,
+    height: 33,
+    x: 20,
+    y: 0
+  },
+
+  menu2: {
+    width: 40,
+    height: 33,
+    x: 60,
+    y: 0
   },
 
   font: "Menlo",

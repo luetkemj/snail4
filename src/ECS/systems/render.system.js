@@ -158,6 +158,14 @@ const renderHud2 = () => {
       y: ECS.game.grid.hud2.y
     });
 
+  // draw menu
+  drawText(`(i)Inventory`, {
+    color: updateHSLA(colors.hudText, { l: 50 }),
+    background: "transparent",
+    x: ECS.game.grid.hud2.x,
+    y: ECS.game.grid.hud2.y + 1
+  });
+
   // print item descriptions
   if (layerGroups[layers.items]) {
     return drawTextHud2(
@@ -185,15 +193,6 @@ const renderHud2 = () => {
 };
 
 export const renderInventory = () => {
-  // backgroung overlay
-  drawRectangle({
-    x: 0,
-    y: 0,
-    width: ECS.game.grid.width,
-    height: ECS.game.grid.height,
-    color: updateHSLA(colors.defaultBGColor, { a: 75 })
-  });
-
   // inventory background
   drawRectangle({
     x: ECS.game.grid.menu.x,
@@ -203,15 +202,59 @@ export const renderInventory = () => {
     color: colors.defaultBGColor
   });
 
-  drawText("Inventory", { x: ECS.game.grid.menu.x, y: ECS.game.grid.menu.y });
-  const inventory = getPlayer().components.inventory.items;
-  console.log(inventory);
-  const inventoryItemNames = Object.keys(inventory);
+  // selected item background
+  drawRectangle({
+    x: ECS.game.grid.menu2.x,
+    y: ECS.game.grid.menu2.y,
+    width: ECS.game.grid.menu2.width,
+    height: ECS.game.grid.menu2.height,
+    color: colors.defaultBGColor
+  });
+
+  const inventory = getPlayer().components.inventory;
+  const inventoryItemNames = Object.keys(inventory.items);
+
+  // draw selected item details
+  if (inventoryItemNames.length) {
+    drawText(inventory.currentSelected, {
+      x: ECS.game.grid.menu2.x + 1,
+      y: ECS.game.grid.menu2.y + 3
+    });
+
+    const eId = inventory.items[inventory.currentSelected].eIds[0];
+    if (eId) {
+      const entity = ECS.entities[eId];
+
+      // draw description
+      // drawText(entity.components.description.text, {
+      //   x: ECS.game.grid.menu2.x + 1,
+      //   y: ECS.game.grid.menu2.y + 3
+      // });
+
+      // actions
+      let actions = "";
+
+      if (entity.components.droppable) {
+        actions = "(d)Drop ";
+      }
+
+      drawText(actions, {
+        x: ECS.game.grid.menu2.x + 1,
+        y: ECS.game.grid.menu2.y + 5
+      });
+    }
+  }
+
+  // draw inventory
+  drawText("INVENTORY", {
+    x: ECS.game.grid.menu.x + 1,
+    y: ECS.game.grid.menu.y + 1
+  });
   inventoryItemNames.forEach((name, idx) => {
-    console.log(inventory[name]);
-    drawText(`${inventory[name].eIds.length} ${name}`, {
-      x: ECS.game.grid.menu.x,
-      y: ECS.game.grid.menu.y + 2 + idx
+    const cursor = name === inventory.currentSelected ? "*" : " ";
+    drawText(`${cursor}${inventory.items[name].eIds.length} ${name}`, {
+      x: ECS.game.grid.menu.x + 1,
+      y: ECS.game.grid.menu.y + 3 + idx
     });
   });
 };
@@ -267,7 +310,7 @@ function render() {
   renderLog();
   renderHud([...player, ...hudEntities]);
   renderHud2();
-  if (ECS.game.showInventory) {
+  if (ECS.game.mode === "INVENTORY") {
     renderInventory();
   }
 }

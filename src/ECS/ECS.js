@@ -8,6 +8,7 @@ import blocking from "./components/blocking.component";
 import dead from "./components/dead.component";
 import description from "./components/description.component";
 import dijkstra from "./components/dijkstra.component";
+import droppable from "./components/droppable.component";
 import fov from "./components/fov.component";
 import garbage from "./components/garbage.component";
 import health from "./components/health.component";
@@ -43,6 +44,7 @@ const ECS = {
     dead,
     description,
     dijkstra,
+    droppable,
     fov,
     garbage,
     health,
@@ -61,8 +63,8 @@ const ECS = {
   },
   systems: [garbageSystem, brainSystem, fovSystem, renderSystem],
   game: {
+    mode: "GAME", // [GAME | INVENTORY]
     paused: false,
-    showInventory: false,
     turn: 0,
     userInput: null,
     playerTurn: true,
