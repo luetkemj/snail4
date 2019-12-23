@@ -14,7 +14,7 @@ const healthPotionAssemblage = (x, y) => {
   });
 
   entity.addComponent("consumable", {
-    effects: [{ buff: { component: "health", delta: 5 } }]
+    effects: [{ buff: { component: "health", delta: 10 } }]
   });
 
   ECS.entities[entity.id] = entity;

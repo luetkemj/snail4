@@ -6,11 +6,11 @@ import {
   setCacheTileLocations
 } from "../ECS/cache";
 
-import createPlayer from "../ECS/assemblages/player.assemblage";
-import createGoblin from "../ECS/assemblages/goblin.assemblage";
-import createRat from "../ECS/assemblages/rat.assemblage";
-import createHealthPotion from "../ECS/assemblages/health-potion.assemblage";
-import createPoisonPotion from "../ECS/assemblages/poison-potion.assemblage";
+import createPlayer from "../ECS/assemblages/creature-player.assemblage";
+import createGoblin from "../ECS/assemblages/creature-goblin.assemblage";
+import createRat from "../ECS/assemblages/creature-rat.assemblage";
+import createHealthPotion from "../ECS/assemblages/potion-health.assemblage";
+import createPoisonPotion from "../ECS/assemblages/potion-poison.assemblage";
 
 import { generateDungeon } from "../lib/dungeon";
 import { dijkstra } from "../lib/dijkstra";
