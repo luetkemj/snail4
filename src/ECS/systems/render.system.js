@@ -244,6 +244,10 @@ const renderInventory = () => {
         actions = `${actions}(c)Consume `;
       }
 
+      if (entity.components.wearable) {
+        actions = `${actions}(e)Equip `;
+      }
+
       drawText(actions, {
         x: ECS.game.grid.menu2.x + 1,
         y: ECS.game.grid.menu2.y + 5

@@ -17,11 +17,19 @@ const playerAssemblage = (x, y) => {
   entity.addComponent("playerControlled");
 
   entity.addComponent("description", { text: "You" });
+  entity.addComponent("armor", {
+    head: "",
+    torso: "",
+    shoulders: "",
+    wrists: "",
+    hands: "",
+    legs: "",
+    feet: ""
+  });
 
   entity.components.health.max = 50;
   entity.components.health.current = 50;
 
-  ECS.entities[entity.id] = entity;
   setCacheId(entity.id, "player");
   setCacheEntityAtLocation(entity.id, { x, y });
 

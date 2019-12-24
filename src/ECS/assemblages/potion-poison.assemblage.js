@@ -17,7 +17,6 @@ const healthPotionAssemblage = (x, y) => {
     effects: [{ buff: { component: "health", delta: -5 } }]
   });
 
-  ECS.entities[entity.id] = entity;
   setCacheEntityAtLocation(entity.id, { x, y });
 };
 

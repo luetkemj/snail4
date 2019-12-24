@@ -4,6 +4,7 @@ export const colors = {
   defaultColor: hexToHSLA("#ff0077"),
   defaultBGColor: hexToHSLA("#000"),
   // items:
+  armor: hexToHSLA("#DAA520"),
   potion: hexToHSLA("#DAA520"),
   // log
   hudText: hexToHSLA("#fff"),
@@ -13,7 +14,7 @@ export const colors = {
   floor: hexToHSLA("#555"),
   cavernFloor: hexToHSLA("#71331E"),
   // player
-  player: hexToHSLA("#DAA520"),
+  player: hexToHSLA("#FFF"),
   // monsters
   goblin: hexToHSLA("#0C9"),
   rat: hexToHSLA("#F1948A")
@@ -21,6 +22,9 @@ export const colors = {
 
 export const chars = {
   defaultChar: "?",
+  // equipment
+  armor: "[",
+  weapons: ")",
   // items
   potion: "!",
   // maps

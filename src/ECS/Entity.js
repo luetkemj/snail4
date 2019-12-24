@@ -26,13 +26,17 @@ const Entity = (cacheKeys = []) => {
   const cacheKeysSet = uniq([...cacheKeys, "entityIds"]);
   [...cacheKeysSet].forEach(cacheKey => setCacheId(id, cacheKey));
 
-  return {
+  const entity = {
     id,
     components,
     addComponent,
     removeComponent,
     print
   };
+
+  ECS.entities[id] = entity;
+
+  return entity;
 };
 
 export default Entity;

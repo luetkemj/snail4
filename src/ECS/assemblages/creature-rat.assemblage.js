@@ -19,7 +19,6 @@ const ratAssemblage = (x, y) => {
     text: `You see a filthy rat with matted fur and carnage in it's beady little eyes.`
   });
 
-  ECS.entities[entity.id] = entity;
   setCacheEntityAtLocation(entity.id, { x, y });
 };
 

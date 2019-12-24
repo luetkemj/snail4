@@ -66,7 +66,7 @@ export const grid = {
   },
 
   font: "Menlo",
-  fontSize: 15,
+  fontSize: window.innerWidth / 100, // todo: update on window resize
   lineHeight: 1.2
 };
 

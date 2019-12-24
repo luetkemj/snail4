@@ -22,7 +22,6 @@ const trackAssemblage = ({ position, eId }) => {
     text: `You spot ${getEntity(eId).components.labels.name} tracks!`
   });
 
-  ECS.entities[entity.id] = entity;
   setCacheEntityAtLocation(entity.id, position);
 };
 

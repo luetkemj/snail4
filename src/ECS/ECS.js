@@ -4,8 +4,10 @@ import { grid, pxToCell } from "../lib/canvas";
 
 // components
 import appearance from "./components/appearance.component";
+import armor from "./components/armor.component";
 import blocking from "./components/blocking.component";
 import consumable from "./components/consumable.component";
+import damageReduction from "./components/damage-reduction.component";
 import dead from "./components/dead.component";
 import description from "./components/description.component";
 import dijkstra from "./components/dijkstra.component";
@@ -16,17 +18,16 @@ import health from "./components/health.component";
 import hud from "./components/hud.component";
 import inventory from "./components/inventory.component";
 import labels from "./components/labels.component";
+import moveToPlayer from "./components/moveToPlayer.component";
 import opaque from "./components/opaque.component";
 import playerControlled from "./components/player-controlled.component";
 import position from "./components/position.component";
 import storable from "./components/storable.component";
 import target from "./components/target.component";
-
 import track from "./components/track.component";
 import trackable from "./components/trackable.component";
 import trackableLoc from "./components/trackable-loc.component";
-
-import moveToPlayer from "./components/moveToPlayer.component";
+import wearable from "./components/wearable.component";
 
 // systems
 import brainSystem from "./systems/brain.system";
@@ -41,8 +42,10 @@ const ECS = {
   entities: {},
   components: {
     appearance,
+    armor,
     blocking,
     consumable,
+    damageReduction,
     dead,
     description,
     dijkstra,
@@ -61,7 +64,8 @@ const ECS = {
     target,
     track,
     trackable,
-    trackableLoc
+    trackableLoc,
+    wearable
   },
   systems: [garbageSystem, brainSystem, fovSystem, renderSystem],
   game: {

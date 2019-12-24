@@ -12,6 +12,8 @@ import createRat from "../ECS/assemblages/creature-rat.assemblage";
 import createHealthPotion from "../ECS/assemblages/potion-health.assemblage";
 import createPoisonPotion from "../ECS/assemblages/potion-poison.assemblage";
 
+import armorAssemblage from "../ECS/assemblages/armor.assemblage";
+
 import { generateDungeon } from "../lib/dungeon";
 import { dijkstra } from "../lib/dijkstra";
 import { colors, chars } from "../lib/graphics";
@@ -100,6 +102,17 @@ const initGame = () => {
     const type = random(0, 1) ? "poison" : "health";
     if (type === "poison") createPoisonPotion(position.x, position.y);
     if (type === "health") createHealthPotion(position.x, position.y);
+  });
+
+  // drop armor
+  times(100, () => {
+    const id = sample(ECS.cache.openTiles);
+    const { position } = ECS.entities[id].components;
+
+    const entity = armorAssemblage();
+
+    entity.components.position = position;
+    setCacheEntityAtLocation(entity.id, position);
   });
 
   // Create player

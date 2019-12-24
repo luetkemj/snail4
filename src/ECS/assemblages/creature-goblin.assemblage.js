@@ -19,7 +19,6 @@ const goblinAssemblage = (x, y) => {
     text: `You see a greedy little goblin bent on cruel revenge.`
   });
 
-  ECS.entities[entity.id] = entity;
   setCacheEntityAtLocation(entity.id, { x, y });
 };
 

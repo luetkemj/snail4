@@ -123,37 +123,7 @@ function processUserInput() {
       return;
     }
 
-    // drop item
-    if (ECS.game.userInput.key === "d") {
-      if (!itemNames.length) {
-        return;
-      }
-
-      const currentSelected = inventory.items[inventory.currentSelected];
-      const eId = currentSelected.eIds[0];
-      const entity = ECS.entities[eId];
-
-      if (entity.components.droppable) {
-        // remove inventory item
-        pull(inventory.items[inventory.currentSelected].eIds, eId);
-
-        if (!inventory.items[inventory.currentSelected].eIds.length) {
-          setNextSelectedItem();
-          tidyInventoryKeys();
-        }
-
-        // place item on map
-        player.components.inventory.total -= 1;
-        entity.addComponent("position", { ...player.components.position });
-        setCacheEntityAtLocation(entity.id, entity.components.position);
-
-        printToLog(`You drop a ${getEntity(eId).components.labels.name}.`);
-      }
-
-      return;
-    }
-
-    // drop item
+    // consume item
     if (ECS.game.userInput.key === "c") {
       if (!itemNames.length) {
         return;
@@ -189,6 +159,65 @@ function processUserInput() {
         player.components.inventory.total -= 1;
 
         printToLog(`You consume a ${getEntity(eId).components.labels.name}.`);
+      }
+
+      return;
+    }
+
+    // drop item
+    if (ECS.game.userInput.key === "d") {
+      if (!itemNames.length) {
+        return;
+      }
+
+      const currentSelected = inventory.items[inventory.currentSelected];
+      const eId = currentSelected.eIds[0];
+      const entity = ECS.entities[eId];
+
+      if (entity.components.droppable) {
+        // remove inventory item
+        pull(inventory.items[inventory.currentSelected].eIds, eId);
+
+        if (!inventory.items[inventory.currentSelected].eIds.length) {
+          setNextSelectedItem();
+          tidyInventoryKeys();
+        }
+
+        // place item on map
+        player.components.inventory.total -= 1;
+        entity.addComponent("position", { ...player.components.position });
+        setCacheEntityAtLocation(entity.id, entity.components.position);
+
+        printToLog(`You drop a ${getEntity(eId).components.labels.name}.`);
+      }
+
+      return;
+    }
+
+    // equip item
+    if (ECS.game.userInput.key === "e") {
+      if (!itemNames.length) {
+        return;
+      }
+
+      const currentSelected = inventory.items[inventory.currentSelected];
+      const eId = currentSelected.eIds[0];
+      const entity = ECS.entities[eId];
+
+      if (entity.components.wearable) {
+        const slots = entity.components.wearable.slots;
+        const emptySlots = slots.filter(slot => !player.components.armor[slot]);
+
+        // if empty slots equip to first available
+        console.log(emptySlots);
+        if (emptySlots.length) {
+          player.components.armor[emptySlots[0]] = entity.id;
+        } else {
+          // else just swap out for first valid slot
+          player.components.armor[slots[0]] = entity.id;
+        }
+
+        printToLog(`You drop a ${getEntity(eId).components.labels.name}.`);
       }
 
       return;
