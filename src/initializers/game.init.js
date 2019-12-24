@@ -12,7 +12,7 @@ import createRat from "../ECS/assemblages/creature-rat.assemblage";
 import createHealthPotion from "../ECS/assemblages/potion-health.assemblage";
 import createPoisonPotion from "../ECS/assemblages/potion-poison.assemblage";
 
-import armorAssemblage from "../ECS/assemblages/armor.assemblage";
+import createLeatherArmor from "../ECS/assemblages/armor-leather.assemblage";
 
 import { generateDungeon } from "../lib/dungeon";
 import { dijkstra } from "../lib/dijkstra";
@@ -95,7 +95,7 @@ const initGame = () => {
     if (type === "goblin") createGoblin(position.x, position.y);
   });
 
-  times(10, () => {
+  times(5, () => {
     const id = sample(ECS.cache.openTiles);
     const { position } = ECS.entities[id].components;
 
@@ -105,14 +105,11 @@ const initGame = () => {
   });
 
   // drop armor
-  times(100, () => {
+  times(3, () => {
     const id = sample(ECS.cache.openTiles);
     const { position } = ECS.entities[id].components;
 
-    const entity = armorAssemblage();
-
-    entity.components.position = position;
-    setCacheEntityAtLocation(entity.id, position);
+    createLeatherArmor(position.x, position.y);
   });
 
   // Create player

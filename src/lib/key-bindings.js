@@ -30,6 +30,10 @@ export default function input(key) {
       ECS.game.userInput = { key, type: "TOGGLE_OMNISCIENCE", payload: {} };
       break;
     }
+    case "r": {
+      ECS.game.userInput = { key, type: "REMOVE", payload: {} };
+      break;
+    }
     case "z": {
       ECS.game.userInput = { key, type: "REST", payload: {} };
       break;

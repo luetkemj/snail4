@@ -22,6 +22,7 @@ import moveToPlayer from "./components/moveToPlayer.component";
 import opaque from "./components/opaque.component";
 import playerControlled from "./components/player-controlled.component";
 import position from "./components/position.component";
+import removable from "./components/removable.component";
 import storable from "./components/storable.component";
 import target from "./components/target.component";
 import track from "./components/track.component";
@@ -60,6 +61,7 @@ const ECS = {
     opaque,
     playerControlled,
     position,
+    removable,
     storable,
     target,
     track,

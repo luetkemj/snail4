@@ -1,9 +1,9 @@
 import ECS from "../ECS";
-import { groupBy, remove } from "lodash";
+import { compact, groupBy, remove } from "lodash";
 import { clearCanvas, drawCell, layers } from "../../lib/canvas";
 import { colors } from "../../lib/graphics";
 import { updateHSLA } from "../../lib/hsla";
-import { getEntitiesAtLoc, getPlayer } from "../../lib/getters";
+import { getEntity, getEntitiesAtLoc, getPlayer } from "../../lib/getters";
 import { rectangle } from "../../lib/grid";
 
 const buildCharEntity = ({
@@ -214,59 +214,97 @@ const renderInventory = () => {
   });
 
   const inventory = getPlayer().components.inventory;
-  const inventoryItemNames = Object.keys(inventory.items);
+  const { items } = inventory;
+  // const inventoryItemNames = Object.keys(inventory.items);
 
   // draw selected item details
-  if (inventoryItemNames.length) {
-    drawText(inventory.currentSelected, {
+  if (items.length) {
+    const currentSelectedEntity = getEntity(inventory.currentSelected);
+    drawText(currentSelectedEntity.components.labels.name, {
       x: ECS.game.grid.menu2.x + 1,
       y: ECS.game.grid.menu2.y + 3
     });
 
-    const eId = inventory.items[inventory.currentSelected].eIds[0];
-    if (eId) {
-      const entity = ECS.entities[eId];
+    // draw description
+    // drawText(entity.components.description.text, {
+    //   x: ECS.game.grid.menu2.x + 1,
+    //   y: ECS.game.grid.menu2.y + 3
+    // });
 
-      // draw description
-      // drawText(entity.components.description.text, {
-      //   x: ECS.game.grid.menu2.x + 1,
-      //   y: ECS.game.grid.menu2.y + 3
-      // });
+    // actions
+    let actions = "";
 
-      // actions
-      let actions = "";
-
-      if (entity.components.droppable) {
-        actions = `${actions}(d)Drop `;
-      }
-
-      if (entity.components.consumable) {
-        actions = `${actions}(c)Consume `;
-      }
-
-      if (entity.components.wearable) {
-        actions = `${actions}(e)Equip `;
-      }
-
-      drawText(actions, {
-        x: ECS.game.grid.menu2.x + 1,
-        y: ECS.game.grid.menu2.y + 5
-      });
+    if (currentSelectedEntity.components.droppable) {
+      actions = `${actions}(d)Drop `;
     }
+
+    if (currentSelectedEntity.components.consumable) {
+      actions = `${actions}(c)Consume `;
+    }
+
+    if (currentSelectedEntity.components.wearable) {
+      actions = `${actions}(e)Equip `;
+    }
+
+    if (currentSelectedEntity.components.removable) {
+      actions = `${actions}(r)Remove `;
+    }
+
+    drawText(actions, {
+      x: ECS.game.grid.menu2.x + 1,
+      y: ECS.game.grid.menu2.y + 5
+    });
   }
+
+  let inventoryX = ECS.game.grid.menu.x + 1;
+  let inventoryY = ECS.game.grid.menu.y + 1;
 
   // draw inventory
   drawText("-- INVENTORY --", {
-    x: ECS.game.grid.menu.x + 1,
-    y: ECS.game.grid.menu.y + 1
+    x: inventoryX,
+    y: inventoryY
   });
-  inventoryItemNames.forEach((name, idx) => {
-    const cursor = name === inventory.currentSelected ? "*" : " ";
-    drawText(`${cursor}${inventory.items[name].eIds.length} ${name}`, {
-      x: ECS.game.grid.menu.x + 1,
-      y: ECS.game.grid.menu.y + 3 + idx
+
+  inventoryY += 2;
+
+  // render equipped items first
+  const armorComponent = getPlayer().components.armor;
+  const equippedItems = compact(Object.values(armorComponent));
+  equippedItems.forEach(eId => {
+    const cursor = eId === inventory.currentSelected ? "*" : " ";
+    const itemName = getEntity(eId).components.labels.name;
+    let slotName;
+    Object.keys(armorComponent).forEach(slot => {
+      if (armorComponent[slot] === eId) {
+        slotName = slot;
+      }
     });
+
+    drawText(`${cursor}${itemName} (${slotName})`, {
+      x: inventoryX,
+      y: inventoryY
+    });
+    inventoryY += 1;
   });
+
+  if (equippedItems.length) {
+    // render divider
+    inventoryY += 1;
+    drawText(`--`, { x: inventoryX, y: inventoryY });
+    inventoryY += 2;
+  }
+
+  // render the rest of the inventory
+  items
+    .filter(eId => !equippedItems.includes(eId))
+    .forEach(id => {
+      const cursor = id === inventory.currentSelected ? "*" : " ";
+      drawText(`${cursor}${getEntity(id).components.labels.name}`, {
+        x: inventoryX,
+        y: inventoryY
+      });
+      inventoryY += 1;
+    });
 };
 
 const renderHelp = () => {

@@ -1,4 +1,4 @@
-import { findIndex, pull } from "lodash";
+import { compact, findIndex, pull, sortBy } from "lodash";
 import ECS from "../ECS/ECS";
 import {
   removeCacheEntityAtLocation,
@@ -22,46 +22,40 @@ const tidyInventoryKeys = () => {
 const setNextSelectedItem = () => {
   const player = getPlayer();
   const { inventory } = player.components;
-  const itemNames = Object.keys(inventory.items);
+  const { items } = inventory;
 
-  if (!itemNames.length) {
+  if (!items.length) {
     inventory.currentSelected = "";
     return;
   }
 
-  const index = findIndex(
-    itemNames,
-    name => name === inventory.currentSelected
-  );
+  const index = findIndex(items, eId => eId === inventory.currentSelected);
 
   // if we are at the last item set to first
-  if (index === itemNames.length - 1) {
-    inventory.currentSelected = itemNames[0];
+  if (index === items.length - 1) {
+    inventory.currentSelected = items[0];
   } else {
-    inventory.currentSelected = itemNames[index + 1];
+    inventory.currentSelected = items[index + 1];
   }
 };
 
 const setPreviousSelectedItem = () => {
   const player = getPlayer();
   const { inventory } = player.components;
-  const itemNames = Object.keys(inventory.items);
+  const { items } = inventory;
 
-  if (!itemNames.length) {
+  if (!items.length) {
     inventory.currentSelected = "";
     return;
   }
 
-  const index = findIndex(
-    itemNames,
-    name => name === inventory.currentSelected
-  );
+  const index = findIndex(items, eId => eId === inventory.currentSelected);
 
   // if we are at the first item set to last
   if (index === 0) {
-    inventory.currentSelected = itemNames[itemNames.length - 1];
+    inventory.currentSelected = items[items.length - 1];
   } else {
-    inventory.currentSelected = itemNames[index - 1];
+    inventory.currentSelected = items[index - 1];
   }
 };
 
@@ -91,7 +85,7 @@ function processUserInput() {
 
     const player = getPlayer();
     player.components.inventory.currentSelected =
-      Object.keys(player.components.inventory.items)[0] || "";
+      player.components.inventory.items[0] || "";
 
     return;
   }
@@ -109,7 +103,6 @@ function processUserInput() {
   if (ECS.game.mode === "INVENTORY") {
     const player = getPlayer();
     const { inventory } = player.components;
-    const itemNames = Object.keys(inventory.items);
 
     // select next item
     if (ECS.game.userInput.key === "ArrowDown") {
@@ -125,22 +118,16 @@ function processUserInput() {
 
     // consume item
     if (ECS.game.userInput.key === "c") {
-      if (!itemNames.length) {
+      if (!inventory.items.length) {
         return;
       }
 
-      const currentSelected = inventory.items[inventory.currentSelected];
-      const eId = currentSelected.eIds[0];
-      const entity = ECS.entities[eId];
+      const entity = getEntity(inventory.currentSelected);
 
       if (entity.components.consumable) {
         // remove inventory item
-        pull(inventory.items[inventory.currentSelected].eIds, eId);
-
-        if (!inventory.items[inventory.currentSelected].eIds.length) {
-          setNextSelectedItem();
-          tidyInventoryKeys();
-        }
+        setNextSelectedItem();
+        pull(inventory.items, entity.id);
 
         // consume item and take it's effects
         entity.components.consumable.effects.forEach(effect => {
@@ -158,7 +145,9 @@ function processUserInput() {
         });
         player.components.inventory.total -= 1;
 
-        printToLog(`You consume a ${getEntity(eId).components.labels.name}.`);
+        printToLog(
+          `You consume a ${getEntity(entity.id).components.labels.name}.`
+        );
       }
 
       return;
@@ -166,29 +155,25 @@ function processUserInput() {
 
     // drop item
     if (ECS.game.userInput.key === "d") {
-      if (!itemNames.length) {
+      if (!inventory.items.length) {
         return;
       }
 
-      const currentSelected = inventory.items[inventory.currentSelected];
-      const eId = currentSelected.eIds[0];
-      const entity = ECS.entities[eId];
+      const entity = getEntity(inventory.currentSelected);
 
       if (entity.components.droppable) {
         // remove inventory item
-        pull(inventory.items[inventory.currentSelected].eIds, eId);
-
-        if (!inventory.items[inventory.currentSelected].eIds.length) {
-          setNextSelectedItem();
-          tidyInventoryKeys();
-        }
+        pull(inventory.items, entity.id);
+        setNextSelectedItem();
 
         // place item on map
         player.components.inventory.total -= 1;
         entity.addComponent("position", { ...player.components.position });
         setCacheEntityAtLocation(entity.id, entity.components.position);
 
-        printToLog(`You drop a ${getEntity(eId).components.labels.name}.`);
+        printToLog(
+          `You drop a ${getEntity(entity.id).components.labels.name}.`
+        );
       }
 
       return;
@@ -196,28 +181,70 @@ function processUserInput() {
 
     // equip item
     if (ECS.game.userInput.key === "e") {
-      if (!itemNames.length) {
+      if (!inventory.items.length) {
         return;
       }
 
-      const currentSelected = inventory.items[inventory.currentSelected];
-      const eId = currentSelected.eIds[0];
-      const entity = ECS.entities[eId];
+      const entity = getEntity(inventory.currentSelected);
 
       if (entity.components.wearable) {
         const slots = entity.components.wearable.slots;
         const emptySlots = slots.filter(slot => !player.components.armor[slot]);
 
         // if empty slots equip to first available
-        console.log(emptySlots);
         if (emptySlots.length) {
           player.components.armor[emptySlots[0]] = entity.id;
         } else {
-          // else just swap out for first valid slot
-          player.components.armor[slots[0]] = entity.id;
+          const slotName = getEntity(player.components.armor[slots[0]])
+            .components.labels.name;
+
+          return printToLog(`You have to remove your ${slotName} first.`);
         }
 
-        printToLog(`You drop a ${getEntity(eId).components.labels.name}.`);
+        // you can't dropped equipped armor - you must remove it first!
+        entity.removeComponent("droppable");
+        entity.removeComponent("wearable");
+
+        entity.addComponent("removable");
+
+        const equippedItems = compact(
+          Object.values(getPlayer().components.armor)
+        );
+        inventory.items = sortBy(inventory.items, eId =>
+          equippedItems.includes(eId)
+        );
+
+        printToLog(
+          `You equip a ${getEntity(entity.id).components.labels.name}.`
+        );
+      }
+
+      return;
+    }
+
+    // remove item
+    if (ECS.game.userInput.key === "r") {
+      if (!inventory.items.length) {
+        return;
+      }
+
+      const entity = getEntity(inventory.currentSelected);
+
+      if (entity.components.removable) {
+        // assume it should have these components
+        entity.addComponent("droppable");
+        entity.addComponent("wearable");
+
+        entity.removeComponent("removable");
+
+        // actually remove the item from armor
+        Object.keys(player.components.armor).forEach(slot => {
+          if (player.components.armor[slot] === entity.id) {
+            player.components.armor[slot] = "";
+          }
+        });
+
+        printToLog(`You remove your ${entity.components.labels.name}.`);
       }
 
       return;
@@ -250,18 +277,7 @@ function processUserInput() {
             return;
           }
 
-          // initialize pocket if none exists
-          player.components.inventory.items[
-            item.components.labels.name
-          ] = player.components.inventory.items[
-            item.components.labels.name
-          ] || {
-            eIds: []
-          };
-
-          player.components.inventory.items[
-            item.components.labels.name
-          ].eIds.push(item.id);
+          player.components.inventory.items.push(item.id);
 
           // remove storable entity from map
           removeCacheEntityAtLocation(item.id, item.components.position);
@@ -272,11 +288,11 @@ function processUserInput() {
           pickedUp.push(item.id);
 
           player.components.inventory.total += 1;
-        });
 
-        pickedUp.forEach(eId =>
-          printToLog(`You pick up a ${getEntity(eId).components.labels.name}.`)
-        );
+          printToLog(
+            `You pick up a ${getEntity(item.id).components.labels.name}.`
+          );
+        });
       }
 
       return;
