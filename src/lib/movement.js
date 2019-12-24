@@ -29,7 +29,6 @@ export const attack = (entity, targetId) => {
   let damage = 3;
   if (targetEntity.components.armor) {
     compact(Object.values(targetEntity.components.armor)).forEach(eId => {
-      console.log("armor:", ECS.entities[eId]);
       if (ECS.entities[eId].components.damageReduction) {
         if (damage - ECS.entities[eId].components.damageReduction.dr < 0) {
           damage = 0;

@@ -1,4 +1,7 @@
+import { throttle } from "lodash";
 import { updateHSLA } from "./hsla";
+import render from "../ECS/systems/render.system";
+
 const pixelRatio = window.devicePixelRatio || 1;
 const canvas = document.querySelector("#canvas");
 const ctx = canvas.getContext("2d");
@@ -63,25 +66,44 @@ export const grid = {
     height: 34,
     x: 20,
     y: 0
-  },
-
-  font: "Menlo",
-  fontSize: window.innerWidth / 100, // todo: update on window resize
-  lineHeight: 1.2
+  }
 };
 
-const cellWidth = grid.fontSize * pixelRatio;
-const cellHeight = grid.fontSize * grid.lineHeight * pixelRatio;
-const fontSize = grid.fontSize * pixelRatio;
+const font = "Menlo";
+const lineHeight = 1.2;
 
-canvas.style.cssText = `width: ${grid.fontSize *
-  grid.width}; height: ${grid.fontSize * grid.lineHeight * grid.height}`;
+let calculatedFontSize = window.innerWidth / grid.width;
+let cellWidth = calculatedFontSize * pixelRatio;
+let cellHeight = calculatedFontSize * lineHeight * pixelRatio;
+let fontSize = calculatedFontSize * pixelRatio;
+
+canvas.style.cssText = `width: ${calculatedFontSize *
+  grid.width}; height: ${calculatedFontSize * lineHeight * grid.height}`;
 canvas.width = cellWidth * grid.width;
 canvas.height = cellHeight * grid.height;
 
-ctx.font = `normal ${fontSize}px ${grid.font}`;
+ctx.font = `normal ${fontSize}px ${font}`;
 ctx.textAlign = "center";
 ctx.textBaseline = "middle";
+
+const onResize = () => {
+  console.log("resizing!");
+  calculatedFontSize = window.innerWidth / grid.width;
+  cellWidth = calculatedFontSize * pixelRatio;
+  cellHeight = calculatedFontSize * lineHeight * pixelRatio;
+  fontSize = calculatedFontSize * pixelRatio;
+
+  canvas.style.cssText = `width: ${calculatedFontSize *
+    grid.width}; height: ${calculatedFontSize * lineHeight * grid.height}`;
+  canvas.width = cellWidth * grid.width;
+  canvas.height = cellHeight * grid.height;
+
+  ctx.font = `normal ${fontSize}px ${font}`;
+
+  render();
+};
+
+window.onresize = throttle(onResize, 500);
 
 const drawBackground = (color, position) => {
   if (color === "transparent") return;
