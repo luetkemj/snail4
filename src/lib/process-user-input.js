@@ -1,4 +1,4 @@
-import { compact, findIndex, pull, sortBy } from "lodash";
+import { compact, difference, findIndex, pull, sortBy } from "lodash";
 import ECS from "../ECS/ECS";
 import {
   removeCacheEntityAtLocation,
@@ -7,16 +7,14 @@ import {
 import { getStorablesAtLoc, getPlayer, getEntity } from "./getters";
 import { printToLog } from "./gui";
 
-const tidyInventoryKeys = () => {
+const sortInventory = () => {
   const player = getPlayer();
   const { inventory } = player.components;
-  const itemNames = Object.keys(inventory.items);
-  // clean up any item keys with 0 items in them
-  itemNames.forEach(name => {
-    if (!inventory.items[name].eIds.length) {
-      delete inventory.items[name];
-    }
-  });
+  const { items } = inventory;
+  const equippedItems = compact(Object.values(player.components.armor));
+  const unequippedItems = difference(items, equippedItems);
+
+  player.components.inventory.items = equippedItems.concat(unequippedItems);
 };
 
 const setNextSelectedItem = () => {
@@ -82,6 +80,8 @@ function processUserInput() {
     ECS.game.mode = ECS.game.mode === "INVENTORY" ? "GAME" : "INVENTORY";
     ECS.game.playerTurn = true;
     ECS.game.userInput = null;
+
+    sortInventory();
 
     const player = getPlayer();
     player.components.inventory.currentSelected =
@@ -214,6 +214,7 @@ function processUserInput() {
           equippedItems.includes(eId)
         );
 
+        sortInventory();
         printToLog(
           `You equip a ${getEntity(entity.id).components.labels.name}.`
         );
@@ -244,6 +245,7 @@ function processUserInput() {
           }
         });
 
+        sortInventory();
         printToLog(`You remove your ${entity.components.labels.name}.`);
       }
 
