@@ -267,6 +267,13 @@ const renderInventory = () => {
 
   inventoryY += 2;
 
+  if (!items.length) {
+    drawText("<EMPTY>", {
+      x: inventoryX,
+      y: inventoryY
+    });
+  }
+
   // render equipped items first
   const armorComponent = getPlayer().components.armor;
   const equippedItems = compact(Object.values(armorComponent));
@@ -308,52 +315,124 @@ const renderInventory = () => {
 };
 
 const renderHelp = () => {
+  let helpY = ECS.game.grid.menu3.y;
+
   drawRectangle({
     x: ECS.game.grid.menu3.x,
-    y: ECS.game.grid.menu3.y,
+    y: helpY,
     width: ECS.game.grid.menu3.width,
     height: ECS.game.grid.menu3.height,
     color: colors.defaultBGColor
   });
 
+  helpY += 1;
+
   drawText("-- COMMANDS --", {
     x: ECS.game.grid.menu3.x + 7,
-    y: ECS.game.grid.menu3.y + 1
+    y: helpY
   });
 
-  drawText("Arrow keys   Move or attack", {
-    x: ECS.game.grid.menu3.x + 1,
-    y: ECS.game.grid.menu3.y + 3
-  });
+  helpY += 2;
 
-  drawText("g   Pick up item", {
-    x: ECS.game.grid.menu3.x + 10,
-    y: ECS.game.grid.menu3.y + 4
-  });
-
-  drawText("z   Rest for 1 turn", {
-    x: ECS.game.grid.menu3.x + 10,
-    y: ECS.game.grid.menu3.y + 5
-  });
-
-  drawText("?   Help", {
-    x: ECS.game.grid.menu3.x + 10,
-    y: ECS.game.grid.menu3.y + 7
-  });
-
-  drawText("i   Inventory", {
-    x: ECS.game.grid.menu3.x + 10,
-    y: ECS.game.grid.menu3.y + 8
-  });
-
-  drawText("esc   Return to game", {
+  drawText("- GAME", {
     x: ECS.game.grid.menu3.x + 8,
-    y: ECS.game.grid.menu3.y + 9
+    y: helpY
   });
 
-  drawText("O   Toggle omniscience", {
+  helpY += 1;
+
+  drawText("Arrow keys  Move or attack", {
+    x: ECS.game.grid.menu3.x + 1,
+    y: helpY
+  });
+  helpY += 1;
+
+  drawText("g  Pick up item", {
     x: ECS.game.grid.menu3.x + 10,
-    y: ECS.game.grid.menu3.y + 11
+    y: helpY
+  });
+  helpY += 1;
+
+  drawText("z  Rest for 1 turn", {
+    x: ECS.game.grid.menu3.x + 10,
+    y: helpY
+  });
+  helpY += 2;
+
+  drawText("- INVENTORY", {
+    x: ECS.game.grid.menu3.x + 8,
+    y: helpY
+  });
+
+  helpY += 1;
+
+  drawText("Arrow keys  Select Item", {
+    x: ECS.game.grid.menu3.x + 1,
+    y: helpY
+  });
+  helpY += 1;
+
+  drawText("c  Consume", {
+    x: ECS.game.grid.menu3.x + 10,
+    y: helpY
+  });
+  helpY += 1;
+
+  drawText("d  Drop", {
+    x: ECS.game.grid.menu3.x + 10,
+    y: helpY
+  });
+  helpY += 1;
+
+  drawText("e  Equip", {
+    x: ECS.game.grid.menu3.x + 10,
+    y: helpY
+  });
+  helpY += 1;
+
+  drawText("r  Remove", {
+    x: ECS.game.grid.menu3.x + 10,
+    y: helpY
+  });
+
+  helpY += 2;
+
+  drawText("- GLOBAL", {
+    x: ECS.game.grid.menu3.x + 8,
+    y: helpY
+  });
+
+  helpY += 1;
+
+  drawText("?  Help", {
+    x: ECS.game.grid.menu3.x + 10,
+    y: helpY
+  });
+  helpY += 1;
+
+  drawText("i  Inventory", {
+    x: ECS.game.grid.menu3.x + 10,
+    y: helpY
+  });
+  helpY += 1;
+
+  drawText("esc  Return to game", {
+    x: ECS.game.grid.menu3.x + 8,
+    y: helpY
+  });
+
+  helpY += 2;
+
+  drawText("- CHEATS", {
+    x: ECS.game.grid.menu3.x + 8,
+    y: helpY
+  });
+
+  helpY += 1;
+
+  drawText("O  Toggle omniscience", {
+    x: ECS.game.grid.menu3.x + 10,
+    y: helpY
   });
 };
 
