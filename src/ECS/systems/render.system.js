@@ -250,6 +250,13 @@ const renderInventory = () => {
       actions = `${actions}(r)Remove `;
     }
 
+    if (
+      currentSelectedEntity.components.wieldable &&
+      !currentSelectedEntity.components.removable
+    ) {
+      actions = `${actions}(w)Wield `;
+    }
+
     drawText(actions, {
       x: ECS.game.grid.menu2.x + 1,
       y: ECS.game.grid.menu2.y + 5
@@ -274,7 +281,26 @@ const renderInventory = () => {
     });
   }
 
-  // render equipped items first
+  // render wielded item
+  if (getPlayer().components.wielding) {
+    const eId = getPlayer().components.wielding;
+    const cursor = eId === inventory.currentSelected ? "*" : " ";
+    const itemName = getEntity(eId).components.labels.name;
+    drawText(`${cursor}${itemName} (Wielding)`, {
+      x: inventoryX,
+      y: inventoryY
+    });
+    inventoryY += 1;
+  }
+
+  if (getPlayer().components.wielding) {
+    // render divider
+    inventoryY += 1;
+    drawText(`--`, { x: inventoryX, y: inventoryY });
+    inventoryY += 2;
+  }
+
+  // render equipped items
   const armorComponent = getPlayer().components.armor;
   const equippedItems = compact(Object.values(armorComponent));
   equippedItems.forEach(eId => {
@@ -301,9 +327,10 @@ const renderInventory = () => {
     inventoryY += 2;
   }
 
-  // render the rest of the inventory
+  // render everything else
   items
     .filter(eId => !equippedItems.includes(eId))
+    .filter(eId => eId !== getPlayer().components.wielding)
     .forEach(id => {
       const cursor = id === inventory.currentSelected ? "*" : " ";
       drawText(`${cursor}${getEntity(id).components.labels.name}`, {
@@ -391,6 +418,13 @@ const renderHelp = () => {
   helpY += 1;
 
   drawText("r  Remove", {
+    x: ECS.game.grid.menu3.x + 10,
+    y: helpY
+  });
+
+  helpY += 1;
+
+  drawText("w  Wield", {
     x: ECS.game.grid.menu3.x + 10,
     y: helpY
   });

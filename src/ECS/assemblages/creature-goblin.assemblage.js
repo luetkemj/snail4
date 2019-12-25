@@ -19,6 +19,8 @@ const goblinAssemblage = (x, y) => {
     text: `You see a greedy little goblin bent on cruel revenge.`
   });
 
+  entity.addComponent("damage", { dmg: 3 });
+
   setCacheEntityAtLocation(entity.id, { x, y });
 };
 

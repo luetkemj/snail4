@@ -7,6 +7,7 @@ import appearance from "./components/appearance.component";
 import armor from "./components/armor.component";
 import blocking from "./components/blocking.component";
 import consumable from "./components/consumable.component";
+import damage from "./components/damage.component";
 import damageReduction from "./components/damage-reduction.component";
 import dead from "./components/dead.component";
 import description from "./components/description.component";
@@ -29,6 +30,8 @@ import track from "./components/track.component";
 import trackable from "./components/trackable.component";
 import trackableLoc from "./components/trackable-loc.component";
 import wearable from "./components/wearable.component";
+import wieldable from "./components/wieldable.component";
+import wielding from "./components/wielding.component";
 
 // systems
 import brainSystem from "./systems/brain.system";
@@ -46,6 +49,7 @@ const ECS = {
     armor,
     blocking,
     consumable,
+    damage,
     damageReduction,
     dead,
     description,
@@ -67,7 +71,9 @@ const ECS = {
     track,
     trackable,
     trackableLoc,
-    wearable
+    wearable,
+    wieldable,
+    wielding
   },
   systems: [garbageSystem, brainSystem, fovSystem, renderSystem],
   game: {

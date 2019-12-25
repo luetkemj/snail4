@@ -6,6 +6,7 @@ export const colors = {
   // items:
   armor: hexToHSLA("#DAA520"),
   potion: hexToHSLA("#DAA520"),
+  weapon: hexToHSLA("#DAA520"),
   // log
   hudText: hexToHSLA("#fff"),
   healthBar: hexToHSLA("#B91906"),
@@ -24,7 +25,7 @@ export const chars = {
   defaultChar: "?",
   // equipment
   armor: "[",
-  weapons: ")",
+  weapon: ")",
   // items
   potion: "!",
   // maps

@@ -26,7 +26,14 @@ export const attack = (entity, targetId) => {
 
   // todo: move this whole thing (attack and damage dealing) into a library
   // calculateDamage
-  let damage = 3;
+  let damage = 1;
+  let weapon = "";
+  // if entity is wielding a weapon add the weapon damage to damage
+  if (entity.components.wielding) {
+    weapon = ECS.entities[entity.components.wielding];
+    damage += weapon.components.damage.dmg;
+  }
+
   if (targetEntity.components.armor) {
     compact(Object.values(targetEntity.components.armor)).forEach(eId => {
       if (ECS.entities[eId].components.damageReduction) {
@@ -42,8 +49,9 @@ export const attack = (entity, targetId) => {
 
   // only print attacks if the player is involved
   if (ECS.cache.player[0] === entity.id || ECS.cache.player[0] === targetId) {
+    const withWeapon = weapon ? ` with ${weapon.components.labels.name}` : "";
     printToLog(
-      `${entity.components.labels.name} attacks ${targetEntity.components.labels.name} for ${damage} damage.`
+      `${entity.components.labels.name} attacks ${targetEntity.components.labels.name}${withWeapon} for ${damage} damage.`
     );
   }
 

@@ -34,6 +34,10 @@ export default function input(key) {
       ECS.game.userInput = { key, type: "REMOVE", payload: {} };
       break;
     }
+    case "w": {
+      ECS.game.userInput = { key, type: "WIELD", payload: {} };
+      break;
+    }
     case "z": {
       ECS.game.userInput = { key, type: "REST", payload: {} };
       break;

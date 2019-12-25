@@ -17,6 +17,9 @@ const creatureAssemblage = () => {
   entity.addComponent("trackable");
   entity.addComponent("droppable");
 
+  entity.addComponent("damage", { dmg: 1 });
+  entity.addComponent("wieldable");
+
   entity.addComponent("hud");
 
   return entity;

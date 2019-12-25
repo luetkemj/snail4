@@ -14,6 +14,8 @@ import createPoisonPotion from "../ECS/assemblages/potion-poison.assemblage";
 
 import createLeatherArmor from "../ECS/assemblages/armor-leather.assemblage";
 
+import createRandomWeapon from "../ECS/assemblages/weapon-random.assemblage";
+
 import { generateDungeon } from "../lib/dungeon";
 import { dijkstra } from "../lib/dijkstra";
 import { colors, chars } from "../lib/graphics";
@@ -105,11 +107,19 @@ const initGame = () => {
   });
 
   // drop armor
-  times(3, () => {
+  times(2, () => {
     const id = sample(ECS.cache.openTiles);
     const { position } = ECS.entities[id].components;
 
     createLeatherArmor(position.x, position.y);
+  });
+
+  // drop weapons
+  times(2, () => {
+    const id = sample(ECS.cache.openTiles);
+    const { position } = ECS.entities[id].components;
+
+    createRandomWeapon(position.x, position.y);
   });
 
   // Create player

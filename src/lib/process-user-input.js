@@ -11,10 +11,19 @@ const sortInventory = () => {
   const player = getPlayer();
   const { inventory } = player.components;
   const { items } = inventory;
+  const wieldedItem = player.components.wielding;
   const equippedItems = compact(Object.values(player.components.armor));
   const unequippedItems = difference(items, equippedItems);
+  // remove wieldedItem
+  pull(unequippedItems, wieldedItem);
 
-  player.components.inventory.items = equippedItems.concat(unequippedItems);
+  console.log({ wieldedItem, ...equippedItems, ...unequippedItems });
+
+  player.components.inventory.items = compact([
+    wieldedItem,
+    ...equippedItems,
+    ...unequippedItems
+  ]);
 };
 
 const setNextSelectedItem = () => {
@@ -171,6 +180,12 @@ function processUserInput() {
         entity.addComponent("position", { ...player.components.position });
         setCacheEntityAtLocation(entity.id, entity.components.position);
 
+        // if item was being wielded, unwield it
+        if (getPlayer().components.wielding === entity.id) {
+          getPlayer().components.wielding = "";
+        }
+
+        sortInventory();
         printToLog(
           `You drop a ${getEntity(entity.id).components.labels.name}.`
         );
@@ -232,21 +247,53 @@ function processUserInput() {
       const entity = getEntity(inventory.currentSelected);
 
       if (entity.components.removable) {
-        // assume it should have these components
-        entity.addComponent("droppable");
-        entity.addComponent("wearable");
-
-        entity.removeComponent("removable");
-
-        // actually remove the item from armor
-        Object.keys(player.components.armor).forEach(slot => {
-          if (player.components.armor[slot] === entity.id) {
-            player.components.armor[slot] = "";
-          }
-        });
+        if (getPlayer().components.wielding === entity.id) {
+          // if entity was being wielded
+          entity.addComponent("droppable");
+          entity.addComponent("wieldable");
+          entity.removeComponent("removable");
+          getPlayer().components.wielding = "";
+        } else {
+          // it's a wearable item
+          entity.addComponent("droppable");
+          entity.addComponent("wearable");
+          entity.removeComponent("removable");
+          // actually remove the item from armor
+          Object.keys(player.components.armor).forEach(slot => {
+            if (player.components.armor[slot] === entity.id) {
+              player.components.armor[slot] = "";
+            }
+          });
+        }
 
         sortInventory();
         printToLog(`You remove your ${entity.components.labels.name}.`);
+      }
+
+      return;
+    }
+
+    // wield item
+    if (ECS.game.userInput.key === "w") {
+      if (!inventory.items.length) {
+        return;
+      }
+
+      const entity = getEntity(inventory.currentSelected);
+      const oldEntity = getEntity(player.components.wielding);
+
+      if (oldEntity) {
+        oldEntity.removeComponent("removable");
+        oldEntity.addComponent("wieldable");
+      }
+
+      if (entity.components.wieldable) {
+        entity.addComponent("removable");
+        entity.removeComponent("wieldable");
+
+        player.components.wielding = entity.id;
+        sortInventory();
+        printToLog(`You are wielding a ${entity.components.labels.name}.`);
       }
 
       return;
