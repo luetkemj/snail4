@@ -1,11 +1,9 @@
 import { compact, difference, findIndex, pull, sortBy } from "lodash";
 import ECS from "../ECS/ECS";
-import {
-  removeCacheEntityAtLocation,
-  setCacheEntityAtLocation
-} from "../ECS/cache";
+import { removeCacheEntityAtLocation } from "../ECS/cache";
 import { getStorablesAtLoc, getPlayer, getEntity } from "./getters";
 import { printToLog } from "./gui";
+import actions from "./actions";
 
 const sortInventory = () => {
   const player = getPlayer();
@@ -127,176 +125,55 @@ function processUserInput() {
 
     // consume item
     if (ECS.game.userInput.key === "c") {
-      if (!inventory.items.length) {
-        return;
-      }
-
       const entity = getEntity(inventory.currentSelected);
-
-      if (entity.components.consumable) {
-        // remove inventory item
+      const result = actions.consume(getPlayer(), entity);
+      if (result.OK) {
         setNextSelectedItem();
-        pull(inventory.items, entity.id);
-
-        // consume item and take it's effects
-        entity.components.consumable.effects.forEach(effect => {
-          if (effect.buff) {
-            if (player.components[effect.buff.component]) {
-              const delta = effect.buff.delta;
-              const { current, max } = player.components[effect.buff.component];
-
-              player.components[effect.buff.component].current = Math.min(
-                current + delta,
-                max
-              );
-            }
-          }
-        });
-        player.components.inventory.total -= 1;
-
-        printToLog(
-          `You consume a ${getEntity(entity.id).components.labels.name}.`
-        );
       }
-
-      return;
+      return printToLog(result.msg);
     }
 
     // drop item
     if (ECS.game.userInput.key === "d") {
-      if (!inventory.items.length) {
-        return;
-      }
-
       const entity = getEntity(inventory.currentSelected);
-
-      if (entity.components.droppable) {
-        // remove inventory item
-        pull(inventory.items, entity.id);
+      const result = actions.drop(getPlayer(), entity);
+      if (result.OK) {
         setNextSelectedItem();
-
-        // place item on map
-        player.components.inventory.total -= 1;
-        entity.addComponent("position", { ...player.components.position });
-        setCacheEntityAtLocation(entity.id, entity.components.position);
-
-        // if item was being wielded, unwield it
-        if (getPlayer().components.wielding === entity.id) {
-          getPlayer().components.wielding = "";
-        }
-
         sortInventory();
-        printToLog(
-          `You drop a ${getEntity(entity.id).components.labels.name}.`
-        );
       }
-
-      return;
+      return printToLog(result.msg);
     }
 
     // equip item
     if (ECS.game.userInput.key === "e") {
-      if (!inventory.items.length) {
-        return;
-      }
-
       const entity = getEntity(inventory.currentSelected);
-
-      if (entity.components.wearable) {
-        const slots = entity.components.wearable.slots;
-        const emptySlots = slots.filter(slot => !player.components.armor[slot]);
-
-        // if empty slots equip to first available
-        if (emptySlots.length) {
-          player.components.armor[emptySlots[0]] = entity.id;
-        } else {
-          const slotName = getEntity(player.components.armor[slots[0]])
-            .components.labels.name;
-
-          return printToLog(`You have to remove your ${slotName} first.`);
-        }
-
-        // you can't dropped equipped armor - you must remove it first!
-        entity.removeComponent("droppable");
-        entity.removeComponent("wearable");
-
-        entity.addComponent("removable");
-
-        const equippedItems = compact(
-          Object.values(getPlayer().components.armor)
-        );
-        inventory.items = sortBy(inventory.items, eId =>
-          equippedItems.includes(eId)
-        );
-
+      const result = actions.equip(getPlayer(), entity);
+      if (result.OK) {
+        setNextSelectedItem();
         sortInventory();
-        printToLog(
-          `You equip a ${getEntity(entity.id).components.labels.name}.`
-        );
       }
 
-      return;
+      return printToLog(result.msg);
     }
 
     // remove item
     if (ECS.game.userInput.key === "r") {
-      if (!inventory.items.length) {
-        return;
-      }
-
       const entity = getEntity(inventory.currentSelected);
-
-      if (entity.components.removable) {
-        if (getPlayer().components.wielding === entity.id) {
-          // if entity was being wielded
-          entity.addComponent("droppable");
-          entity.addComponent("wieldable");
-          entity.removeComponent("removable");
-          getPlayer().components.wielding = "";
-        } else {
-          // it's a wearable item
-          entity.addComponent("droppable");
-          entity.addComponent("wearable");
-          entity.removeComponent("removable");
-          // actually remove the item from armor
-          Object.keys(player.components.armor).forEach(slot => {
-            if (player.components.armor[slot] === entity.id) {
-              player.components.armor[slot] = "";
-            }
-          });
-        }
-
+      const result = actions.remove(getPlayer(), entity);
+      if (result.OK) {
         sortInventory();
-        printToLog(`You remove your ${entity.components.labels.name}.`);
       }
-
-      return;
+      return printToLog(result.msg);
     }
 
     // wield item
     if (ECS.game.userInput.key === "w") {
-      if (!inventory.items.length) {
-        return;
-      }
-
       const entity = getEntity(inventory.currentSelected);
-      const oldEntity = getEntity(player.components.wielding);
-
-      if (oldEntity) {
-        oldEntity.removeComponent("removable");
-        oldEntity.addComponent("wieldable");
-      }
-
-      if (entity.components.wieldable) {
-        entity.addComponent("removable");
-        entity.removeComponent("wieldable");
-
-        player.components.wielding = entity.id;
+      const result = actions.wield(getPlayer(), entity);
+      if (result.OK) {
         sortInventory();
-        printToLog(`You are wielding a ${entity.components.labels.name}.`);
       }
-
-      return;
+      return printToLog(result.msg);
     }
   }
 

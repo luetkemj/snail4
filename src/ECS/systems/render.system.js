@@ -242,7 +242,10 @@ const renderInventory = () => {
       actions = `${actions}(c)Consume `;
     }
 
-    if (currentSelectedEntity.components.wearable) {
+    if (
+      currentSelectedEntity.components.wearable &&
+      !currentSelectedEntity.components.wearable.beingWorn
+    ) {
       actions = `${actions}(e)Equip `;
     }
 
