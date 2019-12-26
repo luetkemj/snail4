@@ -242,13 +242,6 @@ const renderInventory = () => {
       actions = `${actions}(c)Consume `;
     }
 
-    if (
-      currentSelectedEntity.components.wearable &&
-      !currentSelectedEntity.components.wearable.beingWorn
-    ) {
-      actions = `${actions}(e)Equip `;
-    }
-
     if (currentSelectedEntity.components.removable) {
       actions = `${actions}(r)Remove `;
     }
@@ -258,6 +251,13 @@ const renderInventory = () => {
       !currentSelectedEntity.components.removable
     ) {
       actions = `${actions}(w)Wield `;
+    }
+
+    if (
+      currentSelectedEntity.components.wearable &&
+      !currentSelectedEntity.components.wearable.beingWorn
+    ) {
+      actions = `${actions}(W)Wear `;
     }
 
     drawText(actions, {
@@ -277,31 +277,38 @@ const renderInventory = () => {
 
   inventoryY += 2;
 
-  if (!items.length) {
-    drawText("<EMPTY>", {
-      x: inventoryX,
-      y: inventoryY
-    });
-  }
+  // if (!items.length) {
+  //   drawText("<EMPTY>", {
+  //     x: inventoryX,
+  //     y: inventoryY
+  //   });
+  // }
+
+  drawText(" - WIELDING", {
+    x: inventoryX,
+    y: inventoryY
+  });
+
+  inventoryY += 1;
 
   // render wielded item
   if (getPlayer().components.wielding) {
     const eId = getPlayer().components.wielding;
     const cursor = eId === inventory.currentSelected ? "*" : " ";
     const itemName = getEntity(eId).components.labels.name;
-    drawText(`${cursor}${itemName} (Wielding)`, {
-      x: inventoryX,
+    drawText(`${cursor}${itemName}`, {
+      x: inventoryX + 2,
       y: inventoryY
     });
     inventoryY += 1;
   }
 
-  if (getPlayer().components.wielding) {
-    // render divider
-    inventoryY += 1;
-    drawText(`--`, { x: inventoryX, y: inventoryY });
-    inventoryY += 2;
-  }
+  // if (getPlayer().components.wielding) {
+  // render divider
+  inventoryY += 1;
+  drawText(` - WEARING`, { x: inventoryX, y: inventoryY });
+  inventoryY += 1;
+  // }
 
   // render equipped items
   const armorComponent = getPlayer().components.armor;
@@ -317,18 +324,18 @@ const renderInventory = () => {
     });
 
     drawText(`${cursor}${itemName} (${slotName})`, {
-      x: inventoryX,
+      x: inventoryX + 2,
       y: inventoryY
     });
     inventoryY += 1;
   });
 
-  if (equippedItems.length) {
-    // render divider
-    inventoryY += 1;
-    drawText(`--`, { x: inventoryX, y: inventoryY });
-    inventoryY += 2;
-  }
+  // if (equippedItems.length) {
+  // render divider
+  inventoryY += 1;
+  drawText(`   ---------`, { x: inventoryX, y: inventoryY });
+  inventoryY += 2;
+  // }
 
   // render everything else
   items
@@ -337,7 +344,7 @@ const renderInventory = () => {
     .forEach(id => {
       const cursor = id === inventory.currentSelected ? "*" : " ";
       drawText(`${cursor}${getEntity(id).components.labels.name}`, {
-        x: inventoryX,
+        x: inventoryX + 2,
         y: inventoryY
       });
       inventoryY += 1;
@@ -414,20 +421,19 @@ const renderHelp = () => {
   });
   helpY += 1;
 
-  drawText("e  Equip", {
-    x: ECS.game.grid.menu3.x + 10,
-    y: helpY
-  });
-  helpY += 1;
-
   drawText("r  Remove", {
     x: ECS.game.grid.menu3.x + 10,
     y: helpY
   });
-
   helpY += 1;
 
   drawText("w  Wield", {
+    x: ECS.game.grid.menu3.x + 10,
+    y: helpY
+  });
+  helpY += 1;
+
+  drawText("W  Wear", {
     x: ECS.game.grid.menu3.x + 10,
     y: helpY
   });

@@ -1,9 +1,9 @@
 import { pull } from "lodash";
-import { getEntity } from "./getters";
 import {
   removeCacheEntityAtLocation,
   setCacheEntityAtLocation
 } from "../ECS/cache";
+import { getStorablesAtLoc, getEntity } from "./getters";
 
 export const consume = (actor, consumable) => {
   // todo: components for canConsume? no use case yet
@@ -85,7 +85,7 @@ export const drop = (actor, droppable) => {
   }
 };
 
-export const equip = (actor, wearable) => {
+export const wear = (actor, wearable) => {
   if (
     // ensure wearable is infact wearable
     wearable.components.wearable &&
@@ -98,7 +98,7 @@ export const equip = (actor, wearable) => {
     if (wearable.components.wearable.beingWorn) {
       return {
         OK: false,
-        msg: `${actor.components.labels.name} is already equipped.`
+        msg: `${actor.components.labels.name} is already wearing that.`
       };
     }
     const slots = wearable.components.wearable.slots;
@@ -116,7 +116,7 @@ export const equip = (actor, wearable) => {
 
       return {
         OK: true,
-        msg: `${actor.components.labels.name} equips ${wearable.components.labels.name}.`
+        msg: `${actor.components.labels.name} wears ${wearable.components.labels.name}.`
       };
     } else {
       const slotName = getEntity(actor.components.armor[slots[0]]).components
@@ -130,7 +130,70 @@ export const equip = (actor, wearable) => {
 
   return {
     OK: false,
-    msg: `${actor.components.labels.name} can't equip that.`
+    msg: `${actor.components.labels.name} can't wear that.`
+  };
+};
+
+export const get = actor => {
+  if (
+    // ensure actor has inventory
+    actor.components.inventory &&
+    // ensure actor has position
+    actor.components.position
+  ) {
+    const storables = getStorablesAtLoc(actor.components.position).filter(
+      entity => entity.id !== actor.id
+    );
+
+    if (!storables.length) {
+      return {
+        OK: false,
+        msg: `There is nothing to pick up`
+      };
+    }
+
+    if (storables.length) {
+      const pickedUp = [];
+      let response = {};
+
+      storables.forEach(item => {
+        if (
+          actor.components.inventory.total >=
+          actor.components.inventory.capacity
+        ) {
+          // break out of loop
+          response = {
+            OK: false,
+            msg: `${actor.components.labels.name} cannot carry any more`
+          };
+        }
+
+        actor.components.inventory.items.push(item.id);
+
+        // remove storable entity from map
+        removeCacheEntityAtLocation(item.id, item.components.position);
+        item.removeComponent("position");
+        //  remove from hud
+        item.removeComponent("hud");
+
+        pickedUp.push(item.id);
+
+        actor.components.inventory.total += 1;
+
+        response = {
+          OK: false,
+          msg: `${actor.components.labels.name} picks up ${
+            getEntity(item.id).components.labels.name
+          }.`
+        };
+      });
+
+      return response;
+    }
+  }
+  return {
+    OK: false,
+    msg: `${actor.components.labels.name} can't get.`
   };
 };
 
@@ -217,7 +280,8 @@ export const wield = (actor, wieldable) => {
 export default {
   consume,
   drop,
-  equip,
+  get,
   remove,
+  wear,
   wield
 };

@@ -138,19 +138,19 @@ function processUserInput() {
       const entity = getEntity(inventory.currentSelected);
       const result = actions.drop(getPlayer(), entity);
       if (result.OK) {
-        setNextSelectedItem();
         sortInventory();
+        setNextSelectedItem();
       }
       return printToLog(result.msg);
     }
 
-    // equip item
-    if (ECS.game.userInput.key === "e") {
+    // wear item
+    if (ECS.game.userInput.key === "W") {
       const entity = getEntity(inventory.currentSelected);
-      const result = actions.equip(getPlayer(), entity);
+      const result = actions.wear(getPlayer(), entity);
       if (result.OK) {
-        setNextSelectedItem();
         sortInventory();
+        setNextSelectedItem();
       }
 
       return printToLog(result.msg);
@@ -181,47 +181,11 @@ function processUserInput() {
     if (ECS.game.userInput.type === "GET") {
       // check if there is anything to get on current cell
       const player = getPlayer();
-      const storables = getStorablesAtLoc(player.components.position).filter(
-        entity => entity.id !== player.id
-      );
-
-      if (!storables.length) {
-        printToLog(`There is nothing to pick up`);
-        return;
+      const result = actions.get(getPlayer());
+      if (result.OK) {
+        sortInventory();
       }
-
-      if (storables.length) {
-        const pickedUp = [];
-
-        storables.forEach(item => {
-          if (
-            player.components.inventory.total >=
-            player.components.inventory.capacity
-          ) {
-            printToLog(`You cannot carry any more`);
-            // break out of loop
-            return;
-          }
-
-          player.components.inventory.items.push(item.id);
-
-          // remove storable entity from map
-          removeCacheEntityAtLocation(item.id, item.components.position);
-          item.removeComponent("position");
-          //  remove from hud
-          item.removeComponent("hud");
-
-          pickedUp.push(item.id);
-
-          player.components.inventory.total += 1;
-
-          printToLog(
-            `You pick up a ${getEntity(item.id).components.labels.name}.`
-          );
-        });
-      }
-
-      return;
+      return printToLog(result.msg);
     }
 
     if (ECS.game.userInput.type === "TOGGLE_OMNISCIENCE") {

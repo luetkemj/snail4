@@ -14,10 +14,6 @@ export default function input(key) {
       ECS.game.userInput = { key, type: "DROP", payload: {} };
       break;
     }
-    case "e": {
-      ECS.game.userInput = { key, type: "EQUIP", payload: {} };
-      break;
-    }
     case "i": {
       ECS.game.userInput = { key, type: "INVENTORY", payload: {} };
       break;
@@ -36,6 +32,10 @@ export default function input(key) {
     }
     case "w": {
       ECS.game.userInput = { key, type: "WIELD", payload: {} };
+      break;
+    }
+    case "W": {
+      ECS.game.userInput = { key, type: "WEAR", payload: {} };
       break;
     }
     case "z": {
