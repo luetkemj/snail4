@@ -5,7 +5,7 @@ import {
 } from "../ECS/cache";
 import { getStorablesAtLoc, getEntity } from "./getters";
 
-export const consume = (actor, consumable) => {
+export const consume = (actor, consumable, callback = () => {}) => {
   // todo: components for canConsume? no use case yet
 
   if (
@@ -16,6 +16,7 @@ export const consume = (actor, consumable) => {
     // ensure consumable is in actor's inventory
     actor.components.inventory.items.includes(consumable.id)
   ) {
+    callback();
     // remove consumable from actor's inventory
     pull(actor.components.inventory.items, consumable.id);
 
@@ -49,7 +50,7 @@ export const consume = (actor, consumable) => {
   }
 };
 
-export const drop = (actor, droppable) => {
+export const drop = (actor, droppable, callback = () => {}) => {
   if (
     // ensure droppable is infact droppable
     droppable.components.droppable &&
@@ -58,6 +59,7 @@ export const drop = (actor, droppable) => {
     // ensure droppable is in actor's inventory
     actor.components.inventory.items.includes(droppable.id)
   ) {
+    callback();
     // remove droppable from inventory
     pull(actor.components.inventory.items, droppable.id);
 
@@ -123,7 +125,7 @@ export const wear = (actor, wearable) => {
         .labels.name;
       return {
         OK: false,
-        msg: `${actor.components.labels.name} have to remove your ${slotName} first.`
+        msg: `${actor.components.labels.name} must remove ${slotName} first.`
       };
     }
   }
@@ -166,6 +168,7 @@ export const get = actor => {
             OK: false,
             msg: `${actor.components.labels.name} cannot carry any more`
           };
+          return false;
         }
 
         actor.components.inventory.items.push(item.id);
@@ -272,7 +275,7 @@ export const wield = (actor, wieldable) => {
     };
   }
   return {
-    OK: true,
+    OK: false,
     msg: `${actor.components.labels.name} can't wield that.`
   };
 };

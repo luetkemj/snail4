@@ -126,21 +126,28 @@ function processUserInput() {
     // consume item
     if (ECS.game.userInput.key === "c") {
       const entity = getEntity(inventory.currentSelected);
-      const result = actions.consume(getPlayer(), entity);
-      if (result.OK) {
+      // using a callback to do the result OK things here
+      // this is because the item is removed from inventory
+      // which buggers with the order of things...
+      // maybe do all of them like this?
+      const result = actions.consume(getPlayer(), entity, () => {
         setNextSelectedItem();
-      }
+        sortInventory();
+      });
       return printToLog(result.msg);
     }
 
     // drop item
     if (ECS.game.userInput.key === "d") {
       const entity = getEntity(inventory.currentSelected);
-      const result = actions.drop(getPlayer(), entity);
-      if (result.OK) {
-        sortInventory();
+      // using a callback to do the result OK things here
+      // this is because the item is removed from inventory
+      // which buggers with the order of things...
+      // maybe do all of them like this?
+      const result = actions.drop(getPlayer(), entity, () => {
         setNextSelectedItem();
-      }
+        sortInventory();
+      });
       return printToLog(result.msg);
     }
 
@@ -149,8 +156,8 @@ function processUserInput() {
       const entity = getEntity(inventory.currentSelected);
       const result = actions.wear(getPlayer(), entity);
       if (result.OK) {
-        sortInventory();
         setNextSelectedItem();
+        sortInventory();
       }
 
       return printToLog(result.msg);
@@ -161,6 +168,7 @@ function processUserInput() {
       const entity = getEntity(inventory.currentSelected);
       const result = actions.remove(getPlayer(), entity);
       if (result.OK) {
+        setNextSelectedItem();
         sortInventory();
       }
       return printToLog(result.msg);
@@ -171,6 +179,7 @@ function processUserInput() {
       const entity = getEntity(inventory.currentSelected);
       const result = actions.wield(getPlayer(), entity);
       if (result.OK) {
+        setNextSelectedItem();
         sortInventory();
       }
       return printToLog(result.msg);
