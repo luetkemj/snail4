@@ -267,6 +267,7 @@ export const wield = (actor, wieldable) => {
     // wield new thing
     wieldable.addComponent("removable");
     wieldable.removeComponent("wieldable");
+    // TODO: should check for a canWield component?
     actor.components.wielding = wieldable.id;
 
     return {

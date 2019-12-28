@@ -1,4 +1,3 @@
-import ECS from "../ECS";
 import { setCacheEntityAtLocation } from "../cache";
 import createPotion from "./potion.assemblage";
 

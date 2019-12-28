@@ -31,14 +31,16 @@ const randomWeaponAssemblage = (x, y) => {
   const details = sample(slots);
 
   entity.components.labels.name = details.name;
-
-  entity.components.position.x = x;
-  entity.components.position.y = y;
-
   entity.addComponent("damage", { dmg: details.dmg });
   entity.addComponent("description", { text: details.text });
 
-  setCacheEntityAtLocation(entity.id, { x, y });
+  if (x && y) {
+    entity.components.position.x = x;
+    entity.components.position.y = y;
+    setCacheEntityAtLocation(entity.id, { x, y });
+  }
+
+  return entity;
 };
 
 export default randomWeaponAssemblage;

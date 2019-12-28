@@ -53,15 +53,17 @@ const leatherArmorAssemblage = (x, y) => {
   const details = sample(slots);
 
   entity.components.labels.name = details.name;
-
-  entity.components.position.x = x;
-  entity.components.position.y = y;
-
   entity.addComponent("damageReduction", { dr: details.dr });
   entity.addComponent("wearable", { slots: [details.slot] });
   entity.addComponent("description", { text: details.text });
 
-  setCacheEntityAtLocation(entity.id, { x, y });
+  if (x && y) {
+    entity.components.position.x = x;
+    entity.components.position.y = y;
+    setCacheEntityAtLocation(entity.id, { x, y });
+  }
+
+  return entity;
 };
 
 export default leatherArmorAssemblage;

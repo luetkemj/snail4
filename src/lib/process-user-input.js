@@ -189,7 +189,6 @@ function processUserInput() {
   if (ECS.game.mode === "GAME") {
     if (ECS.game.userInput.type === "GET") {
       // check if there is anything to get on current cell
-      const player = getPlayer();
       const result = actions.get(getPlayer());
       if (result.OK) {
         sortInventory();

@@ -19,6 +19,7 @@ import createRandomWeapon from "../ECS/assemblages/weapon-random.assemblage";
 import { generateDungeon } from "../lib/dungeon";
 import { dijkstra } from "../lib/dijkstra";
 import { colors, chars } from "../lib/graphics";
+import actions from "../lib/actions";
 
 const initGame = () => {
   // create dungeon level
@@ -93,8 +94,20 @@ const initGame = () => {
     const { position } = ECS.entities[id].components;
 
     const type = random(0, 1) ? "rat" : "goblin";
-    if (type === "rat") createRat(position.x, position.y);
-    if (type === "goblin") createGoblin(position.x, position.y);
+    if (type === "rat") {
+      createRat(position.x, position.y);
+    }
+    if (type === "goblin") {
+      const goblin = createGoblin(position.x, position.y);
+      const armor = createLeatherArmor();
+      const weapon = createRandomWeapon();
+
+      goblin.components.inventory.items.push(armor.id);
+      goblin.components.inventory.items.push(weapon.id);
+
+      actions.wield(goblin, weapon);
+      actions.wear(goblin, armor);
+    }
   });
 
   times(5, () => {
