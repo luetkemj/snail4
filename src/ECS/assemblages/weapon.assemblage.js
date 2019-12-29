@@ -14,7 +14,7 @@ const weaponAssemblage = () => {
   entity.addComponent("position");
   entity.addComponent("fov");
   entity.addComponent("droppable");
-  entity.addComponent("storable");
+  entity.addComponent("gettable");
   entity.addComponent("hud");
   entity.addComponent("damage", { dmg: 3 });
   entity.addComponent("wieldable");

@@ -1,7 +1,6 @@
 import { compact, difference, findIndex, pull, sortBy } from "lodash";
 import ECS from "../ECS/ECS";
-import { removeCacheEntityAtLocation } from "../ECS/cache";
-import { getStorablesAtLoc, getPlayer, getEntity } from "./getters";
+import { getPlayer, getEntity } from "./getters";
 import { printToLog } from "./gui";
 import actions from "./actions";
 

@@ -3,7 +3,11 @@ import {
   removeCacheEntityAtLocation,
   setCacheEntityAtLocation
 } from "../ECS/cache";
-import { getStorablesAtLoc, getEntity } from "./getters";
+import {
+  getEntity,
+  getGettableEntitiesAtLoc,
+  getStorablesAtLoc
+} from "./getters";
 
 export const consume = (actor, consumable, callback = () => {}) => {
   // todo: components for canConsume? no use case yet
@@ -87,55 +91,6 @@ export const drop = (actor, droppable, callback = () => {}) => {
   }
 };
 
-export const wear = (actor, wearable) => {
-  if (
-    // ensure wearable is infact wearable
-    wearable.components.wearable &&
-    // ensure actor has an inventory
-    actor.components.inventory &&
-    // ensure wearable is in actor's inventory
-    actor.components.inventory.items.includes(wearable.id)
-  ) {
-    // check if it's already being worn
-    if (wearable.components.wearable.beingWorn) {
-      return {
-        OK: false,
-        msg: `${actor.components.labels.name} is already wearing that.`
-      };
-    }
-    const slots = wearable.components.wearable.slots;
-    const emptySlots = slots.filter(slot => !actor.components.armor[slot]);
-
-    if (emptySlots.length) {
-      // if empty slots equip to first available
-      actor.components.armor[emptySlots[0]] = wearable.id;
-
-      // You can't drop an equipped item
-      wearable.removeComponent("droppable");
-      wearable.components.wearable.beingWorn = true;
-      // You can now remove it
-      wearable.addComponent("removable");
-
-      return {
-        OK: true,
-        msg: `${actor.components.labels.name} wears ${wearable.components.labels.name}.`
-      };
-    } else {
-      const slotName = getEntity(actor.components.armor[slots[0]]).components
-        .labels.name;
-      return {
-        OK: false,
-        msg: `${actor.components.labels.name} must remove ${slotName} first.`
-      };
-    }
-  }
-
-  return {
-    OK: false,
-    msg: `${actor.components.labels.name} can't wear that.`
-  };
-};
-
 export const get = actor => {
   if (
     // ensure actor has inventory
@@ -143,22 +98,46 @@ export const get = actor => {
     // ensure actor has position
     actor.components.position
   ) {
-    const storables = getStorablesAtLoc(actor.components.position).filter(
-      entity => entity.id !== actor.id
-    );
-
-    if (!storables.length) {
+    const gettables = getGettableEntitiesAtLoc(
+      actor.components.position
+    ).filter(entity => entity.id !== actor.id);
+    if (!gettables.length) {
       return {
         OK: false,
         msg: `There is nothing to pick up`
       };
     }
 
-    if (storables.length) {
+    if (gettables.length) {
+      const items = {
+        allAvailable: [],
+        hasInventory: {},
+        inInventory: {}
+      };
+
+      gettables.forEach(item => {
+        items.allAvailable.push(item.id);
+        if (item.components.inventory) {
+          items.hasInventory[item.id] = item.components.inventory.items;
+
+          item.components.inventory.items.forEach(eId => {
+            items.inInventory[eId] = item.id;
+            items.allAvailable.push(eId);
+          });
+        }
+      });
+
+      console.log(items);
+      // open container UI
+      // on get
+      // check if item has inventory (items[item.id])
+    }
+
+    // OLD CODE NO TOUCH FOR NOW
+    if (gettables.length) {
       const pickedUp = [];
       let response = {};
-
-      storables.forEach(item => {
+      gettables.forEach(item => {
         if (
           actor.components.inventory.total >=
           actor.components.inventory.capacity
@@ -170,19 +149,14 @@ export const get = actor => {
           };
           return false;
         }
-
         actor.components.inventory.items.push(item.id);
-
-        // remove storable entity from map
+        // remove gettable entity from map
         removeCacheEntityAtLocation(item.id, item.components.position);
         item.removeComponent("position");
         //  remove from hud
         item.removeComponent("hud");
-
         pickedUp.push(item.id);
-
         actor.components.inventory.total += 1;
-
         response = {
           OK: false,
           msg: `${actor.components.labels.name} picks up ${
@@ -190,7 +164,6 @@ export const get = actor => {
           }.`
         };
       });
-
       return response;
     }
   }
@@ -237,6 +210,55 @@ export const remove = (actor, removable) => {
   return {
     OK: false,
     msg: `${actor.components.labels.name} can't remove that.`
+  };
+};
+
+export const wear = (actor, wearable) => {
+  if (
+    // ensure wearable is infact wearable
+    wearable.components.wearable &&
+    // ensure actor has an inventory
+    actor.components.inventory &&
+    // ensure wearable is in actor's inventory
+    actor.components.inventory.items.includes(wearable.id)
+  ) {
+    // check if it's already being worn
+    if (wearable.components.wearable.beingWorn) {
+      return {
+        OK: false,
+        msg: `${actor.components.labels.name} is already wearing that.`
+      };
+    }
+    const slots = wearable.components.wearable.slots;
+    const emptySlots = slots.filter(slot => !actor.components.armor[slot]);
+
+    if (emptySlots.length) {
+      // if empty slots equip to first available
+      actor.components.armor[emptySlots[0]] = wearable.id;
+
+      // You can't drop an equipped item
+      wearable.removeComponent("droppable");
+      wearable.components.wearable.beingWorn = true;
+      // You can now remove it
+      wearable.addComponent("removable");
+
+      return {
+        OK: true,
+        msg: `${actor.components.labels.name} wears ${wearable.components.labels.name}.`
+      };
+    } else {
+      const slotName = getEntity(actor.components.armor[slots[0]]).components
+        .labels.name;
+      return {
+        OK: false,
+        msg: `${actor.components.labels.name} must remove ${slotName} first.`
+      };
+    }
+  }
+
+  return {
+    OK: false,
+    msg: `${actor.components.labels.name} can't wear that.`
   };
 };
 

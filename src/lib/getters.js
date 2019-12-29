@@ -10,5 +10,16 @@ export const getEntity = eId => ECS.entities[eId];
 export const getEntitiesAtLoc = ({ x, y }) =>
   readCacheEntitiesAtLocation({ x, y }).map(eId => ECS.entities[eId]);
 
+// @todo
 export const getStorablesAtLoc = ({ x, y }) =>
   getEntitiesAtLoc({ x, y }).filter(entity => entity.components.storable);
+
+export const getGettableEntitiesAtLoc = ({ x, y }) => {
+  const entities = getEntitiesAtLoc({ x, y }).filter(
+    entity => entity.components.gettable
+  );
+  // iterate over entities and add all with a gettable to floor.
+  console.log(entities);
+
+  return entities;
+};

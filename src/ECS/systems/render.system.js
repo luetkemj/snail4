@@ -194,6 +194,28 @@ const renderHud2 = () => {
   }
 };
 
+// items comes from payload - tile id instead? then I can just get the entities there and deal with that
+const renderContainer = locId => {
+  // get entities at locId
+  const entities = getEntitiesAtLoc(getPlayer().components.position);
+  // iterate over entities and add all with a gettable to floor.
+  console.log(entities);
+
+  // look for any that have an inventory. If they do:
+  // need to be able to remove item from entity inventory (so build some data structire that will faciliate that)
+  // items: {
+  //   floor: []
+  //   entityId: [] // id of entity whose inventory item belongs to
+  //   ...
+  // }
+  // lists all items
+  // store current selected item
+  // on get
+  // remove from floor or inventory
+  // add to player inventory
+  // all this needs to somehow be able to work for monsters npcs to do this without a UI...
+};
+
 const renderInventory = () => {
   // inventory background
   drawRectangle({
@@ -277,13 +299,6 @@ const renderInventory = () => {
 
   inventoryY += 2;
 
-  // if (!items.length) {
-  //   drawText("<EMPTY>", {
-  //     x: inventoryX,
-  //     y: inventoryY
-  //   });
-  // }
-
   drawText(" - WIELDING", {
     x: inventoryX,
     y: inventoryY
@@ -303,12 +318,10 @@ const renderInventory = () => {
     inventoryY += 1;
   }
 
-  // if (getPlayer().components.wielding) {
   // render divider
   inventoryY += 1;
   drawText(` - WEARING`, { x: inventoryX, y: inventoryY });
   inventoryY += 1;
-  // }
 
   // render equipped items
   const armorComponent = getPlayer().components.armor;
@@ -330,12 +343,10 @@ const renderInventory = () => {
     inventoryY += 1;
   });
 
-  // if (equippedItems.length) {
   // render divider
   inventoryY += 1;
   drawText(`   ---------`, { x: inventoryX, y: inventoryY });
   inventoryY += 2;
-  // }
 
   // render everything else
   items

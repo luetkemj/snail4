@@ -69,7 +69,7 @@ export const attack = (entity, targetId) => {
       targetEntity.components.description.text = `You see a crumpled ${targetEntity.components.labels.name} on the floor.`;
     }
 
-    targetEntity.addComponent("storable");
+    targetEntity.addComponent("gettable");
     targetEntity.components.appearance.layer = layers.items;
     targetEntity.components.appearance.char = "%";
     targetEntity.removeComponent("moveToPlayer");
@@ -119,20 +119,21 @@ export const attemptMove = (entity, x, y) => {
   const mx = Math.min(width - 1, Math.max(0, x));
   const my = Math.min(height - 1, Math.max(0, y));
 
-  // check for blocking entities in taget location
+  // check for blocking entities in target location
   const entitiesAtGoalIds = readCacheEntitiesAtLocation({ x: mx, y: my });
   const blockers = entitiesAtGoalIds.filter(
     id => ECS.entities[id].components.blocking
   );
 
   // set blocking entity as target
+  // and do not move
   if (blockers.length) {
     blockers.forEach(id => entity.addComponent("target", { id }));
     return false;
   }
+
   removeCacheEntityAtLocation(entity.id, { x: position.x, y: position.y });
   setCacheEntityAtLocation(entity.id, { x: mx, y: my });
-
   createTrack({ position: { x, y }, eId: entity.id });
 
   position.x = mx;

@@ -14,7 +14,7 @@ const potionAssemblage = () => {
   entity.addComponent("position");
   entity.addComponent("fov");
   entity.addComponent("droppable");
-  entity.addComponent("storable");
+  entity.addComponent("gettable");
 
   entity.addComponent("hud");
 

@@ -14,7 +14,7 @@ const armorAssemblage = () => {
   entity.addComponent("position");
   entity.addComponent("fov");
   entity.addComponent("droppable");
-  entity.addComponent("storable");
+  entity.addComponent("gettable");
   entity.addComponent("hud");
   entity.addComponent("damageReduction", { dr: 1 });
   entity.addComponent("wearable", { slots: ["torso"] });

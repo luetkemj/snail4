@@ -26,8 +26,8 @@ const playerAssemblage = (x, y) => {
     feet: ""
   });
 
-  entity.components.health.max = 50;
-  entity.components.health.current = 50;
+  entity.components.health.max = 500;
+  entity.components.health.current = 500;
 
   setCacheId(entity.id, "player");
   setCacheEntityAtLocation(entity.id, { x, y });
