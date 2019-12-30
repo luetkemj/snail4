@@ -252,18 +252,28 @@ const renderInventory = () => {
   const { items } = inventory;
   // const inventoryItemNames = Object.keys(inventory.items);
 
+  // draw description pane heading
+  // drawText("-- DETAILS --", {
+  //   x: ECS.game.grid.menu2.x,
+  //   y: ECS.game.grid.menu2.y,
+  //   color: ECS.game.menu.currentPane === 1 ? colors.defaultColor : undefined
+  // });
+
   // draw selected item details
   if (items.length) {
-    let descY = ECS.game.grid.menu2.y + 3;
+    let descY =
+      ECS.game.grid.menu2.y +
+      1 +
+      ECS.game.menu.paneOffset[ECS.game.menu.currentPane];
     const currentSelectedEntity = getEntity(inventory.currentSelected);
-    drawText(currentSelectedEntity.components.labels.name, {
+    drawText(`-- ${currentSelectedEntity.components.labels.name} --`, {
       x: ECS.game.grid.menu2.x + 1,
-      y: descY
+      y: descY,
+      color: ECS.game.menu.currentPane === 1 ? colors.defaultColor : undefined
     });
 
     descY += 2;
 
-    // TODO YUCK THIS IS HARD TO READ!
     // draw description
     const lines = drawScrollableText(
       currentSelectedEntity.components.description.text,
@@ -318,7 +328,8 @@ const renderInventory = () => {
   // draw inventory
   drawText("-- INVENTORY --", {
     x: inventoryX,
-    y: inventoryY
+    y: inventoryY,
+    color: ECS.game.menu.currentPane === 0 ? colors.defaultColor : undefined
   });
 
   inventoryY += 2;

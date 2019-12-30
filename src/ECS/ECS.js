@@ -82,7 +82,12 @@ const ECS = {
     turn: 0,
     userInput: null,
     playerTurn: true,
-    grid
+    grid,
+    menu: {
+      currentPane: 0,
+      paneOffset: [0, 0],
+      paneLines: [0, 0]
+    }
   },
   log: [
     "Welcome, adventurer, to the Dungeons of Doom!",

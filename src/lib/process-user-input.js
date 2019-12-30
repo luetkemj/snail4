@@ -23,6 +23,26 @@ const sortInventory = () => {
   ]);
 };
 
+const scrollPaneIfNeeded = dir => {
+  const currentPane = ECS.game.menu.currentPane;
+  const paneOffset = ECS.game.menu.paneOffset[currentPane];
+  const paneLines = ECS.game.menu.paneLines[currentPane];
+
+  if (dir === "UP") {
+    ECS.game.menu.paneOffset[currentPane] -= 1;
+    if (ECS.game.menu.paneOffset[currentPane] < 0) {
+      ECS.game.menu.paneOffset[currentPane] = 0;
+    }
+  }
+
+  if (dir === "DOWN") {
+    ECS.game.menu.paneOffset[currentPane] += 1;
+    // if (ECS.game.menu.paneOffsec[currentPane] < 0) {
+    //   ECS.game.menu.paneOffsec[currentPane] = 0;
+    // }
+  }
+};
+
 const setNextSelectedItem = () => {
   const player = getPlayer();
   const { inventory } = player.components;
@@ -110,16 +130,35 @@ function processUserInput() {
     const player = getPlayer();
     const { inventory } = player.components;
 
+    // switch active pane
+    // some how track the number of available panes? not sure how yet
+    if (
+      ECS.game.userInput.key === "ArrowLeft" ||
+      ECS.game.userInput.key === "ArrowRight"
+    ) {
+      ECS.game.menu.currentPane += 1;
+      if (ECS.game.menu.currentPane > 1) ECS.game.menu.currentPane = 0;
+      return;
+    }
+
     // select next item
     if (ECS.game.userInput.key === "ArrowDown") {
-      setNextSelectedItem();
-      return;
+      scrollPaneIfNeeded("DOWN");
+
+      if (ECS.game.menu.currentPane === 0) {
+        setNextSelectedItem();
+        return;
+      }
     }
 
     // select previous item
     if (ECS.game.userInput.key === "ArrowUp") {
-      setPreviousSelectedItem();
-      return;
+      scrollPaneIfNeeded("UP");
+
+      if (ECS.game.menu.currentPane === 0) {
+        setPreviousSelectedItem();
+        return;
+      }
     }
 
     // consume item
