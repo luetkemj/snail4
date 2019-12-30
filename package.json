@@ -18,7 +18,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.15",
+    "wrap-ansi": "^6.2.0"
   },
   "devDependencies": {
     "cssnano": "^4.1.10",

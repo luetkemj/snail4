@@ -5,6 +5,7 @@ import { colors } from "../../lib/graphics";
 import { updateHSLA } from "../../lib/hsla";
 import { getEntity, getEntitiesAtLoc, getPlayer } from "../../lib/getters";
 import { rectangle } from "../../lib/grid";
+import wrapAnsi from "wrap-ansi";
 
 const buildCharEntity = ({
   char,
@@ -40,6 +41,18 @@ const drawText = (
     });
     drawCell(charEntity, { char: { a: charAlpha } });
   });
+};
+
+export const drawScrollableText = (text, width, height, options) => {
+  // const words = text.split(" ");
+  const lines = wrapAnsi(text, width).split("\n");
+  lines.forEach((line, index) => {
+    const opt = { ...options };
+    opt.y = options.y + index;
+    drawText(line, opt);
+  });
+
+  return lines;
 };
 
 // const renderHealth
@@ -241,17 +254,28 @@ const renderInventory = () => {
 
   // draw selected item details
   if (items.length) {
+    let descY = ECS.game.grid.menu2.y + 3;
     const currentSelectedEntity = getEntity(inventory.currentSelected);
     drawText(currentSelectedEntity.components.labels.name, {
       x: ECS.game.grid.menu2.x + 1,
-      y: ECS.game.grid.menu2.y + 3
+      y: descY
     });
 
+    descY += 2;
+
+    // TODO YUCK THIS IS HARD TO READ!
     // draw description
-    // drawText(entity.components.description.text, {
-    //   x: ECS.game.grid.menu2.x + 1,
-    //   y: ECS.game.grid.menu2.y + 3
-    // });
+    const lines = drawScrollableText(
+      currentSelectedEntity.components.description.text,
+      ECS.game.grid.menu2.width - 2,
+      ECS.game.grid.menu2.height - 2,
+      {
+        x: ECS.game.grid.menu2.x + 1,
+        y: descY
+      }
+    );
+
+    descY += 1 + lines.length;
 
     // actions
     let actions = "";
@@ -284,7 +308,7 @@ const renderInventory = () => {
 
     drawText(actions, {
       x: ECS.game.grid.menu2.x + 1,
-      y: ECS.game.grid.menu2.y + 5
+      y: descY
     });
   }
 
