@@ -43,16 +43,19 @@ const drawText = (
   });
 };
 
-export const drawScrollableText = (text, width, height, options) => {
-  // const words = text.split(" ");
+export const drawScrollableText = (text, width, height, offset, options) => {
+  // split string into wrapped lines
   const lines = wrapAnsi(text, width).split("\n");
-  lines.forEach((line, index) => {
+  // get visible portion of lines based on current scroll
+  const visible = lines.slice(offset, offset + height);
+  // draw visible to canvas
+  visible.forEach((line, index) => {
     const opt = { ...options };
     opt.y = options.y + index;
     drawText(line, opt);
   });
 
-  return lines;
+  return { lines, visible };
 };
 
 // const renderHealth
@@ -261,10 +264,7 @@ const renderInventory = () => {
 
   // draw selected item details
   if (items.length) {
-    let descY =
-      ECS.game.grid.menu2.y +
-      1 +
-      ECS.game.menu.paneOffset[ECS.game.menu.currentPane];
+    let descY = ECS.game.grid.menu2.y + 1;
     const currentSelectedEntity = getEntity(inventory.currentSelected);
     drawText(`-- ${currentSelectedEntity.components.labels.name} --`, {
       x: ECS.game.grid.menu2.x + 1,
@@ -275,17 +275,19 @@ const renderInventory = () => {
     descY += 2;
 
     // draw description
-    const lines = drawScrollableText(
+    const { lines, visible } = drawScrollableText(
       currentSelectedEntity.components.description.text,
       ECS.game.grid.menu2.width - 2,
-      ECS.game.grid.menu2.height - 2,
+      ECS.game.grid.menu2.height - 5,
+      ECS.game.menu.paneOffset[1],
       {
         x: ECS.game.grid.menu2.x + 1,
         y: descY
       }
     );
 
-    descY += 1 + lines.length;
+    ECS.game.menu.contentHeight[1] = lines.length;
+    descY += 1 + visible.length;
 
     // actions
     let actions = "";

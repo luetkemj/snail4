@@ -25,21 +25,25 @@ const sortInventory = () => {
 
 const scrollPaneIfNeeded = dir => {
   const currentPane = ECS.game.menu.currentPane;
-  const paneOffset = ECS.game.menu.paneOffset[currentPane];
-  const paneLines = ECS.game.menu.paneLines[currentPane];
-
   if (dir === "UP") {
-    ECS.game.menu.paneOffset[currentPane] -= 1;
-    if (ECS.game.menu.paneOffset[currentPane] < 0) {
-      ECS.game.menu.paneOffset[currentPane] = 0;
+    if (ECS.game.menu.paneOffset[currentPane] - 1 < 0) {
+      return;
+    } else {
+      return (ECS.game.menu.paneOffset[currentPane] -= 1);
     }
   }
 
   if (dir === "DOWN") {
-    ECS.game.menu.paneOffset[currentPane] += 1;
-    // if (ECS.game.menu.paneOffsec[currentPane] < 0) {
-    //   ECS.game.menu.paneOffsec[currentPane] = 0;
-    // }
+    if (
+      ECS.game.menu.contentHeight[currentPane] -
+        ECS.game.menu.paneOffset[currentPane] +
+        1 <
+      ECS.game.menu.visibleHeight[currentPane]
+    ) {
+      return;
+    } else {
+      return (ECS.game.menu.paneOffset[currentPane] += 1);
+    }
   }
 };
 
@@ -61,6 +65,8 @@ const setNextSelectedItem = () => {
   } else {
     inventory.currentSelected = items[index + 1];
   }
+
+  ECS.game.menu.paneOffset[1] = 0;
 };
 
 const setPreviousSelectedItem = () => {
@@ -81,6 +87,8 @@ const setPreviousSelectedItem = () => {
   } else {
     inventory.currentSelected = items[index - 1];
   }
+
+  ECS.game.menu.paneOffset[1] = 0;
 };
 
 function processUserInput() {

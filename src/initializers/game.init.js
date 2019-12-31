@@ -110,7 +110,7 @@ const initGame = () => {
     }
   });
 
-  times(5, () => {
+  times(500, () => {
     const id = sample(ECS.cache.openTiles);
     const { position } = ECS.entities[id].components;
 

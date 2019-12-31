@@ -86,7 +86,8 @@ const ECS = {
     menu: {
       currentPane: 0,
       paneOffset: [0, 0],
-      paneLines: [0, 0]
+      contentHeight: [100, 0],
+      visibleHeight: [25, 27]
     }
   },
   log: [
