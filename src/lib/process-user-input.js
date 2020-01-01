@@ -73,7 +73,6 @@ const setPreviousSelectedItem = () => {
 
   const index = findIndex(items, eId => eId === inventory.currentSelected);
 
-  console.log(ECS.game.menu);
   // if we are at the first item set to last
   if (index === 0) {
     inventory.currentSelected = items[items.length - 1];

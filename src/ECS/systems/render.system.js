@@ -242,6 +242,15 @@ const renderContainer = locId => {
 };
 
 const renderInventory = () => {
+  // render masks over non essential UI
+  drawRectangle({
+    x: 0,
+    y: 0,
+    width: ECS.game.grid.width,
+    height: ECS.game.grid.height,
+    color: updateHSLA(colors.defaultBGColor, { a: 60 })
+  });
+
   const drawInventoryList = () => {
     const inventoryListText = writePlayerInventoryList(
       getPlayer().components.inventory.items,
@@ -251,8 +260,8 @@ const renderInventory = () => {
 
     const color =
       ECS.game.menu.currentPane === 0
-        ? colors.inventoryHighlight
-        : colors.hudText;
+        ? colors.hudText
+        : updateHSLA(colors.hudText, { l: 60 });
 
     // draw Inventory list (left pane [0])
     // inventory background
@@ -304,8 +313,8 @@ const renderInventory = () => {
 
     const color =
       ECS.game.menu.currentPane === 1
-        ? colors.inventoryHighlight
-        : colors.hudText;
+        ? colors.hudText
+        : updateHSLA(colors.hudText, { l: 60 });
     const inventory = getPlayer().components.inventory;
     const { items } = inventory;
     // draw selected item details
