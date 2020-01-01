@@ -1,6 +1,7 @@
 import ECS from "../ECS";
 import { colors, chars } from "../../lib/graphics";
 import { layers } from "../../lib/canvas";
+import { componentTypes } from "../../lib/dictionary";
 
 const armorAssemblage = () => {
   const entity = ECS.Entity();
@@ -19,6 +20,7 @@ const armorAssemblage = () => {
   entity.addComponent("damageReduction", { dr: 1 });
   entity.addComponent("wearable", { slots: ["torso"] });
   entity.addComponent("description", { text: "armor" });
+  entity.addComponent("type", componentTypes.ARMOR);
 
   return entity;
 };

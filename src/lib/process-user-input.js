@@ -1,4 +1,4 @@
-import { compact, difference, findIndex, pull, sortBy } from "lodash";
+import { findIndex, flatten, groupBy } from "lodash";
 import ECS from "../ECS/ECS";
 import { getPlayer, getEntity } from "./getters";
 import { printToLog } from "./gui";
@@ -6,21 +6,10 @@ import actions from "./actions";
 
 const sortInventory = () => {
   const player = getPlayer();
-  const { inventory } = player.components;
-  const { items } = inventory;
-  const wieldedItem = player.components.wielding;
-  const equippedItems = compact(Object.values(player.components.armor));
-  const unequippedItems = difference(items, equippedItems);
-  // remove wieldedItem
-  pull(unequippedItems, wieldedItem);
-
-  console.log({ wieldedItem, ...equippedItems, ...unequippedItems });
-
-  player.components.inventory.items = compact([
-    wieldedItem,
-    ...equippedItems,
-    ...unequippedItems
-  ]);
+  const entities = player.components.inventory.items.map(eId => getEntity(eId));
+  const groups = groupBy(entities, entity => entity.components.type.name);
+  const sortedInventory = flatten(Object.values(groups)).map(x => x.id);
+  player.components.inventory.items = [...sortedInventory];
 };
 
 const scrollPaneIfNeeded = dir => {
@@ -62,6 +51,9 @@ const setNextSelectedItem = () => {
   // if we are at the last item set to first
   if (index === items.length - 1) {
     inventory.currentSelected = items[0];
+    // reset the offset so that we scroll back to top
+    const currentPane = ECS.game.menu.currentPane;
+    ECS.game.menu.paneOffset[currentPane] = 0;
   } else {
     inventory.currentSelected = items[index + 1];
   }
@@ -81,9 +73,15 @@ const setPreviousSelectedItem = () => {
 
   const index = findIndex(items, eId => eId === inventory.currentSelected);
 
+  console.log(ECS.game.menu);
   // if we are at the first item set to last
   if (index === 0) {
     inventory.currentSelected = items[items.length - 1];
+    // set the offset so that we scroll to the bottom
+    const currentPane = ECS.game.menu.currentPane;
+    ECS.game.menu.paneOffset[currentPane] =
+      ECS.game.menu.contentHeight[currentPane] -
+      ECS.game.menu.visibleHeight[currentPane];
   } else {
     inventory.currentSelected = items[index - 1];
   }

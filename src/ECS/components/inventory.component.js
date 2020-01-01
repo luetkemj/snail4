@@ -1,6 +1,6 @@
 const componentInventory = () => {
   return {
-    capacity: 10,
+    capacity: 100,
     total: 0,
     currentSelected: "",
     items: [] // eIds

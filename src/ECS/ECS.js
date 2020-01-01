@@ -29,6 +29,7 @@ import target from "./components/target.component";
 import track from "./components/track.component";
 import trackable from "./components/trackable.component";
 import trackableLoc from "./components/trackable-loc.component";
+import type from "./components/type.component";
 import wearable from "./components/wearable.component";
 import wieldable from "./components/wieldable.component";
 import wielding from "./components/wielding.component";
@@ -71,6 +72,7 @@ const ECS = {
     track,
     trackable,
     trackableLoc,
+    type,
     wearable,
     wieldable,
     wielding
@@ -86,8 +88,8 @@ const ECS = {
     menu: {
       currentPane: 0,
       paneOffset: [0, 0],
-      contentHeight: [100, 0],
-      visibleHeight: [25, 27]
+      contentHeight: [0, 0],
+      visibleHeight: [27, 27]
     }
   },
   log: [

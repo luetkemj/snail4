@@ -1,6 +1,7 @@
 import ECS from "../ECS";
 import { colors } from "../../lib/graphics";
 import { layers } from "../../lib/canvas";
+import { componentTypes } from "../../lib/dictionary";
 
 const creatureAssemblage = () => {
   const entity = ECS.Entity(["movable"]);
@@ -24,6 +25,8 @@ const creatureAssemblage = () => {
   entity.addComponent("damageReduction", { dr: 1 });
 
   entity.addComponent("hud");
+
+  entity.addComponent("type", componentTypes.MISC);
 
   return entity;
 };

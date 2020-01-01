@@ -3,11 +3,7 @@ import {
   removeCacheEntityAtLocation,
   setCacheEntityAtLocation
 } from "../ECS/cache";
-import {
-  getEntity,
-  getGettableEntitiesAtLoc,
-  getStorablesAtLoc
-} from "./getters";
+import { getEntity, getGettableEntitiesAtLoc } from "./getters";
 
 export const consume = (actor, consumable, callback = () => {}) => {
   // todo: components for canConsume? no use case yet
@@ -222,6 +218,7 @@ export const wear = (actor, wearable) => {
     // ensure wearable is in actor's inventory
     actor.components.inventory.items.includes(wearable.id)
   ) {
+    // TODO: bug - You can wear and wield the SAME THING!
     // check if it's already being worn
     if (wearable.components.wearable.beingWorn) {
       return {
@@ -271,6 +268,7 @@ export const wield = (actor, wieldable) => {
     // ensure wieldable is in actor's inventory
     actor.components.inventory.items.includes(wieldable.id)
   ) {
+    // TODO: bug - You can wear and wield the SAME THING!
     const wielding = getEntity(actor.components.wielding);
 
     if (wielding === wieldable.id) {

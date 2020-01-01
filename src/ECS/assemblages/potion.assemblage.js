@@ -1,6 +1,7 @@
 import ECS from "../ECS";
 import { colors, chars } from "../../lib/graphics";
 import { layers } from "../../lib/canvas";
+import { componentTypes } from "../../lib/dictionary";
 
 const potionAssemblage = () => {
   const entity = ECS.Entity();
@@ -17,6 +18,8 @@ const potionAssemblage = () => {
   entity.addComponent("gettable");
 
   entity.addComponent("hud");
+
+  entity.addComponent("type", componentTypes.POTION);
 
   return entity;
 };

@@ -7,6 +7,11 @@ import { getEntity, getEntitiesAtLoc, getPlayer } from "../../lib/getters";
 import { rectangle } from "../../lib/grid";
 import wrapAnsi from "wrap-ansi";
 
+import {
+  writePlayerInventoryList,
+  writeItemDescription
+} from "../../lib/menus";
+
 const buildCharEntity = ({
   char,
   color = colors.hudText,
@@ -45,7 +50,7 @@ const drawText = (
 
 export const drawScrollableText = (text, width, height, offset, options) => {
   // split string into wrapped lines
-  const lines = wrapAnsi(text, width).split("\n");
+  const lines = wrapAnsi(text, width, { hard: true, trim: false }).split("\n");
   // get visible portion of lines based on current scroll
   const visible = lines.slice(offset, offset + height);
   // draw visible to canvas
@@ -233,6 +238,12 @@ const renderContainer = locId => {
 };
 
 const renderInventory = () => {
+  const inventoryListText = writePlayerInventoryList(
+    getPlayer().components.inventory.items,
+    getPlayer().components.inventory.currentSelected
+  );
+  ECS.game.menu.contentHeight[0] = inventoryListText.length;
+
   // inventory background
   drawRectangle({
     x: ECS.game.grid.menu.x,
@@ -253,30 +264,12 @@ const renderInventory = () => {
 
   const inventory = getPlayer().components.inventory;
   const { items } = inventory;
-  // const inventoryItemNames = Object.keys(inventory.items);
-
-  // draw description pane heading
-  // drawText("-- DETAILS --", {
-  //   x: ECS.game.grid.menu2.x,
-  //   y: ECS.game.grid.menu2.y,
-  //   color: ECS.game.menu.currentPane === 1 ? colors.defaultColor : undefined
-  // });
-
   // draw selected item details
   if (items.length) {
     let descY = ECS.game.grid.menu2.y + 1;
-    const currentSelectedEntity = getEntity(inventory.currentSelected);
-    drawText(`-- ${currentSelectedEntity.components.labels.name} --`, {
-      x: ECS.game.grid.menu2.x + 1,
-      y: descY,
-      color: ECS.game.menu.currentPane === 1 ? colors.defaultColor : undefined
-    });
-
-    descY += 2;
-
     // draw description
-    const { lines, visible } = drawScrollableText(
-      currentSelectedEntity.components.description.text,
+    const drawnDescriptionText = drawScrollableText(
+      writeItemDescription(inventory.currentSelected),
       ECS.game.grid.menu2.width - 2,
       ECS.game.grid.menu2.height - 5,
       ECS.game.menu.paneOffset[1],
@@ -286,117 +279,25 @@ const renderInventory = () => {
       }
     );
 
-    ECS.game.menu.contentHeight[1] = lines.length;
-    descY += 1 + visible.length;
-
-    // actions
-    let actions = "";
-
-    if (currentSelectedEntity.components.droppable) {
-      actions = `${actions}(d)Drop `;
-    }
-
-    if (currentSelectedEntity.components.consumable) {
-      actions = `${actions}(c)Consume `;
-    }
-
-    if (currentSelectedEntity.components.removable) {
-      actions = `${actions}(r)Remove `;
-    }
-
-    if (
-      currentSelectedEntity.components.wieldable &&
-      !currentSelectedEntity.components.removable
-    ) {
-      actions = `${actions}(w)Wield `;
-    }
-
-    if (
-      currentSelectedEntity.components.wearable &&
-      !currentSelectedEntity.components.wearable.beingWorn
-    ) {
-      actions = `${actions}(W)Wear `;
-    }
-
-    drawText(actions, {
-      x: ECS.game.grid.menu2.x + 1,
-      y: descY
-    });
+    ECS.game.menu.contentHeight[1] = drawnDescriptionText.lines.length;
   }
 
   let inventoryX = ECS.game.grid.menu.x + 1;
   let inventoryY = ECS.game.grid.menu.y + 1;
 
-  // draw inventory
-  drawText("-- INVENTORY --", {
-    x: inventoryX,
-    y: inventoryY,
-    color: ECS.game.menu.currentPane === 0 ? colors.defaultColor : undefined
-  });
-
-  inventoryY += 2;
-
-  drawText(" - WIELDING", {
-    x: inventoryX,
-    y: inventoryY
-  });
-
-  inventoryY += 1;
-
-  // render wielded item
-  if (getPlayer().components.wielding) {
-    const eId = getPlayer().components.wielding;
-    const cursor = eId === inventory.currentSelected ? "*" : " ";
-    const itemName = getEntity(eId).components.labels.name;
-    drawText(`${cursor}${itemName}`, {
-      x: inventoryX + 2,
+  // draw inventory list
+  const drawnInventoryListText = drawScrollableText(
+    inventoryListText,
+    ECS.game.grid.menu.width - 2,
+    ECS.game.grid.menu.height - 3,
+    ECS.game.menu.paneOffset[0],
+    {
+      x: inventoryX,
       y: inventoryY
-    });
-    inventoryY += 1;
-  }
+    }
+  );
 
-  // render divider
-  inventoryY += 1;
-  drawText(` - WEARING`, { x: inventoryX, y: inventoryY });
-  inventoryY += 1;
-
-  // render equipped items
-  const armorComponent = getPlayer().components.armor;
-  const equippedItems = compact(Object.values(armorComponent));
-  equippedItems.forEach(eId => {
-    const cursor = eId === inventory.currentSelected ? "*" : " ";
-    const itemName = getEntity(eId).components.labels.name;
-    let slotName;
-    Object.keys(armorComponent).forEach(slot => {
-      if (armorComponent[slot] === eId) {
-        slotName = slot;
-      }
-    });
-
-    drawText(`${cursor}${itemName} (${slotName})`, {
-      x: inventoryX + 2,
-      y: inventoryY
-    });
-    inventoryY += 1;
-  });
-
-  // render divider
-  inventoryY += 1;
-  drawText(`   ---------`, { x: inventoryX, y: inventoryY });
-  inventoryY += 2;
-
-  // render everything else
-  items
-    .filter(eId => !equippedItems.includes(eId))
-    .filter(eId => eId !== getPlayer().components.wielding)
-    .forEach(id => {
-      const cursor = id === inventory.currentSelected ? "*" : " ";
-      drawText(`${cursor}${getEntity(id).components.labels.name}`, {
-        x: inventoryX + 2,
-        y: inventoryY
-      });
-      inventoryY += 1;
-    });
+  ECS.game.menu.contentHeight[0] = drawnInventoryListText.lines.length;
 };
 
 const renderHelp = () => {
