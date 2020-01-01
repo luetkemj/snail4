@@ -88,7 +88,7 @@ export const drop = (actor, droppable, callback = () => {}) => {
   }
 };
 
-export const getFromContainer = (actor, entity) => {
+export const getFromContainer = (actor, entity, callback) => {
   // ensure actor has inventory
   if (actor.components.inventory) {
     let response = {};
@@ -103,6 +103,7 @@ export const getFromContainer = (actor, entity) => {
       return response;
     }
 
+    callback();
     actor.components.inventory.items.push(entity.id);
     // remove gettable entity from map
     removeCacheEntityAtLocation(entity.id, entity.components.position);
@@ -155,6 +156,10 @@ export const get = actor => {
           item.components.inventory.items.forEach(eId => {
             items.inInventory[eId] = item.id;
             items.allAvailable.push(eId);
+            // add position to item in inventory
+            getEntity(eId).addComponent("position", item.components.position);
+            // add item to cache at location!
+            setCacheEntityAtLocation(eId, item.components.position);
           });
         }
       });

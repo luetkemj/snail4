@@ -3,11 +3,7 @@ import { groupBy, remove } from "lodash";
 import { clearCanvas, drawCell, layers } from "../../lib/canvas";
 import { colors } from "../../lib/graphics";
 import { updateHSLA } from "../../lib/hsla";
-import {
-  getEntitiesAtLoc,
-  getGettableEntitiesAtLoc,
-  getPlayer
-} from "../../lib/getters";
+import { getEntitiesAtLoc, getPlayer } from "../../lib/getters";
 import { rectangle } from "../../lib/grid";
 import wrapAnsi from "wrap-ansi";
 
@@ -224,14 +220,12 @@ const renderHud2 = () => {
   }
 };
 
-// items comes from payload - tile id instead? then I can just get the entities there and deal with that
+// Render Container UI for getting from Container
 const renderContainer = () => {
   const eIds = ECS.game.menu.containerMenu.items;
-  if (eIds.length) {
+  if (eIds.length && !ECS.game.menu.containerMenu.currentSelected) {
     ECS.game.menu.containerMenu.currentSelected = eIds[0];
   }
-
-  console.log(eIds);
 
   // render masks over non essential UI
   drawRectangle({
@@ -243,7 +237,6 @@ const renderContainer = () => {
   });
 
   const drawItemList = () => {
-    console.log(eIds);
     const itemListText = writeItemList(
       eIds,
       ECS.game.menu.containerMenu.currentSelected

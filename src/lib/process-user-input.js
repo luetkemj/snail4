@@ -36,7 +36,33 @@ const scrollPaneIfNeeded = dir => {
   }
 };
 
-const setNextSelectedItem = () => {
+const setNextSelectedContainerItem = () => {
+  const { items } = ECS.game.menu.containerMenu;
+
+  if (!items.length) {
+    ECS.game.menu.containerMenu.currentSelected = "";
+    return;
+  }
+
+  const index = findIndex(
+    items,
+    eId => eId === ECS.game.menu.containerMenu.currentSelected
+  );
+
+  // if we are at the last item set to first
+  if (index === items.length - 1) {
+    ECS.game.menu.containerMenu.currentSelected = items[0];
+    // reset the offset so that we scroll back to top
+    const currentPane = ECS.game.menu.currentPane;
+    ECS.game.menu.paneOffset[currentPane] = 0;
+  } else {
+    ECS.game.menu.containerMenu.currentSelected = items[index + 1];
+  }
+
+  ECS.game.menu.paneOffset[1] = 0;
+};
+
+const setNextSelectedInventoryItem = () => {
   const player = getPlayer();
   const { inventory } = player.components;
   const { items } = inventory;
@@ -64,7 +90,7 @@ const setNextSelectedItem = () => {
   ECS.game.menu.paneOffset[1] = 0;
 };
 
-const setPreviousSelectedItem = () => {
+const setPreviousSelectedInventoryItem = () => {
   const player = getPlayer();
   const { inventory } = player.components;
   const { items } = inventory;
@@ -95,6 +121,57 @@ const setPreviousSelectedItem = () => {
   }
 
   ECS.game.menu.paneOffset[1] = 0;
+};
+
+const setPreviousSelectedContainerItem = () => {
+  const { items } = ECS.game.menu.containerMenu;
+
+  if (!items.length) {
+    ECS.game.menu.containerMenu.currentSelected = "";
+    return;
+  }
+
+  const index = findIndex(
+    items,
+    eId => eId === ECS.game.menu.containerMenu.currentSelected
+  );
+
+  // if we are at the first item set to last
+  if (index === 0) {
+    ECS.game.menu.containerMenu.currentSelected = items[items.length - 1];
+    // set the offset so that we scroll to the bottom
+    const currentPane = ECS.game.menu.currentPane;
+
+    if (ECS.game.menu.contentHeight > ECS.game.menu.visibleHeight) {
+      ECS.game.menu.paneOffset[currentPane] =
+        ECS.game.menu.contentHeight[currentPane] -
+        ECS.game.menu.visibleHeight[currentPane];
+    }
+  } else {
+    ECS.game.menu.containerMenu.currentSelected = items[index - 1];
+  }
+
+  ECS.game.menu.paneOffset[1] = 0;
+};
+
+const setNextSelectedItem = () => {
+  if (ECS.game.mode === "INVENTORY") {
+    return setNextSelectedInventoryItem();
+  }
+
+  if (ECS.game.mode === "LOOT_CONTAINER") {
+    return setNextSelectedContainerItem();
+  }
+};
+
+const setPreviousSelectedItem = () => {
+  if (ECS.game.mode === "INVENTORY") {
+    return setPreviousSelectedInventoryItem();
+  }
+
+  if (ECS.game.mode === "LOOT_CONTAINER") {
+    return setPreviousSelectedContainerItem();
+  }
 };
 
 function processUserInput() {
@@ -231,7 +308,9 @@ function processUserInput() {
 
     // get from container (for LOOT_CONTAINER)
     if (ECS.game.userInput.key === "g") {
-      const result = actions.getFromContainer(getPlayer(), entity);
+      const result = actions.getFromContainer(getPlayer(), entity, () => {
+        setNextSelectedItem();
+      });
       return printToLog(result.msg);
     }
   }

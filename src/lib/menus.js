@@ -152,7 +152,6 @@ export const writeAvailableEntityActions = eId => {
 };
 
 export const writeEntityName = eId => {
-  console.log(eId);
   const entity = getEntity(eId);
   return `-- ${entity.components.labels.name} --`;
 };
