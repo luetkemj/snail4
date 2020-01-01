@@ -110,7 +110,7 @@ const initGame = () => {
     }
   });
 
-  times(500, () => {
+  times(5, () => {
     const id = sample(ECS.cache.openTiles);
     const { position } = ECS.entities[id].components;
 
@@ -136,7 +136,14 @@ const initGame = () => {
   });
 
   // Create player
-  createPlayer(dungeon.start.x, dungeon.start.y);
+  const player = createPlayer(dungeon.start.x, dungeon.start.y);
+  const armor = createLeatherArmor();
+  const weapon = createRandomWeapon();
+  player.components.inventory.items.push(armor.id);
+  player.components.inventory.items.push(weapon.id);
+
+  actions.wield(player, weapon);
+  actions.wear(player, armor);
 
   // build dijkstra Maps
   const playerDijkstra = dijkstra([{ x: dungeon.start.x, y: dungeon.start.y }]);
