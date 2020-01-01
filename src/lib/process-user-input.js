@@ -307,7 +307,7 @@ function processUserInput() {
     }
 
     // get from container (for LOOT_CONTAINER)
-    if (ECS.game.userInput.key === "g") {
+    if (ECS.game.userInput.key === "g" && ECS.game.mode === "LOOT_CONTAINER") {
       const result = actions.getFromContainer(getPlayer(), entity, () => {
         setNextSelectedItem();
       });

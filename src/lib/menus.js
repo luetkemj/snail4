@@ -1,5 +1,5 @@
 import _ from "lodash";
-
+import ECS from "../ECS/ECS";
 import { getEntity, getPlayer } from "../lib/getters";
 
 export const writeItemList = (eIds, selectedId) => {
@@ -144,7 +144,7 @@ export const writeAvailableEntityActions = eId => {
     text = `${text}(W)Wear `;
   }
 
-  if (entity.components.gettable) {
+  if (entity.components.gettable && ECS.game.mode === "LOOT_CONTAINER") {
     text = `${text}(g)Get `;
   }
 
