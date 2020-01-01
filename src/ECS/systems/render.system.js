@@ -9,7 +9,9 @@ import wrapAnsi from "wrap-ansi";
 
 import {
   writePlayerInventoryList,
-  writeItemDescription
+  writeEntityDescription,
+  writeEntityName,
+  writeAvailableEntityActions
 } from "../../lib/menus";
 
 const buildCharEntity = ({
@@ -50,7 +52,9 @@ const drawText = (
 
 export const drawScrollableText = (text, width, height, offset, options) => {
   // split string into wrapped lines
-  const lines = wrapAnsi(text, width, { hard: true, trim: false }).split("\n");
+  const lines = wrapAnsi(text, width, { hard: true, trim: options.trim }).split(
+    "\n"
+  );
   // get visible portion of lines based on current scroll
   const visible = lines.slice(offset, offset + height);
   // draw visible to canvas
@@ -244,6 +248,7 @@ const renderInventory = () => {
   );
   ECS.game.menu.contentHeight[0] = inventoryListText.length;
 
+  // draw Inventory list (left pane [0])
   // inventory background
   drawRectangle({
     x: ECS.game.grid.menu.x,
@@ -252,7 +257,25 @@ const renderInventory = () => {
     height: ECS.game.grid.menu.height,
     color: colors.defaultBGColor
   });
+  let inventoryX = ECS.game.grid.menu.x + 1;
+  let inventoryY = ECS.game.grid.menu.y + 1;
 
+  // draw inventory list
+  const drawnInventoryListText = drawScrollableText(
+    inventoryListText,
+    ECS.game.grid.menu.width - 2,
+    ECS.game.grid.menu.height - 3,
+    ECS.game.menu.paneOffset[0],
+    {
+      x: inventoryX,
+      y: inventoryY,
+      trim: false
+    }
+  );
+
+  ECS.game.menu.contentHeight[0] = drawnInventoryListText.lines.length;
+
+  // draw selected item details (right pane [1])
   // selected item background
   drawRectangle({
     x: ECS.game.grid.menu2.x,
@@ -267,37 +290,36 @@ const renderInventory = () => {
   // draw selected item details
   if (items.length) {
     let descY = ECS.game.grid.menu2.y + 1;
+
+    drawText(writeEntityName(inventory.currentSelected), {
+      x: ECS.game.grid.menu2.x + 1,
+      y: descY
+    });
+
+    descY += 2;
+
     // draw description
     const drawnDescriptionText = drawScrollableText(
-      writeItemDescription(inventory.currentSelected),
+      writeEntityDescription(inventory.currentSelected),
       ECS.game.grid.menu2.width - 2,
       ECS.game.grid.menu2.height - 5,
       ECS.game.menu.paneOffset[1],
       {
         x: ECS.game.grid.menu2.x + 1,
-        y: descY
+        y: descY,
+        trim: true
       }
     );
 
+    descY += drawnDescriptionText.lines.length + 1;
+
     ECS.game.menu.contentHeight[1] = drawnDescriptionText.lines.length;
+
+    drawText(writeAvailableEntityActions(inventory.currentSelected), {
+      x: ECS.game.grid.menu2.x + 1,
+      y: Math.min(descY, ECS.game.grid.menu3.height - 2)
+    });
   }
-
-  let inventoryX = ECS.game.grid.menu.x + 1;
-  let inventoryY = ECS.game.grid.menu.y + 1;
-
-  // draw inventory list
-  const drawnInventoryListText = drawScrollableText(
-    inventoryListText,
-    ECS.game.grid.menu.width - 2,
-    ECS.game.grid.menu.height - 3,
-    ECS.game.menu.paneOffset[0],
-    {
-      x: inventoryX,
-      y: inventoryY
-    }
-  );
-
-  ECS.game.menu.contentHeight[0] = drawnInventoryListText.lines.length;
 };
 
 const renderHelp = () => {

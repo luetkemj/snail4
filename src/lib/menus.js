@@ -76,38 +76,42 @@ export const writePlayerInventoryList = (eIds, selectedId) => {
   return text;
 };
 
-export const writeItemDescription = eId => {
-  let text = ``;
+export const writeAvailableEntityActions = eId => {
   const entity = getEntity(eId);
-  const name = entity.components.labels.name;
-  const description = entity.components.description.text;
-  let actions = "";
+  let text = "";
 
   if (entity.components.droppable) {
-    actions = `${actions}(d)Drop `;
+    text = `${text}(d)Drop `;
   }
 
   if (entity.components.consumable) {
-    actions = `${actions}(c)Consume `;
+    text = `${text}(c)Consume `;
   }
 
   if (entity.components.removable) {
-    actions = `${actions}(r)Remove `;
+    text = `${text}(r)Remove `;
   }
 
   if (entity.components.wieldable && !entity.components.removable) {
-    actions = `${actions}(w)Wield `;
+    text = `${text}(w)Wield `;
   }
 
   if (entity.components.wearable && !entity.components.wearable.beingWorn) {
-    actions = `${actions}(W)Wear `;
+    text = `${text}(W)Wear `;
   }
 
-  text += `-- ${name} --
+  return text;
+};
 
-${actions}
+export const writeEntityName = eId => {
+  const entity = getEntity(eId);
+  return `-- ${entity.components.labels.name} --`;
+};
 
-${description}
-`;
+export const writeEntityDescription = eId => {
+  let text = ``;
+  const entity = getEntity(eId);
+  const description = entity.components.description.text;
+  text += `${description}`;
   return text;
 };
