@@ -79,9 +79,12 @@ const setPreviousSelectedItem = () => {
     inventory.currentSelected = items[items.length - 1];
     // set the offset so that we scroll to the bottom
     const currentPane = ECS.game.menu.currentPane;
-    ECS.game.menu.paneOffset[currentPane] =
-      ECS.game.menu.contentHeight[currentPane] -
-      ECS.game.menu.visibleHeight[currentPane];
+
+    if (ECS.game.menu.contentHeight > ECS.game.menu.visibleHeight) {
+      ECS.game.menu.paneOffset[currentPane] =
+        ECS.game.menu.contentHeight[currentPane] -
+        ECS.game.menu.visibleHeight[currentPane];
+    }
   } else {
     inventory.currentSelected = items[index - 1];
   }
@@ -199,11 +202,6 @@ function processUserInput() {
     if (ECS.game.userInput.key === "W") {
       const entity = getEntity(inventory.currentSelected);
       const result = actions.wear(getPlayer(), entity);
-      if (result.OK) {
-        setNextSelectedItem();
-        sortInventory();
-      }
-
       return printToLog(result.msg);
     }
 
@@ -211,10 +209,6 @@ function processUserInput() {
     if (ECS.game.userInput.key === "r") {
       const entity = getEntity(inventory.currentSelected);
       const result = actions.remove(getPlayer(), entity);
-      if (result.OK) {
-        setNextSelectedItem();
-        sortInventory();
-      }
       return printToLog(result.msg);
     }
 
@@ -222,10 +216,6 @@ function processUserInput() {
     if (ECS.game.userInput.key === "w") {
       const entity = getEntity(inventory.currentSelected);
       const result = actions.wield(getPlayer(), entity);
-      if (result.OK) {
-        setNextSelectedItem();
-        sortInventory();
-      }
       return printToLog(result.msg);
     }
   }

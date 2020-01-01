@@ -3,6 +3,9 @@ import { hexToHSLA } from "./hsla";
 export const colors = {
   defaultColor: hexToHSLA("#ff0077"),
   defaultBGColor: hexToHSLA("#000"),
+
+  inventoryHighlight: hexToHSLA("#A9CCE3"),
+
   // items:
   armor: hexToHSLA("#DAA520"),
   potion: hexToHSLA("#DAA520"),

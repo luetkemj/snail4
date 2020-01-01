@@ -62,12 +62,12 @@ export const writePlayerInventoryList = (eIds, selectedId) => {
 
   let text = ``;
   schema.forEach(section => {
-    text += `${section.sectionHead}\n`;
+    text += `\u00A0${section.sectionHead}\n`;
     section.items.forEach(item => {
       if (item.selected) {
-        text += `\u00A0*${item.text}\n`;
+        text += `\u00A0\u00A0*${item.text}\n`;
       } else {
-        text += `\u00A0\u00A0${item.text}\n`;
+        text += `\u00A0\u00A0\u00A0${item.text}\n`;
       }
     });
     text += `\n`;

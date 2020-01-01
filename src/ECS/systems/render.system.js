@@ -1,9 +1,9 @@
 import ECS from "../ECS";
-import { compact, groupBy, remove } from "lodash";
+import { groupBy, remove } from "lodash";
 import { clearCanvas, drawCell, layers } from "../../lib/canvas";
 import { colors } from "../../lib/graphics";
 import { updateHSLA } from "../../lib/hsla";
-import { getEntity, getEntitiesAtLoc, getPlayer } from "../../lib/getters";
+import { getEntitiesAtLoc, getPlayer } from "../../lib/getters";
 import { rectangle } from "../../lib/grid";
 import wrapAnsi from "wrap-ansi";
 
@@ -242,84 +242,113 @@ const renderContainer = locId => {
 };
 
 const renderInventory = () => {
-  const inventoryListText = writePlayerInventoryList(
-    getPlayer().components.inventory.items,
-    getPlayer().components.inventory.currentSelected
-  );
-  ECS.game.menu.contentHeight[0] = inventoryListText.length;
+  const drawInventoryList = () => {
+    const inventoryListText = writePlayerInventoryList(
+      getPlayer().components.inventory.items,
+      getPlayer().components.inventory.currentSelected
+    );
+    ECS.game.menu.contentHeight[0] = inventoryListText.length;
 
-  // draw Inventory list (left pane [0])
-  // inventory background
-  drawRectangle({
-    x: ECS.game.grid.menu.x,
-    y: ECS.game.grid.menu.y,
-    width: ECS.game.grid.menu.width,
-    height: ECS.game.grid.menu.height,
-    color: colors.defaultBGColor
-  });
-  let inventoryX = ECS.game.grid.menu.x + 1;
-  let inventoryY = ECS.game.grid.menu.y + 1;
+    const color =
+      ECS.game.menu.currentPane === 0
+        ? colors.inventoryHighlight
+        : colors.hudText;
 
-  // draw inventory list
-  const drawnInventoryListText = drawScrollableText(
-    inventoryListText,
-    ECS.game.grid.menu.width - 2,
-    ECS.game.grid.menu.height - 3,
-    ECS.game.menu.paneOffset[0],
-    {
-      x: inventoryX,
-      y: inventoryY,
-      trim: false
-    }
-  );
+    // draw Inventory list (left pane [0])
+    // inventory background
+    drawRectangle({
+      x: ECS.game.grid.menu.x,
+      y: ECS.game.grid.menu.y,
+      width: ECS.game.grid.menu.width,
+      height: ECS.game.grid.menu.height,
+      color: colors.defaultBGColor
+    });
+    let x = ECS.game.grid.menu.x + 1;
+    let y = ECS.game.grid.menu.y + 1;
 
-  ECS.game.menu.contentHeight[0] = drawnInventoryListText.lines.length;
-
-  // draw selected item details (right pane [1])
-  // selected item background
-  drawRectangle({
-    x: ECS.game.grid.menu2.x,
-    y: ECS.game.grid.menu2.y,
-    width: ECS.game.grid.menu2.width,
-    height: ECS.game.grid.menu2.height,
-    color: colors.defaultBGColor
-  });
-
-  const inventory = getPlayer().components.inventory;
-  const { items } = inventory;
-  // draw selected item details
-  if (items.length) {
-    let descY = ECS.game.grid.menu2.y + 1;
-
-    drawText(writeEntityName(inventory.currentSelected), {
-      x: ECS.game.grid.menu2.x + 1,
-      y: descY
+    drawText(`-- INVENTORY --`, {
+      x,
+      y,
+      color
     });
 
-    descY += 2;
+    y += 2;
 
-    // draw description
-    const drawnDescriptionText = drawScrollableText(
-      writeEntityDescription(inventory.currentSelected),
-      ECS.game.grid.menu2.width - 2,
-      ECS.game.grid.menu2.height - 5,
-      ECS.game.menu.paneOffset[1],
+    // draw inventory list
+    const drawnInventoryListText = drawScrollableText(
+      inventoryListText,
+      ECS.game.grid.menu.width - 2,
+      ECS.game.grid.menu.height - 5,
+      ECS.game.menu.paneOffset[0],
       {
-        x: ECS.game.grid.menu2.x + 1,
-        y: descY,
-        trim: true
+        x,
+        y,
+        trim: false,
+        color
       }
     );
 
-    descY += drawnDescriptionText.lines.length + 1;
+    ECS.game.menu.contentHeight[0] = drawnInventoryListText.lines.length;
+  };
 
-    ECS.game.menu.contentHeight[1] = drawnDescriptionText.lines.length;
-
-    drawText(writeAvailableEntityActions(inventory.currentSelected), {
-      x: ECS.game.grid.menu2.x + 1,
-      y: Math.min(descY, ECS.game.grid.menu3.height - 2)
+  const drawSelectedItemDetails = () => {
+    // draw selected item details (right pane [1])
+    // selected item background
+    drawRectangle({
+      x: ECS.game.grid.menu2.x,
+      y: ECS.game.grid.menu2.y,
+      width: ECS.game.grid.menu2.width,
+      height: ECS.game.grid.menu2.height,
+      color: colors.defaultBGColor
     });
-  }
+
+    const color =
+      ECS.game.menu.currentPane === 1
+        ? colors.inventoryHighlight
+        : colors.hudText;
+    const inventory = getPlayer().components.inventory;
+    const { items } = inventory;
+    // draw selected item details
+    if (items.length) {
+      let y = ECS.game.grid.menu2.y + 1;
+      let x = ECS.game.grid.menu2.x + 1;
+
+      drawText(writeEntityName(inventory.currentSelected), {
+        x,
+        y,
+        color
+      });
+
+      y += 2;
+
+      // draw description
+      const drawnDescriptionText = drawScrollableText(
+        writeEntityDescription(inventory.currentSelected),
+        ECS.game.grid.menu2.width - 2,
+        ECS.game.grid.menu2.height - 5,
+        ECS.game.menu.paneOffset[1],
+        {
+          x,
+          y,
+          trim: true,
+          color
+        }
+      );
+
+      y += drawnDescriptionText.lines.length + 1;
+
+      ECS.game.menu.contentHeight[1] = drawnDescriptionText.lines.length;
+
+      drawText(writeAvailableEntityActions(inventory.currentSelected), {
+        x,
+        y: Math.min(y, ECS.game.grid.menu3.height - 2),
+        color
+      });
+    }
+  };
+
+  drawInventoryList();
+  drawSelectedItemDetails();
 };
 
 const renderHelp = () => {
