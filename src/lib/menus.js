@@ -2,6 +2,50 @@ import _ from "lodash";
 
 import { getEntity, getPlayer } from "../lib/getters";
 
+export const writeItemList = (eIds, selectedId) => {
+  const entities = eIds.map(eId => getEntity(eId));
+  const groups = _.groupBy(entities, entity => entity.components.type.name);
+
+  // builds the following schema
+  // [
+  //   {
+  //     sectionHead: "! POTIONS",
+  //     items: [
+  //       {
+  //         id: "", //eId or other identifier
+  //         selected: true,
+  //         text: "Potion of Healing" // some text calculated prior
+  //       }
+  //     ]
+  //   },
+  // ];
+  const schema = Object.values(groups).map(group => {
+    return {
+      sectionHead: group[0].components.type.text,
+      items: group.map(item => ({
+        id: item.id,
+        selected: item.id === selectedId,
+        text: `${item.components.labels.name}`
+      }))
+    };
+  });
+
+  let text = ``;
+  schema.forEach(section => {
+    text += `\u00A0${section.sectionHead}\n`;
+    section.items.forEach(item => {
+      if (item.selected) {
+        text += `\u00A0\u00A0*${item.text}\n`;
+      } else {
+        text += `\u00A0\u00A0\u00A0${item.text}\n`;
+      }
+    });
+    text += `\n`;
+  });
+
+  return text;
+};
+
 // creates a list like:
 //
 // - SOME GROUP
@@ -100,10 +144,15 @@ export const writeAvailableEntityActions = eId => {
     text = `${text}(W)Wear `;
   }
 
+  if (entity.components.gettable) {
+    text = `${text}(g)Get `;
+  }
+
   return text;
 };
 
 export const writeEntityName = eId => {
+  console.log(eId);
   const entity = getEntity(eId);
   return `-- ${entity.components.labels.name} --`;
 };

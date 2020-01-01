@@ -3,11 +3,16 @@ import { groupBy, remove } from "lodash";
 import { clearCanvas, drawCell, layers } from "../../lib/canvas";
 import { colors } from "../../lib/graphics";
 import { updateHSLA } from "../../lib/hsla";
-import { getEntitiesAtLoc, getPlayer } from "../../lib/getters";
+import {
+  getEntitiesAtLoc,
+  getGettableEntitiesAtLoc,
+  getPlayer
+} from "../../lib/getters";
 import { rectangle } from "../../lib/grid";
 import wrapAnsi from "wrap-ansi";
 
 import {
+  writeItemList,
   writePlayerInventoryList,
   writeEntityDescription,
   writeEntityName,
@@ -220,11 +225,134 @@ const renderHud2 = () => {
 };
 
 // items comes from payload - tile id instead? then I can just get the entities there and deal with that
-const renderContainer = locId => {
-  // get entities at locId
-  const entities = getEntitiesAtLoc(getPlayer().components.position);
-  // iterate over entities and add all with a gettable to floor.
-  console.log(entities);
+const renderContainer = () => {
+  const eIds = ECS.game.menu.containerMenu.items;
+  if (eIds.length) {
+    ECS.game.menu.containerMenu.currentSelected = eIds[0];
+  }
+
+  console.log(eIds);
+
+  // render masks over non essential UI
+  drawRectangle({
+    x: 0,
+    y: 0,
+    width: ECS.game.grid.width,
+    height: ECS.game.grid.height,
+    color: updateHSLA(colors.defaultBGColor, { a: 60 })
+  });
+
+  const drawItemList = () => {
+    console.log(eIds);
+    const itemListText = writeItemList(
+      eIds,
+      ECS.game.menu.containerMenu.currentSelected
+    );
+    ECS.game.menu.contentHeight[0] = itemListText.length;
+
+    const color =
+      ECS.game.menu.currentPane === 0
+        ? colors.hudText
+        : updateHSLA(colors.hudText, { l: 60 });
+
+    // draw Inventory list (left pane [0])
+    // inventory background
+    drawRectangle({
+      x: ECS.game.grid.menu.x,
+      y: ECS.game.grid.menu.y,
+      width: ECS.game.grid.menu.width,
+      height: ECS.game.grid.menu.height,
+      color: colors.defaultBGColor
+    });
+    let x = ECS.game.grid.menu.x + 1;
+    let y = ECS.game.grid.menu.y + 1;
+
+    drawText(`-- ITEMS TO PICKUP --`, {
+      x,
+      y,
+      color
+    });
+
+    y += 2;
+
+    // draw inventory list
+    const drawnItemListText = drawScrollableText(
+      itemListText,
+      ECS.game.grid.menu.width - 2,
+      ECS.game.grid.menu.height - 5,
+      ECS.game.menu.paneOffset[0],
+      {
+        x,
+        y,
+        trim: false,
+        color
+      }
+    );
+
+    ECS.game.menu.contentHeight[0] = drawnItemListText.lines.length;
+  };
+
+  const drawSelectedItemDetails = () => {
+    // draw selected item details (right pane [1])
+    // selected item background
+    drawRectangle({
+      x: ECS.game.grid.menu2.x,
+      y: ECS.game.grid.menu2.y,
+      width: ECS.game.grid.menu2.width,
+      height: ECS.game.grid.menu2.height,
+      color: colors.defaultBGColor
+    });
+
+    const color =
+      ECS.game.menu.currentPane === 1
+        ? colors.hudText
+        : updateHSLA(colors.hudText, { l: 60 });
+    // draw selected item details
+    if (eIds.length) {
+      let y = ECS.game.grid.menu2.y + 1;
+      let x = ECS.game.grid.menu2.x + 1;
+
+      drawText(writeEntityName(ECS.game.menu.containerMenu.currentSelected), {
+        x,
+        y,
+        color
+      });
+
+      y += 2;
+
+      // draw description
+      const drawnDescriptionText = drawScrollableText(
+        writeEntityDescription(ECS.game.menu.containerMenu.currentSelected),
+        ECS.game.grid.menu2.width - 2,
+        ECS.game.grid.menu2.height - 5,
+        ECS.game.menu.paneOffset[1],
+        {
+          x,
+          y,
+          trim: true,
+          color
+        }
+      );
+
+      y += drawnDescriptionText.lines.length + 1;
+
+      ECS.game.menu.contentHeight[1] = drawnDescriptionText.lines.length;
+
+      drawText(
+        writeAvailableEntityActions(
+          ECS.game.menu.containerMenu.currentSelected
+        ),
+        {
+          x,
+          y: Math.min(y, ECS.game.grid.menu3.height - 2),
+          color
+        }
+      );
+    }
+  };
+
+  drawItemList();
+  drawSelectedItemDetails();
 
   // look for any that have an inventory. If they do:
   // need to be able to remove item from entity inventory (so build some data structire that will faciliate that)
@@ -254,7 +382,7 @@ const renderInventory = () => {
   const drawInventoryList = () => {
     const inventoryListText = writePlayerInventoryList(
       getPlayer().components.inventory.items,
-      getPlayer().components.inventory.currentSelected
+      ECS.game.menu.inventoryMenu.currentSelected
     );
     ECS.game.menu.contentHeight[0] = inventoryListText.length;
 
@@ -322,7 +450,7 @@ const renderInventory = () => {
       let y = ECS.game.grid.menu2.y + 1;
       let x = ECS.game.grid.menu2.x + 1;
 
-      drawText(writeEntityName(inventory.currentSelected), {
+      drawText(writeEntityName(ECS.game.menu.inventoryMenu.currentSelected), {
         x,
         y,
         color
@@ -332,7 +460,7 @@ const renderInventory = () => {
 
       // draw description
       const drawnDescriptionText = drawScrollableText(
-        writeEntityDescription(inventory.currentSelected),
+        writeEntityDescription(ECS.game.menu.inventoryMenu.currentSelected),
         ECS.game.grid.menu2.width - 2,
         ECS.game.grid.menu2.height - 5,
         ECS.game.menu.paneOffset[1],
@@ -348,11 +476,16 @@ const renderInventory = () => {
 
       ECS.game.menu.contentHeight[1] = drawnDescriptionText.lines.length;
 
-      drawText(writeAvailableEntityActions(inventory.currentSelected), {
-        x,
-        y: Math.min(y, ECS.game.grid.menu3.height - 2),
-        color
-      });
+      drawText(
+        writeAvailableEntityActions(
+          ECS.game.menu.inventoryMenu.currentSelected
+        ),
+        {
+          x,
+          y: Math.min(y, ECS.game.grid.menu3.height - 2),
+          color
+        }
+      );
     }
   };
 
@@ -541,6 +674,10 @@ function render() {
   renderHud2();
   if (ECS.game.mode === "INVENTORY") {
     renderInventory();
+  }
+
+  if (ECS.game.mode === "LOOT_CONTAINER") {
+    renderContainer();
   }
 
   if (ECS.game.mode === "HELP") {

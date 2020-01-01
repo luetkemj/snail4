@@ -89,7 +89,14 @@ const ECS = {
       currentPane: 0,
       paneOffset: [0, 0],
       contentHeight: [0, 0],
-      visibleHeight: [27, 27]
+      visibleHeight: [27, 27],
+      inventoryMenu: {
+        currentSelected: ""
+      },
+      containerMenu: {
+        currentSelected: "",
+        items: []
+      }
     }
   },
   log: [

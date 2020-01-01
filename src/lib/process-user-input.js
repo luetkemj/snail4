@@ -42,20 +42,23 @@ const setNextSelectedItem = () => {
   const { items } = inventory;
 
   if (!items.length) {
-    inventory.currentSelected = "";
+    ECS.game.menu.inventoryMenu.currentSelected = "";
     return;
   }
 
-  const index = findIndex(items, eId => eId === inventory.currentSelected);
+  const index = findIndex(
+    items,
+    eId => eId === ECS.game.menu.inventoryMenu.currentSelected
+  );
 
   // if we are at the last item set to first
   if (index === items.length - 1) {
-    inventory.currentSelected = items[0];
+    ECS.game.menu.inventoryMenu.currentSelected = items[0];
     // reset the offset so that we scroll back to top
     const currentPane = ECS.game.menu.currentPane;
     ECS.game.menu.paneOffset[currentPane] = 0;
   } else {
-    inventory.currentSelected = items[index + 1];
+    ECS.game.menu.inventoryMenu.currentSelected = items[index + 1];
   }
 
   ECS.game.menu.paneOffset[1] = 0;
@@ -67,15 +70,18 @@ const setPreviousSelectedItem = () => {
   const { items } = inventory;
 
   if (!items.length) {
-    inventory.currentSelected = "";
+    ECS.game.menu.inventoryMenu.currentSelected = "";
     return;
   }
 
-  const index = findIndex(items, eId => eId === inventory.currentSelected);
+  const index = findIndex(
+    items,
+    eId => eId === ECS.game.menu.inventoryMenu.currentSelected
+  );
 
   // if we are at the first item set to last
   if (index === 0) {
-    inventory.currentSelected = items[items.length - 1];
+    ECS.game.menu.inventoryMenu.currentSelected = items[items.length - 1];
     // set the offset so that we scroll to the bottom
     const currentPane = ECS.game.menu.currentPane;
 
@@ -85,7 +91,7 @@ const setPreviousSelectedItem = () => {
         ECS.game.menu.visibleHeight[currentPane];
     }
   } else {
-    inventory.currentSelected = items[index - 1];
+    ECS.game.menu.inventoryMenu.currentSelected = items[index - 1];
   }
 
   ECS.game.menu.paneOffset[1] = 0;
@@ -118,7 +124,7 @@ function processUserInput() {
     sortInventory();
 
     const player = getPlayer();
-    player.components.inventory.currentSelected =
+    ECS.game.menu.inventoryMenu.currentSelected =
       player.components.inventory.items[0] || "";
 
     return;
@@ -134,8 +140,18 @@ function processUserInput() {
     return;
   }
 
-  if (ECS.game.mode === "INVENTORY") {
+  if (ECS.game.mode === "INVENTORY" || ECS.game.mode === "LOOT_CONTAINER") {
     const player = getPlayer();
+    let entity;
+
+    if (ECS.game.mode === "INVENTORY") {
+      entity = getEntity(ECS.game.menu.inventoryMenu.currentSelected);
+    }
+
+    if (ECS.game.mode === "LOOT_CONTAINER") {
+      entity = getEntity(ECS.game.menu.containerMenu.currentSelected);
+    }
+
     const { inventory } = player.components;
 
     // switch active pane
@@ -171,7 +187,6 @@ function processUserInput() {
 
     // consume item
     if (ECS.game.userInput.key === "c") {
-      const entity = getEntity(inventory.currentSelected);
       // using a callback to do the result OK things here
       // this is because the item is removed from inventory
       // which buggers with the order of things...
@@ -185,7 +200,6 @@ function processUserInput() {
 
     // drop item
     if (ECS.game.userInput.key === "d") {
-      const entity = getEntity(inventory.currentSelected);
       // using a callback to do the result OK things here
       // this is because the item is removed from inventory
       // which buggers with the order of things...
@@ -199,22 +213,25 @@ function processUserInput() {
 
     // wear item
     if (ECS.game.userInput.key === "W") {
-      const entity = getEntity(inventory.currentSelected);
       const result = actions.wear(getPlayer(), entity);
       return printToLog(result.msg);
     }
 
     // remove item
     if (ECS.game.userInput.key === "r") {
-      const entity = getEntity(inventory.currentSelected);
       const result = actions.remove(getPlayer(), entity);
       return printToLog(result.msg);
     }
 
     // wield item
     if (ECS.game.userInput.key === "w") {
-      const entity = getEntity(inventory.currentSelected);
       const result = actions.wield(getPlayer(), entity);
+      return printToLog(result.msg);
+    }
+
+    // get from container (for LOOT_CONTAINER)
+    if (ECS.game.userInput.key === "g") {
+      const result = actions.getFromContainer(getPlayer(), entity);
       return printToLog(result.msg);
     }
   }
@@ -222,6 +239,8 @@ function processUserInput() {
   if (ECS.game.mode === "GAME") {
     if (ECS.game.userInput.type === "GET") {
       // check if there is anything to get on current cell
+
+      // ECS.game.mode = "LOOT_CONTAINER";
       const result = actions.get(getPlayer());
       if (result.OK) {
         sortInventory();

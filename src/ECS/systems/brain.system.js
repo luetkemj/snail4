@@ -17,7 +17,11 @@ const brainSystem = entities => {
     // process player input
     if (ECS.game.playerTurn) {
       if (entity.components.position && entity.components.playerControlled) {
-        if (ECS.game.userInput && ECS.game.userInput.type === "MOVE") {
+        if (
+          ECS.game.userInput &&
+          ECS.game.userInput.type === "MOVE" &&
+          ECS.game.mode === "GAME" // todo: this check is a shortcut - should probaly do this in process-user-input
+        ) {
           const { x, y } = ECS.game.userInput.payload;
 
           const mx = entity.components.position.x + x;

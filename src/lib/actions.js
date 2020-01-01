@@ -1,9 +1,10 @@
-import { pull } from "lodash";
+import _ from "lodash";
 import {
   removeCacheEntityAtLocation,
   setCacheEntityAtLocation
 } from "../ECS/cache";
 import { getEntity, getGettableEntitiesAtLoc } from "./getters";
+import ECS from "../ECS/ECS";
 
 export const consume = (actor, consumable, callback = () => {}) => {
   // todo: components for canConsume? no use case yet
@@ -18,7 +19,7 @@ export const consume = (actor, consumable, callback = () => {}) => {
   ) {
     callback();
     // remove consumable from actor's inventory
-    pull(actor.components.inventory.items, consumable.id);
+    _.pull(actor.components.inventory.items, consumable.id);
 
     // apply effects
     consumable.components.consumable.effects.forEach(effect => {
@@ -61,7 +62,7 @@ export const drop = (actor, droppable, callback = () => {}) => {
   ) {
     callback();
     // remove droppable from inventory
-    pull(actor.components.inventory.items, droppable.id);
+    _.pull(actor.components.inventory.items, droppable.id);
 
     // track inventory total
     actor.components.inventory.total -= 1;
@@ -84,6 +85,41 @@ export const drop = (actor, droppable, callback = () => {}) => {
       OK: false,
       msg: `${actor.components.labels.name} can't drop that.`
     };
+  }
+};
+
+export const getFromContainer = (actor, entity) => {
+  // ensure actor has inventory
+  if (actor.components.inventory) {
+    let response = {};
+
+    if (
+      actor.components.inventory.total >= actor.components.inventory.capacity
+    ) {
+      response = {
+        OK: false,
+        msg: `${actor.components.labels.name} cannot carry any more`
+      };
+      return response;
+    }
+
+    actor.components.inventory.items.push(entity.id);
+    // remove gettable entity from map
+    removeCacheEntityAtLocation(entity.id, entity.components.position);
+    entity.removeComponent("position");
+    //  remove from hud
+    entity.removeComponent("hud");
+    // remove from container
+    _.remove(ECS.game.menu.containerMenu.items, x => x === entity.id);
+
+    actor.components.inventory.total += 1;
+    response = {
+      OK: false,
+      msg: `${actor.components.labels.name} picks up ${
+        getEntity(entity.id).components.labels.name
+      }.`
+    };
+    return response;
   }
 };
 
@@ -123,44 +159,45 @@ export const get = actor => {
         }
       });
 
-      console.log(items);
-      // open container UI
-      // on get
-      // check if item has inventory (items[item.id])
-    }
-
-    // OLD CODE NO TOUCH FOR NOW
-    if (gettables.length) {
-      const pickedUp = [];
-      let response = {};
-      gettables.forEach(item => {
-        if (
-          actor.components.inventory.total >=
-          actor.components.inventory.capacity
-        ) {
-          // break out of loop
+      if (items.allAvailable.length === 1) {
+        const pickedUp = [];
+        let response = {};
+        gettables.forEach(item => {
+          if (
+            actor.components.inventory.total >=
+            actor.components.inventory.capacity
+          ) {
+            // break out of loop
+            response = {
+              OK: false,
+              msg: `${actor.components.labels.name} cannot carry any more`
+            };
+            return false;
+          }
+          actor.components.inventory.items.push(item.id);
+          // remove gettable entity from map
+          removeCacheEntityAtLocation(item.id, item.components.position);
+          item.removeComponent("position");
+          //  remove from hud
+          item.removeComponent("hud");
+          pickedUp.push(item.id);
+          actor.components.inventory.total += 1;
           response = {
-            OK: false,
-            msg: `${actor.components.labels.name} cannot carry any more`
+            OK: true,
+            msg: `${actor.components.labels.name} picks up ${
+              getEntity(item.id).components.labels.name
+            }.`
           };
-          return false;
-        }
-        actor.components.inventory.items.push(item.id);
-        // remove gettable entity from map
-        removeCacheEntityAtLocation(item.id, item.components.position);
-        item.removeComponent("position");
-        //  remove from hud
-        item.removeComponent("hud");
-        pickedUp.push(item.id);
-        actor.components.inventory.total += 1;
-        response = {
-          OK: false,
-          msg: `${actor.components.labels.name} picks up ${
-            getEntity(item.id).components.labels.name
-          }.`
-        };
-      });
-      return response;
+        });
+        return response;
+      }
+
+      // this is a container and we need to open the UI for grabbing things
+      if (items.allAvailable.length > 1) {
+        ECS.game.menu.containerMenu.items = items.allAvailable;
+        ECS.game.mode = "LOOT_CONTAINER";
+        return { msg: "" };
+      }
     }
   }
   return {
@@ -305,6 +342,7 @@ export default {
   consume,
   drop,
   get,
+  getFromContainer,
   remove,
   wear,
   wield

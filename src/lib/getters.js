@@ -18,8 +18,6 @@ export const getGettableEntitiesAtLoc = ({ x, y }) => {
   const entities = getEntitiesAtLoc({ x, y }).filter(
     entity => entity.components.gettable
   );
-  // iterate over entities and add all with a gettable to floor.
-  console.log(entities);
 
   return entities;
 };
