@@ -148,6 +148,7 @@ export const get = actor => {
         inInventory: {}
       };
 
+      // all items including those in inventory
       gettables.forEach(item => {
         items.allAvailable.push(item.id);
         if (item.components.inventory) {
@@ -156,12 +157,17 @@ export const get = actor => {
           item.components.inventory.items.forEach(eId => {
             items.inInventory[eId] = item.id;
             items.allAvailable.push(eId);
-            // add position to item in inventory
-            getEntity(eId).addComponent("position", item.components.position);
-            // add item to cache at location!
-            setCacheEntityAtLocation(eId, item.components.position);
           });
         }
+      });
+
+      // all items in an inventory should be removed and dropped onto the floor
+      const containerIds = Object.keys(items.hasInventory);
+      containerIds.forEach(id => {
+        items.hasInventory[id].forEach(eId => {
+          remove(getEntity(id), getEntity(eId));
+          drop(getEntity(id), getEntity(eId));
+        });
       });
 
       if (items.allAvailable.length === 1) {
@@ -198,6 +204,8 @@ export const get = actor => {
       }
 
       // this is a container and we need to open the UI for grabbing things
+      // With a UI open we need PAUSE the game
+      ECS.game.paused = true;
       if (items.allAvailable.length > 1) {
         ECS.game.menu.containerMenu.items = items.allAvailable;
         ECS.game.mode = "LOOT_CONTAINER";
