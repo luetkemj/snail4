@@ -1,9 +1,13 @@
 import ECS from "../ECS";
-import { groupBy, remove } from "lodash";
+import { groupBy, isEqual, remove } from "lodash";
 import { clearCanvas, drawCell, layers } from "../../lib/canvas";
-import { colors } from "../../lib/graphics";
+import { colors, chars } from "../../lib/graphics";
 import { updateHSLA } from "../../lib/hsla";
-import { getEntitiesAtLoc, getPlayer } from "../../lib/getters";
+import {
+  getEntitiesAtLoc,
+  getPlayer,
+  getGettableEntitiesAtLoc
+} from "../../lib/getters";
 import { rectangle } from "../../lib/grid";
 import wrapAnsi from "wrap-ansi";
 
@@ -196,9 +200,21 @@ const renderHud2 = () => {
 
   // print item descriptions
   if (layerGroups[layers.items]) {
-    return drawTextHud2(
-      layerGroups[layers.items][0].components.description.text
-    );
+    const nGettable = getGettableEntitiesAtLoc(getPlayer().components.position)
+      .length;
+    if (nGettable === 2) {
+      return drawTextHud2("You see a couple things on the floor.");
+    } else if (nGettable === 3) {
+      return drawTextHud2("You see a few things on the floor.");
+    } else if (nGettable === 4) {
+      return drawTextHud2("You see several things on the floor.");
+    } else if (nGettable > 4) {
+      return drawTextHud2("You see a large pile of things on the floor.");
+    } else {
+      return drawTextHud2(
+        layerGroups[layers.items][0].components.description.text
+      );
+    }
   }
 
   // print track descriptions
@@ -646,10 +662,26 @@ function render() {
               da = 100;
             }
 
-            drawCell(entity, { char: { da: -da } });
-          } else {
-            drawCell(entity);
+            return drawCell(entity, { char: { da: -da } });
           }
+
+          if (
+            getGettableEntitiesAtLoc(position).length > 1 &&
+            entity.components.gettable
+          ) {
+            return drawCell({
+              components: {
+                appearance: {
+                  char: chars.multipleItems,
+                  color: colors.multipleItems,
+                  background: colors.defaultBGColor
+                },
+                position
+              }
+            });
+          }
+
+          return drawCell(entity);
         }
 
         if (fov.showIfRevealed && fov.revealed && !fov.inFov) {

@@ -11,10 +11,9 @@ import createGoblin from "../ECS/assemblages/creature-goblin.assemblage";
 import createRat from "../ECS/assemblages/creature-rat.assemblage";
 import createHealthPotion from "../ECS/assemblages/potion-health.assemblage";
 import createPoisonPotion from "../ECS/assemblages/potion-poison.assemblage";
-
 import createLeatherArmor from "../ECS/assemblages/armor-leather.assemblage";
-
 import createRandomWeapon from "../ECS/assemblages/weapon-random.assemblage";
+import createChest from "../ECS/assemblages/chest.assemblage";
 
 import { generateDungeon } from "../lib/dungeon";
 import { dijkstra } from "../lib/dijkstra";
@@ -133,6 +132,21 @@ const initGame = () => {
     const { position } = ECS.entities[id].components;
 
     createRandomWeapon(position.x, position.y);
+  });
+
+  // drop chest
+  times(2, () => {
+    const id = sample(ECS.cache.openTiles);
+    const { position } = ECS.entities[id].components;
+
+    const armor = createLeatherArmor();
+    const weapon = createRandomWeapon();
+    const chest = createChest();
+    chest.components.position = position;
+    chest.components.inventory.items.push(armor.id);
+    chest.components.inventory.items.push(weapon.id);
+
+    setCacheEntityAtLocation(chest.id, position);
   });
 
   // Create player
