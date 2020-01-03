@@ -218,7 +218,6 @@ function processUserInput() {
   }
 
   if (ECS.game.mode === "INVENTORY" || ECS.game.mode === "LOOT_CONTAINER") {
-    const player = getPlayer();
     let entity;
 
     if (ECS.game.mode === "INVENTORY") {
@@ -229,10 +228,7 @@ function processUserInput() {
       entity = getEntity(ECS.game.menu.containerMenu.currentSelected);
     }
 
-    const { inventory } = player.components;
-
     // switch active pane
-    // some how track the number of available panes? not sure how yet
     if (
       ECS.game.userInput.key === "ArrowLeft" ||
       ECS.game.userInput.key === "ArrowRight"
@@ -318,8 +314,6 @@ function processUserInput() {
   if (ECS.game.mode === "GAME") {
     if (ECS.game.userInput.type === "GET") {
       // check if there is anything to get on current cell
-
-      // ECS.game.mode = "LOOT_CONTAINER";
       const result = actions.get(getPlayer());
       if (result.OK) {
         sortInventory();

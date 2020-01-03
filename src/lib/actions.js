@@ -152,7 +152,7 @@ export const get = actor => {
       gettables.forEach(item => {
         items.allAvailable.push(item.id);
         if (item.components.inventory) {
-          items.hasInventory[item.id] = item.components.inventory.items;
+          items.hasInventory[item.id] = [...item.components.inventory.items];
 
           item.components.inventory.items.forEach(eId => {
             items.inInventory[eId] = item.id;
