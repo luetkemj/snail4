@@ -19,6 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "lodash": "^4.17.15",
+    "scribe-rpg-coin-purse": "^1.2.4",
     "wrap-ansi": "^6.2.0"
   },
   "devDependencies": {

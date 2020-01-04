@@ -11,6 +11,7 @@ const creatureAssemblage = () => {
     background: colors.defaultBGColor,
     layer: layers.player
   });
+  entity.addComponent("wallet", { copperValue: 0 });
   entity.addComponent("position");
   entity.addComponent("fov");
   entity.addComponent("blocking");

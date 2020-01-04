@@ -7,6 +7,7 @@ import appearance from "./components/appearance.component";
 import armor from "./components/armor.component";
 import blocking from "./components/blocking.component";
 import consumable from "./components/consumable.component";
+import currency from "./components/currency.component";
 import damage from "./components/damage.component";
 import damageReduction from "./components/damage-reduction.component";
 import dead from "./components/dead.component";
@@ -30,6 +31,7 @@ import track from "./components/track.component";
 import trackable from "./components/trackable.component";
 import trackableLoc from "./components/trackable-loc.component";
 import type from "./components/type.component";
+import wallet from "./components/wallet.component";
 import wearable from "./components/wearable.component";
 import wieldable from "./components/wieldable.component";
 import wielding from "./components/wielding.component";
@@ -50,6 +52,7 @@ const ECS = {
     armor,
     blocking,
     consumable,
+    currency,
     damage,
     damageReduction,
     dead,
@@ -73,6 +76,7 @@ const ECS = {
     trackable,
     trackableLoc,
     type,
+    wallet,
     wearable,
     wieldable,
     wielding

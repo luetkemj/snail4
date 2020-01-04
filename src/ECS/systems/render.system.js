@@ -10,6 +10,7 @@ import {
 } from "../../lib/getters";
 import { rectangle } from "../../lib/grid";
 import wrapAnsi from "wrap-ansi";
+import { humanValue } from "../../lib/coinpurse";
 
 import {
   writeItemList,
@@ -72,7 +73,6 @@ export const drawScrollableText = (text, width, height, offset, options) => {
   return { lines, visible };
 };
 
-// const renderHealth
 const drawBar = (current, max, color, y) => {
   const curr = current > -1 ? current : 0;
   const width = ECS.game.grid.hud.width;
@@ -137,12 +137,14 @@ const renderLog = () => {
 };
 
 const renderHud = entities => {
-  const drawTextHud = (msg, y) =>
+  let y = ECS.game.grid.hud.y;
+
+  const drawTextHud = msg =>
     drawText(msg, {
       color: colors.hudText,
       background: "transparent",
       x: ECS.game.grid.hud.x,
-      y: y + ECS.game.grid.hud.y
+      y
     });
 
   entities.forEach((entity, idx) => {
@@ -153,25 +155,34 @@ const renderHud = entities => {
       }
     } = entity;
 
-    drawTextHud(`${char}: ${name}`, idx * 3);
+    drawTextHud(`${char}: ${name}`, y);
+    y += 1;
+    if (getPlayer().id === entity.id) {
+      const { copperValue } = entity.components.wallet;
+      drawTextHud(`${humanValue(copperValue)}`, y);
+      y += 1;
+    }
 
     if (entity.components.health) {
       drawBar(
         ECS.game.grid.hud.width,
         ECS.game.grid.hud.width,
         updateHSLA(colors.healthBar, { a: 15 }),
-        idx * 3 + 1
+        y
       );
 
       drawBar(
         entity.components.health.current,
         entity.components.health.max,
         colors.healthBar,
-        idx * 3 + 1
+        y
       );
 
       const status = entity.components.dead ? "Dead" : "Health";
-      drawTextHud(status, idx * 3 + 1);
+      drawTextHud(status, y);
+      y += 2;
+    } else {
+      y += 1;
     }
   });
 };

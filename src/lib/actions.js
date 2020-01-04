@@ -176,7 +176,8 @@ export const get = actor => {
         gettables.forEach(item => {
           if (
             actor.components.inventory.total >=
-            actor.components.inventory.capacity
+              actor.components.inventory.capacity ||
+            !item.components.currency // if it's money we do something different...
           ) {
             // break out of loop
             response = {
@@ -185,14 +186,21 @@ export const get = actor => {
             };
             return false;
           }
-          actor.components.inventory.items.push(item.id);
+
+          if (!item.components.currency) {
+            actor.components.inventory.items.push(item.id);
+            actor.components.inventory.total += 1;
+          } else {
+            actor.components.wallet.copperValue +=
+              item.components.currency.copperValue;
+          }
+
           // remove gettable entity from map
           removeCacheEntityAtLocation(item.id, item.components.position);
           item.removeComponent("position");
           //  remove from hud
           item.removeComponent("hud");
           pickedUp.push(item.id);
-          actor.components.inventory.total += 1;
           response = {
             OK: true,
             msg: `${actor.components.labels.name} picks up ${
