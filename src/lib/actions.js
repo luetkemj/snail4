@@ -176,7 +176,7 @@ export const get = actor => {
         gettables.forEach(item => {
           if (
             actor.components.inventory.total >=
-              actor.components.inventory.capacity ||
+              actor.components.inventory.capacity &&
             !item.components.currency // if it's money we do something different...
           ) {
             // break out of loop

@@ -16,6 +16,7 @@ Corpses should become piles? Not sure yet. But this fun would be nice to have...
 - [ ] sort items in container UI
 - [ ] some variablility to init rendering of dungeon - not static numbers of entities as we currently have
 - [ ] character tab for player stats
+- [ ] items on floor have Wear and Wield actions but you cant actually do them until you pick them up
 
 # Doing
 
