@@ -3,6 +3,7 @@ import ECS from "../ECS/ECS";
 import { getPlayer, getEntity } from "./getters";
 import { printToLog } from "./gui";
 import actions from "./actions";
+import initGame from "../initializers/game.init";
 
 const sortInventory = () => {
   const player = getPlayer();
@@ -319,6 +320,64 @@ function processUserInput() {
         sortInventory();
       }
       return printToLog(result.msg);
+    }
+
+    if (ECS.game.userInput.type === "ASCEND") {
+      ECS.game.depth = ECS.game.depth + 1;
+      if (!ECS.cache[ECS.game.depth]) {
+        ECS.cache[ECS.game.depth] = {
+          tileLocations: {},
+          entityLocations: {},
+          entityIds: [],
+          movable: [],
+          openTiles: [],
+          player: []
+        };
+        initGame();
+
+        console.log(ECS.cache);
+      }
+
+      if (ECS.game.depth === 0) {
+        return printToLog(`You ascend to the surface.`);
+      }
+
+      if (ECS.game.depth > 0) {
+        return printToLog(`You ascend to height ${ECS.game.depth}`);
+      }
+
+      if (ECS.game.depth < 0) {
+        return printToLog(`You ascend to depth ${Math.abs(ECS.game.depth)}`);
+      }
+    }
+
+    if (ECS.game.userInput.type === "DESCEND") {
+      ECS.game.depth = ECS.game.depth - 1;
+      if (!ECS.cache[ECS.game.depth]) {
+        ECS.cache[ECS.game.depth] = {
+          tileLocations: {},
+          entityLocations: {},
+          entityIds: [],
+          movable: [],
+          openTiles: [],
+          player: []
+        };
+        initGame();
+
+        console.log(ECS.cache);
+      }
+
+      if (ECS.game.depth === 0) {
+        return printToLog(`You descend to the surface.`);
+      }
+
+      if (ECS.game.depth > 0) {
+        return printToLog(`You descend to height ${ECS.game.depth}`);
+      }
+
+      if (ECS.game.depth < 0) {
+        return printToLog(`You descend to depth ${Math.abs(ECS.game.depth)}`);
+      }
     }
 
     if (ECS.game.userInput.type === "TOGGLE_OMNISCIENCE") {
