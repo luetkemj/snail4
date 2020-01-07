@@ -1,9 +1,10 @@
 import ECS from "../ECS/ECS";
 import { cellToId, getNeighborIds, idToCell } from "./grid";
+import { readCacheKey } from "../ECS/cache";
 
 export const dijkstra = (goals, weights = []) => {
   // todo: read function for getting this cache...
-  const cellIdsByLocation = ECS.cache.tileLocations;
+  const cellIdsByLocation = readCacheKey("tileLocations");
 
   const frontier = goals.map(cellToId);
 

@@ -89,6 +89,7 @@ const ECS = {
     userInput: null,
     playerTurn: true,
     grid,
+    depth: -1,
     menu: {
       currentPane: 0,
       paneOffset: [0, 0],

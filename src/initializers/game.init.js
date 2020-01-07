@@ -1,6 +1,8 @@
 import { random, sample, times } from "lodash";
 import ECS from "../ECS/ECS";
 import {
+  readCacheKey,
+  readCacheKeyAtId,
   setCacheEntityAtLocation,
   setCacheId,
   setCacheTileLocations
@@ -90,7 +92,7 @@ const initGame = () => {
 
   // add monsters!
   times(10, () => {
-    const id = sample(ECS.cache.openTiles);
+    const id = sample(readCacheKey("openTiles"));
     const { position } = ECS.entities[id].components;
 
     const type = random(0, 1) ? "rat" : "goblin";
@@ -111,7 +113,7 @@ const initGame = () => {
   });
 
   times(5, () => {
-    const id = sample(ECS.cache.openTiles);
+    const id = sample(readCacheKey("openTiles"));
     const { position } = ECS.entities[id].components;
 
     const type = random(0, 1) ? "poison" : "health";
@@ -121,7 +123,7 @@ const initGame = () => {
 
   // drop armor
   times(2, () => {
-    const id = sample(ECS.cache.openTiles);
+    const id = sample(readCacheKey("openTiles"));
     const { position } = ECS.entities[id].components;
 
     createLeatherArmor(position.x, position.y);
@@ -129,7 +131,7 @@ const initGame = () => {
 
   // drop weapons
   times(2, () => {
-    const id = sample(ECS.cache.openTiles);
+    const id = sample(readCacheKey("openTiles"));
     const { position } = ECS.entities[id].components;
 
     createRandomWeapon(position.x, position.y);
@@ -137,7 +139,7 @@ const initGame = () => {
 
   // drop chest
   times(2, () => {
-    const id = sample(ECS.cache.openTiles);
+    const id = sample(readCacheKey("openTiles"));
     const { position } = ECS.entities[id].components;
 
     const armor = createLeatherArmor();
@@ -152,7 +154,7 @@ const initGame = () => {
 
   // drop coins
   times(2, () => {
-    const id = sample(ECS.cache.openTiles);
+    const id = sample(readCacheKey("openTiles"));
     const { position } = ECS.entities[id].components;
     createCoins(position.x, position.y);
   });
@@ -170,7 +172,7 @@ const initGame = () => {
   // build dijkstra Maps
   const playerDijkstra = dijkstra([{ x: dungeon.start.x, y: dungeon.start.y }]);
   Object.keys(playerDijkstra).forEach(loc => {
-    const eId = ECS.cache.tileLocations[loc];
+    const eId = readCacheKeyAtId(loc, "tileLocations");
     ECS.entities[eId].components.dijkstra.player = playerDijkstra[loc];
   });
 };

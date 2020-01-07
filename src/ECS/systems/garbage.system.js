@@ -1,8 +1,11 @@
-import { deleteCacheId, removeCacheEntityAtLocation } from "../cache";
-import ECS from "../ECS";
+import {
+  deleteCacheId,
+  removeCacheEntityAtLocation,
+  readCacheKey
+} from "../cache";
 
 function garbage(entities) {
-  ECS.cache.entityIds.forEach(id => {
+  readCacheKey("entityIds").forEach(id => {
     const entity = entities[id];
     const { garbage, position } = entity.components;
     if (garbage) {
