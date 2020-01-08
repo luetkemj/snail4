@@ -1,9 +1,14 @@
 import { findIndex, flatten, groupBy } from "lodash";
 import ECS from "../ECS/ECS";
+import {
+  setCacheEntityAtLocation,
+  setCacheId,
+  setCacheAtPath
+} from "../ECS/cache";
 import { getPlayer, getEntity } from "./getters";
 import { printToLog } from "./gui";
 import actions from "./actions";
-import initGame from "../initializers/game.init";
+import initDungeonLevel from "../initializers/dungeon-level.init";
 
 const sortInventory = () => {
   const player = getPlayer();
@@ -322,6 +327,7 @@ function processUserInput() {
       return printToLog(result.msg);
     }
 
+    // TODO: DRY this up!
     if (ECS.game.userInput.type === "ASCEND") {
       ECS.game.depth = ECS.game.depth + 1;
       if (!ECS.cache[ECS.game.depth]) {
@@ -330,12 +336,25 @@ function processUserInput() {
           entityLocations: {},
           entityIds: [],
           movable: [],
-          openTiles: [],
-          player: []
+          openTiles: []
         };
-        initGame();
+        const { stairsDownPosition, stairsUpPosition } = initDungeonLevel();
+        getPlayer().components.position = { ...stairsDownPosition };
+        setCacheEntityAtLocation(getPlayer().id, stairsDownPosition);
+        setCacheId(getPlayer().id, "movable");
+        setCacheId(getPlayer().id, "entityIds");
 
-        console.log(ECS.cache);
+        setCacheAtPath(
+          `${ECS.game.depth}.playerSpawnLocs.stairsDown`,
+          stairsDownPosition
+        );
+        setCacheAtPath(
+          `${ECS.game.depth}.playerSpawnLocs.stairsUp`,
+          stairsUpPosition
+        );
+      } else {
+        const { stairsDown } = ECS.cache[ECS.game.depth].playerSpawnLocs;
+        getPlayer().components.position = { ...stairsDown };
       }
 
       if (ECS.game.depth === 0) {
@@ -359,12 +378,28 @@ function processUserInput() {
           entityLocations: {},
           entityIds: [],
           movable: [],
-          openTiles: [],
-          player: []
+          openTiles: []
         };
-        initGame();
+        const { stairsDownPosition, stairsUpPosition } = initDungeonLevel();
+        getPlayer().components.position = { ...stairsUpPosition };
+        setCacheEntityAtLocation(getPlayer().id, stairsUpPosition);
+        setCacheId(getPlayer().id, "movable");
+        setCacheId(getPlayer().id, "entityIds");
 
-        console.log(ECS.cache);
+        setCacheAtPath(
+          `${ECS.game.depth}.playerSpawnLocs.stairsDown`,
+          stairsDownPosition
+        );
+        setCacheAtPath(
+          `${ECS.game.depth}.playerSpawnLocs.stairsUp`,
+          stairsUpPosition
+        );
+      } else {
+        // set player postition to existing stairs on level
+        // need to know level we are going to
+        // need to know where stairs are on each level...
+        const { stairsUp } = ECS.cache[ECS.game.depth].playerSpawnLocs;
+        getPlayer().components.position = { ...stairsUp };
       }
 
       if (ECS.game.depth === 0) {

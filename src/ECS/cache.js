@@ -1,20 +1,24 @@
 import ECS from "./ECS";
-import { findIndex, get } from "lodash";
+import { findIndex, get, set } from "lodash";
 
 const depth = () => get(ECS, "game.depth", -1);
 
 export const cache = {
+  player: [],
   [depth()]: {
     tileLocations: {},
     entityLocations: {},
     entityIds: [],
     movable: [],
     openTiles: [],
-    player: []
+    playerSpawnLocs: {
+      stairsUp: {},
+      stairsDown: {}
+    }
   }
 };
 
-export const playerId = () => cache[depth()].player[0];
+export const playerId = () => cache.player[0];
 
 // set single entity id at cache.tileLocations[loc]
 export const setCacheTileLocations = (id, position) => {
@@ -45,6 +49,7 @@ export const removeCacheEntityAtLocation = (id, position) => {
 
 // add Id to cache[key]
 export const setCacheId = (id, key) => cache[depth()][key].push(id);
+export const setPlayerCacheId = id => (cache.player[0] = id);
 
 // read from cache at key
 export const readCacheKey = key => cache[depth()][key];
@@ -57,3 +62,6 @@ export const deleteCacheId = (id, key) => {
   const index = findIndex(cache[depth()][key], x => x === id);
   cache[depth()][key].splice(index, 1);
 };
+
+export const setCacheAtPath = (path, value) => set(cache, path, value);
+export const readCacheAtPath = path => get(cache, path);
