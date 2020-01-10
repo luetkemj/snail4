@@ -533,6 +533,18 @@ const renderHelp = () => {
   });
   helpY += 1;
 
+  drawText("<  Ascend stairs", {
+    x: ECS.game.grid.menu3.x + 10,
+    y: helpY
+  });
+  helpY += 1;
+
+  drawText(">  Decend stairs", {
+    x: ECS.game.grid.menu3.x + 10,
+    y: helpY
+  });
+  helpY += 1;
+
   drawText("g  Pick up item", {
     x: ECS.game.grid.menu3.x + 10,
     y: helpY
