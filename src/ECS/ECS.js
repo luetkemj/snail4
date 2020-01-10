@@ -5,12 +5,14 @@ import { grid, pxToCell } from "../lib/canvas";
 // components
 import appearance from "./components/appearance.component";
 import armor from "./components/armor.component";
+import ascend from "./components/ascend.component";
 import blocking from "./components/blocking.component";
 import consumable from "./components/consumable.component";
 import currency from "./components/currency.component";
 import damage from "./components/damage.component";
 import damageReduction from "./components/damage-reduction.component";
 import dead from "./components/dead.component";
+import descend from "./components/descend.component";
 import description from "./components/description.component";
 import dijkstra from "./components/dijkstra.component";
 import droppable from "./components/droppable.component";
@@ -50,12 +52,14 @@ const ECS = {
   components: {
     appearance,
     armor,
+    ascend,
     blocking,
     consumable,
     currency,
     damage,
     damageReduction,
     dead,
+    descend,
     description,
     dijkstra,
     droppable,
@@ -89,6 +93,7 @@ const ECS = {
     userInput: null,
     playerTurn: true,
     grid,
+    depth: -1,
     menu: {
       currentPane: 0,
       paneOffset: [0, 0],

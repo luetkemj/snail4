@@ -11,10 +11,10 @@ const coinsAssemblage = (x, y) => {
   entity.addComponent("hud");
   entity.addComponent("fov");
   entity.addComponent("type", componentTypes.MISC);
-  entity.addComponent("labels", { name: "A pile of coins" }),
-    entity.addComponent("description", {
-      text: `You see a pile of coins scattered on the floor.`
-    });
+  entity.addComponent("labels", { name: "A pile of coins" });
+  entity.addComponent("description", {
+    text: `You see a pile of coins scattered on the floor.`
+  });
 
   entity.addComponent("currency", { copperValue: random(1, 1000) });
   entity.addComponent("gettable");

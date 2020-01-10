@@ -2,6 +2,14 @@ import ECS from "../ECS/ECS";
 
 export default function input(key) {
   switch (key) {
+    case "<": {
+      ECS.game.userInput = { key, type: "ASCEND", payload: {} };
+      break;
+    }
+    case ">": {
+      ECS.game.userInput = { key, type: "DESCEND", payload: {} };
+      break;
+    }
     case "?": {
       ECS.game.userInput = { key, type: "HELP", payload: {} };
       break;

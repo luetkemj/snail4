@@ -8,10 +8,14 @@ import {
 } from "../../lib/movement";
 import { dijkstra } from "../../lib/dijkstra";
 
-import { readCacheEntitiesAtLocation } from "../cache";
+import {
+  readCacheEntitiesAtLocation,
+  readCacheKey,
+  readCacheKeyAtId
+} from "../cache";
 
 const brainSystem = entities => {
-  ECS.cache.movable.forEach(key => {
+  readCacheKey("movable").forEach(key => {
     const entity = entities[key];
 
     // process player input
@@ -45,7 +49,7 @@ const brainSystem = entities => {
             // rebuild dijkstra Maps
             const playerDijkstra = dijkstra([{ x: didMove.x, y: didMove.y }]);
             Object.keys(playerDijkstra).forEach(loc => {
-              const eId = ECS.cache.tileLocations[loc];
+              const eId = readCacheKeyAtId(loc, "tileLocations");
               ECS.entities[eId].components.dijkstra.player =
                 playerDijkstra[loc];
             });

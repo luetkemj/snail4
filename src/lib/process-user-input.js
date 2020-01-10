@@ -1,8 +1,15 @@
-import { findIndex, flatten, groupBy } from "lodash";
+import { findIndex, flatten, groupBy, some } from "lodash";
 import ECS from "../ECS/ECS";
+import {
+  readCacheEntitiesAtLocation,
+  setCacheEntityAtLocation,
+  setCacheId,
+  setCacheAtPath
+} from "../ECS/cache";
 import { getPlayer, getEntity } from "./getters";
 import { printToLog } from "./gui";
 import actions from "./actions";
+import initDungeonLevel from "../initializers/dungeon-level.init";
 
 const sortInventory = () => {
   const player = getPlayer();
@@ -319,6 +326,102 @@ function processUserInput() {
         sortInventory();
       }
       return printToLog(result.msg);
+    }
+
+    // TODO: DRY this up!
+    if (ECS.game.userInput.type === "ASCEND") {
+      // return if playert is NOT on stairs up
+      const eIds = readCacheEntitiesAtLocation(getPlayer().components.position);
+      if (!some(eIds, eId => getEntity(eId).components.ascend)) return;
+
+      ECS.game.depth = ECS.game.depth + 1;
+      if (!ECS.cache[ECS.game.depth]) {
+        ECS.cache[ECS.game.depth] = {
+          tileLocations: {},
+          entityLocations: {},
+          entityIds: [],
+          movable: [],
+          openTiles: []
+        };
+        const { stairsDownPosition, stairsUpPosition } = initDungeonLevel();
+        getPlayer().components.position = { ...stairsDownPosition };
+        setCacheEntityAtLocation(getPlayer().id, stairsDownPosition);
+        setCacheId(getPlayer().id, "movable");
+        setCacheId(getPlayer().id, "entityIds");
+
+        setCacheAtPath(
+          `${ECS.game.depth}.playerSpawnLocs.stairsDown`,
+          stairsDownPosition
+        );
+        setCacheAtPath(
+          `${ECS.game.depth}.playerSpawnLocs.stairsUp`,
+          stairsUpPosition
+        );
+      } else {
+        const { stairsDown } = ECS.cache[ECS.game.depth].playerSpawnLocs;
+        getPlayer().components.position = { ...stairsDown };
+      }
+
+      if (ECS.game.depth === 0) {
+        return printToLog(`You ascend to the surface.`);
+      }
+
+      if (ECS.game.depth > 0) {
+        return printToLog(`You ascend to height ${ECS.game.depth}`);
+      }
+
+      if (ECS.game.depth < 0) {
+        return printToLog(`You ascend to depth ${Math.abs(ECS.game.depth)}`);
+      }
+    }
+
+    if (ECS.game.userInput.type === "DESCEND") {
+      // return if playert is NOT on stairs down
+      const eIds = readCacheEntitiesAtLocation(getPlayer().components.position);
+      if (!some(eIds, eId => getEntity(eId).components.descend)) return;
+
+      ECS.game.depth = ECS.game.depth - 1;
+      if (!ECS.cache[ECS.game.depth]) {
+        ECS.cache[ECS.game.depth] = {
+          tileLocations: {},
+          entityLocations: {},
+          entityIds: [],
+          movable: [],
+          openTiles: []
+        };
+        const { stairsDownPosition, stairsUpPosition } = initDungeonLevel();
+        getPlayer().components.position = { ...stairsUpPosition };
+        setCacheEntityAtLocation(getPlayer().id, stairsUpPosition);
+        setCacheId(getPlayer().id, "movable");
+        setCacheId(getPlayer().id, "entityIds");
+
+        setCacheAtPath(
+          `${ECS.game.depth}.playerSpawnLocs.stairsDown`,
+          stairsDownPosition
+        );
+        setCacheAtPath(
+          `${ECS.game.depth}.playerSpawnLocs.stairsUp`,
+          stairsUpPosition
+        );
+      } else {
+        // set player postition to existing stairs on level
+        // need to know level we are going to
+        // need to know where stairs are on each level...
+        const { stairsUp } = ECS.cache[ECS.game.depth].playerSpawnLocs;
+        getPlayer().components.position = { ...stairsUp };
+      }
+
+      if (ECS.game.depth === 0) {
+        return printToLog(`You descend to the surface.`);
+      }
+
+      if (ECS.game.depth > 0) {
+        return printToLog(`You descend to height ${ECS.game.depth}`);
+      }
+
+      if (ECS.game.depth < 0) {
+        return printToLog(`You descend to depth ${Math.abs(ECS.game.depth)}`);
+      }
     }
 
     if (ECS.game.userInput.type === "TOGGLE_OMNISCIENCE") {

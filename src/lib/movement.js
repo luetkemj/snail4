@@ -3,7 +3,8 @@ import ECS from "../ECS/ECS";
 import {
   readCacheEntitiesAtLocation,
   removeCacheEntityAtLocation,
-  setCacheEntityAtLocation
+  setCacheEntityAtLocation,
+  readCacheKeyAtId
 } from "../ECS/cache";
 import { printToLog } from "./gui";
 import { layers } from "../lib/canvas";
@@ -11,10 +12,11 @@ import { layers } from "../lib/canvas";
 import createTrack from "../ECS/assemblages/track.assemblage";
 
 import { CARDINAL, getNeighbors } from "./grid";
+import { getPlayer } from "./getters";
 
 export const bump = (entity, targetId) => {
   // only print player bumps
-  if (ECS.cache.player[0] === entity.id) {
+  if (getPlayer().id === entity.id) {
     printToLog(
       `${entity.components.labels.name} bumps into ${ECS.entities[targetId].components.labels.name}`
     );
@@ -48,7 +50,7 @@ export const attack = (entity, targetId) => {
   targetEntity.components.health.current -= damage;
 
   // only print attacks if the player is involved
-  if (ECS.cache.player[0] === entity.id || ECS.cache.player[0] === targetId) {
+  if (getPlayer().id === entity.id || getPlayer().id === targetId) {
     const withWeapon = weapon ? ` with ${weapon.components.labels.name}` : "";
     printToLog(
       `${entity.components.labels.name} attacks ${targetEntity.components.labels.name}${withWeapon} for ${damage} damage.`
@@ -57,7 +59,7 @@ export const attack = (entity, targetId) => {
 
   if (targetEntity.components.health.current <= 0) {
     // only print deaths if the player is involved
-    if (ECS.cache.player[0] === entity.id || ECS.cache.player[0] === targetId) {
+    if (getPlayer().id === entity.id || getPlayer().id === targetId) {
       printToLog(`${targetEntity.components.labels.name} is dead.`);
     }
 
@@ -95,7 +97,7 @@ export const walkDijkstra = (entity, dMapName) => {
   let score = 1000000;
   let nextPosition = {};
   neighbors.forEach(n => {
-    const eId = ECS.cache.tileLocations[`${n.x},${n.y}`];
+    const eId = readCacheKeyAtId(`${n.x},${n.y}`, "tileLocations");
     if (ECS.entities[eId].components.dijkstra[dMapName] < score) {
       score = ECS.entities[eId].components.dijkstra[dMapName];
       nextPosition = n;

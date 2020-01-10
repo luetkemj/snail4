@@ -1,20 +1,21 @@
 import ECS from "../ECS";
+import { readCacheKey } from "../cache";
 import createFOV from "../../lib/fov";
+import { getPlayer } from "../../lib/getters";
 
 const fovSystem = entities => {
-  const playerId = ECS.cache.player[0];
   const {
     game: {
       grid: { width: WIDTH, height: HEIGHT }
     }
   } = ECS;
 
-  const originX = entities[playerId].components.position.x;
-  const originY = entities[playerId].components.position.y;
+  const originX = getPlayer().components.position.x;
+  const originY = getPlayer().components.position.y;
 
   const FOV = createFOV(WIDTH, HEIGHT, originX, originY, 8);
 
-  ECS.cache.entityIds.forEach(id => {
+  readCacheKey("entityIds").forEach(id => {
     const entity = ECS.entities[id];
     if (!entity.components.position) return;
 

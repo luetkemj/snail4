@@ -1,4 +1,5 @@
 import ECS from "../ECS";
+import { readCacheKey } from "../cache";
 import { groupBy, isEqual, remove } from "lodash";
 import { clearCanvas, drawCell, layers } from "../../lib/canvas";
 import { colors, chars } from "../../lib/graphics";
@@ -373,20 +374,6 @@ const renderContainer = () => {
 
   drawItemList();
   drawSelectedItemDetails();
-
-  // look for any that have an inventory. If they do:
-  // need to be able to remove item from entity inventory (so build some data structire that will faciliate that)
-  // items: {
-  //   floor: []
-  //   entityId: [] // id of entity whose inventory item belongs to
-  //   ...
-  // }
-  // lists all items
-  // store current selected item
-  // on get
-  // remove from floor or inventory
-  // add to player inventory
-  // all this needs to somehow be able to work for monsters npcs to do this without a UI...
 };
 
 const renderInventory = () => {
@@ -546,6 +533,18 @@ const renderHelp = () => {
   });
   helpY += 1;
 
+  drawText("<  Ascend stairs", {
+    x: ECS.game.grid.menu3.x + 10,
+    y: helpY
+  });
+  helpY += 1;
+
+  drawText(">  Decend stairs", {
+    x: ECS.game.grid.menu3.x + 10,
+    y: helpY
+  });
+  helpY += 1;
+
   drawText("g  Pick up item", {
     x: ECS.game.grid.menu3.x + 10,
     y: helpY
@@ -645,7 +644,7 @@ function render() {
   clearCanvas();
 
   // render map
-  const entities = ECS.cache.entityIds.reduce((acc, val) => {
+  const entities = readCacheKey("entityIds").reduce((acc, val) => {
     acc[val] = ECS.entities[val];
     return acc;
   }, {});
@@ -669,7 +668,7 @@ function render() {
             }
 
             let da = trackAge * 5;
-            if (ECS.cache.player[0] === entity.components.track.eId) {
+            if (getPlayer().id === entity.components.track.eId) {
               da = 100;
             }
 
@@ -703,7 +702,7 @@ function render() {
   });
 
   // put player at top of hud entities array
-  const player = remove(hudEntities, x => x.id === ECS.cache.player[0]);
+  const player = remove(hudEntities, x => x.id === getPlayer().id);
 
   renderLog();
   renderHud([...player, ...hudEntities]);

@@ -20,6 +20,8 @@ export const colors = {
   wall: hexToHSLA("#AAA"),
   floor: hexToHSLA("#555"),
   cavernFloor: hexToHSLA("#71331E"),
+  stairsUp: hexToHSLA("#AAA"),
+  stairsDown: hexToHSLA("#AAA"),
   // player
   player: hexToHSLA("#FFF"),
   // monsters
@@ -42,6 +44,8 @@ export const chars = {
   wall: "#",
   floor: "•",
   cavernFloor: "•",
+  stairsUp: "<",
+  stairsDown: ">",
   // tracks
   track: "•",
   // player

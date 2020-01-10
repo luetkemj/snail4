@@ -1,4 +1,4 @@
-import { setCacheEntityAtLocation, setCacheId } from "../cache";
+import { setCacheEntityAtLocation, setPlayerCacheId } from "../cache";
 import createCreature from "./creature.assemblage";
 import { chars, colors } from "../../lib/graphics";
 
@@ -29,7 +29,7 @@ const playerAssemblage = (x, y) => {
   // entity.components.health.max = 500;
   // entity.components.health.current = 500;
 
-  setCacheId(entity.id, "player");
+  setPlayerCacheId(entity.id);
   setCacheEntityAtLocation(entity.id, { x, y });
 
   return entity;
