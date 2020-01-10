@@ -4,6 +4,8 @@ Chests should not become a pile when sorted through but instead all the things t
 
 Corpses should become piles? Not sure yet. But this fun would be nice to have...
 
+Gold is an entity (item) that happens to not go in your inventory but incremnet your gold stat - like an instant potion...
+
 # Todo
 
 - [ ] Improve AI
@@ -23,8 +25,6 @@ Corpses should become piles? Not sure yet. But this fun would be nice to have...
 
 # Doing
 
-- [ ] add stair commands to help page
-
 # Done
 
 - [x] money!
@@ -35,5 +35,4 @@ Corpses should become piles? Not sure yet. But this fun would be nice to have...
 - [x] Inventory does not carry through to next level - different player instance per floor! oops! Duh. I'm reinitializing the entire game state. So a brand new player entity. There is literally a different player per floor...
 - [x] Multiple dungeon floors
 - [x] Only allow ascend and descend when on stairs
-
-Gold is an entity (item) that happens to not go in your inventory but incremnet your gold stat - like an instant potion...
+- [x] add stair commands to help page
