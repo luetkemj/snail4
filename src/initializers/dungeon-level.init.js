@@ -19,6 +19,7 @@ import createLeatherArmor from "../ECS/assemblages/armor-leather.assemblage";
 import createRandomWeapon from "../ECS/assemblages/weapon-random.assemblage";
 import createChest from "../ECS/assemblages/chest.assemblage";
 import createCoins from "../ECS/assemblages/coins.assemblage";
+import createStairs from "../ECS/assemblages/stairs.assemblage";
 
 import { generateDungeon } from "../lib/dungeon";
 import { dijkstra } from "../lib/dijkstra";
@@ -162,56 +163,35 @@ const initDungeonLevel = () => {
   });
 
   // generate stairs location
-  const genrateOpenLocation = () => {
+  const generateOpenLocation = () => {
     const id = sample(readCacheKey("openTiles"));
     const { position } = ECS.entities[id].components;
 
     return position;
   };
 
-  const stairsUpPosition = genrateOpenLocation();
-  // todo: guard against these being the same!
-  const stairsDownPosition = genrateOpenLocation();
+  const buildStairs = () => {
+    let stairsUpPosition = generateOpenLocation();
+    let stairsDownPosition = generateOpenLocation();
 
-  times(1, () => {
-    const entity = ECS.Entity();
+    // make sure stairsUp and stairsDown are in different locations
+    while (
+      `${stairsUpPosition.x},${stairsUpPosition.y}` ===
+      `${stairsDownPosition.x},${stairsDownPosition.y}`
+    ) {
+      stairsDownPosition = generateOpenLocation();
+    }
 
-    entity.addComponent("hud");
-    entity.addComponent("fov");
-    entity.addComponent("labels", { name: "Stairs down" });
-    entity.addComponent("description", {
-      text: `A set of stairs leading down into the depths...`
-    });
-    entity.addComponent("appearance", {
-      background: colors.defaultBGColor,
-      char: chars.stairsDown,
-      color: colors.stairsDown,
-      layer: layers.player
-    });
+    createStairs({ direction: "up", position: stairsUpPosition });
+    createStairs({ direction: "down", position: stairsDownPosition });
 
-    entity.addComponent("position", { ...stairsDownPosition });
-    setCacheEntityAtLocation(entity.id, { ...stairsDownPosition });
-  });
+    return {
+      stairsUpPosition,
+      stairsDownPosition
+    };
+  };
 
-  times(1, () => {
-    const entity = ECS.Entity();
-
-    entity.addComponent("hud");
-    entity.addComponent("fov");
-    entity.addComponent("labels", { name: "Stairs up" });
-    entity.addComponent("description", {
-      text: `A set of stairs leading up...`
-    });
-    entity.addComponent("appearance", {
-      background: colors.defaultBGColor,
-      char: chars.stairsUp,
-      color: colors.stairsUp,
-      layer: layers.player
-    });
-
-    entity.addComponent("position", { ...stairsUpPosition });
-    setCacheEntityAtLocation(entity.id, { ...stairsUpPosition });
-  });
+  const { stairsUpPosition, stairsDownPosition } = buildStairs();
 
   // build dijkstra Maps
   const playerDijkstra = dijkstra([

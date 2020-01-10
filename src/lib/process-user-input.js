@@ -1,6 +1,7 @@
-import { findIndex, flatten, groupBy } from "lodash";
+import { findIndex, flatten, groupBy, some } from "lodash";
 import ECS from "../ECS/ECS";
 import {
+  readCacheEntitiesAtLocation,
   setCacheEntityAtLocation,
   setCacheId,
   setCacheAtPath
@@ -329,6 +330,10 @@ function processUserInput() {
 
     // TODO: DRY this up!
     if (ECS.game.userInput.type === "ASCEND") {
+      // return if playert is NOT on stairs up
+      const eIds = readCacheEntitiesAtLocation(getPlayer().components.position);
+      if (!some(eIds, eId => getEntity(eId).components.ascend)) return;
+
       ECS.game.depth = ECS.game.depth + 1;
       if (!ECS.cache[ECS.game.depth]) {
         ECS.cache[ECS.game.depth] = {
@@ -371,6 +376,10 @@ function processUserInput() {
     }
 
     if (ECS.game.userInput.type === "DESCEND") {
+      // return if playert is NOT on stairs down
+      const eIds = readCacheEntitiesAtLocation(getPlayer().components.position);
+      if (!some(eIds, eId => getEntity(eId).components.descend)) return;
+
       ECS.game.depth = ECS.game.depth - 1;
       if (!ECS.cache[ECS.game.depth]) {
         ECS.cache[ECS.game.depth] = {
