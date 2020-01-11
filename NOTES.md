@@ -17,6 +17,7 @@ Gold is an entity (item) that happens to not go in your inventory but incremnet 
 - [ ] some variablility to init rendering of dungeon - not static numbers of entities as we currently have
 - [ ] character tab for player stats
 - [ ] convert wallet to currency on death for monsters
+- [ ] display depth in UI
 
 # Bugs
 

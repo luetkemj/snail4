@@ -1,10 +1,11 @@
 import ECS from "../ECS";
 import { readCacheKey } from "../cache";
-import { groupBy, isEqual, remove } from "lodash";
+import { flatten, groupBy, remove } from "lodash";
 import { clearCanvas, drawCell, layers } from "../../lib/canvas";
 import { colors, chars } from "../../lib/graphics";
 import { updateHSLA } from "../../lib/hsla";
 import {
+  getEntity,
   getEntitiesAtLoc,
   getPlayer,
   getGettableEntitiesAtLoc
@@ -250,7 +251,14 @@ const renderHud2 = () => {
 
 // Render Container UI for getting from Container
 const renderContainer = () => {
-  const eIds = ECS.game.menu.containerMenu.items;
+  const entities = ECS.game.menu.containerMenu.items.map(eId => getEntity(eId));
+
+  // sort items in container
+  const groups = groupBy(entities, entity => entity.components.type.name);
+  const sortedInventory = flatten(Object.values(groups)).map(x => x.id);
+  ECS.game.menu.containerMenu.items = [...sortedInventory];
+  const eIds = [...sortedInventory];
+
   if (eIds.length && !ECS.game.menu.containerMenu.currentSelected) {
     ECS.game.menu.containerMenu.currentSelected = eIds[0];
   }
