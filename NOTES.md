@@ -8,21 +8,36 @@ Gold is an entity (item) that happens to not go in your inventory but incremnet 
 
 # Todo
 
+AI
+
 - [ ] Improve AI
+- [ ] Monsters pick up things on map if they want them...
+
+UI
+
+- [ ] character tab for player stats
+- [ ] display depth in UI
+- [ ] HUD should sort items by proximity to player
+
+Combat
+
 - [ ] Weapons should have variable damage
 - [ ] Chance to hit
 - [ ] minimum damage so a hit can't do 0 damage (should always be some sort of a threat even if it's minimal)
+
+World
+
+- [ ] some variablility to init rendering of dungeon - not static numbers of entities as we currently have
+
+Misc
+
+- [ ] convert wallet to currency on death for monsters
 - [ ] food & drink
 - [ ] shops
-- [ ] some variablility to init rendering of dungeon - not static numbers of entities as we currently have
-- [ ] character tab for player stats
-- [ ] convert wallet to currency on death for monsters
-- [ ] display depth in UI
 
 # Bugs
 
 - [ ] items on floor have Wear and Wield actions but you cant actually do them until you pick them up
-- [ ] items in container UI are not sorted
 
 # Doing
 
@@ -37,3 +52,4 @@ Gold is an entity (item) that happens to not go in your inventory but incremnet 
 - [x] Multiple dungeon floors
 - [x] Only allow ascend and descend when on stairs
 - [x] add stair commands to help page
+- [x] items in container UI are not sorted
