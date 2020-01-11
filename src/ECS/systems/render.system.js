@@ -642,6 +642,20 @@ const renderHelp = () => {
 
   helpY += 1;
 
+  drawText("B  Toggle berserker", {
+    x: ECS.game.grid.menu3.x + 10,
+    y: helpY
+  });
+
+  helpY += 1;
+
+  drawText("I  Toggle invincibility", {
+    x: ECS.game.grid.menu3.x + 10,
+    y: helpY
+  });
+
+  helpY += 1;
+
   drawText("O  Toggle omniscience", {
     x: ECS.game.grid.menu3.x + 10,
     y: helpY

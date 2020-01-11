@@ -14,6 +14,10 @@ export default function input(key) {
       ECS.game.userInput = { key, type: "HELP", payload: {} };
       break;
     }
+    case "B": {
+      ECS.game.userInput = { key, type: "TOGGLE_BERSERK", payload: {} };
+      break;
+    }
     case "c": {
       ECS.game.userInput = { key, type: "CONSUME", payload: {} };
       break;
@@ -26,11 +30,15 @@ export default function input(key) {
       ECS.game.userInput = { key, type: "INVENTORY", payload: {} };
       break;
     }
+    case "I": {
+      ECS.game.userInput = { key, type: "TOGGLE_INVINCIBLE", payload: {} };
+      break;
+    }
     case "g": {
       ECS.game.userInput = { key, type: "GET", payload: {} };
       break;
     }
-    case "o": {
+    case "O": {
       ECS.game.userInput = { key, type: "TOGGLE_OMNISCIENCE", payload: {} };
       break;
     }

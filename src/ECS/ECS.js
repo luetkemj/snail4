@@ -46,7 +46,9 @@ import renderSystem from "./systems/render.system";
 
 const ECS = {
   cheats: {
-    omniscience: false
+    omniscience: false,
+    invincible: false,
+    berserk: false
   },
   entities: {},
   components: {

@@ -426,7 +426,25 @@ function processUserInput() {
 
     if (ECS.game.userInput.type === "TOGGLE_OMNISCIENCE") {
       ECS.cheats.omniscience = !ECS.cheats.omniscience;
-      return;
+      return printToLog(
+        ECS.cheats.omniscience
+          ? `Cheat ON: Omniscience`
+          : `Cheat OFF: Omniscience`
+      );
+    }
+    if (ECS.game.userInput.type === "TOGGLE_INVINCIBLE") {
+      ECS.cheats.invincible = !ECS.cheats.invincible;
+      return printToLog(
+        ECS.cheats.invincible
+          ? `Cheat ON: Invincibility`
+          : `Cheat OFF: Invincibility`
+      );
+    }
+    if (ECS.game.userInput.type === "TOGGLE_BERSERK") {
+      ECS.cheats.berserk = !ECS.cheats.berserk;
+      return printToLog(
+        ECS.cheats.berserk ? `Cheat ON: Berserker` : `Cheat OFF: Berserker`
+      );
     }
   }
 

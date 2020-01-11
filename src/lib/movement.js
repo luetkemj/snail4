@@ -47,6 +47,17 @@ export const attack = (entity, targetId) => {
       }
     });
   }
+
+  // if player is target and invincible cheat is on take no damage
+  if (getPlayer().id === targetEntity.id && ECS.cheats.invincible) {
+    damage = 0;
+  }
+
+  // if player is entity and berzerk mode is on take mega damage
+  if (getPlayer().id === entity.id && ECS.cheats.berserk) {
+    damage = 10000000;
+  }
+
   targetEntity.components.health.current -= damage;
 
   // only print attacks if the player is involved
