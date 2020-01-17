@@ -8,6 +8,7 @@ import armor from "./components/armor.component";
 import ascend from "./components/ascend.component";
 import blocking from "./components/blocking.component";
 import consumable from "./components/consumable.component";
+import abilityScores from "./components/ability-scores.component";
 import currency from "./components/currency.component";
 import damage from "./components/damage.component";
 import damageReduction from "./components/damage-reduction.component";
@@ -18,6 +19,7 @@ import dijkstra from "./components/dijkstra.component";
 import droppable from "./components/droppable.component";
 import fov from "./components/fov.component";
 import garbage from "./components/garbage.component";
+import gettable from "./components/gettable.component";
 import health from "./components/health.component";
 import hud from "./components/hud.component";
 import inventory from "./components/inventory.component";
@@ -26,8 +28,8 @@ import moveToPlayer from "./components/moveToPlayer.component";
 import opaque from "./components/opaque.component";
 import playerControlled from "./components/player-controlled.component";
 import position from "./components/position.component";
+import race from "./components/race.component";
 import removable from "./components/removable.component";
-import gettable from "./components/gettable.component";
 import target from "./components/target.component";
 import track from "./components/track.component";
 import trackable from "./components/trackable.component";
@@ -57,6 +59,7 @@ const ECS = {
     ascend,
     blocking,
     consumable,
+    abilityScores,
     currency,
     damage,
     damageReduction,
@@ -67,6 +70,7 @@ const ECS = {
     droppable,
     fov,
     garbage,
+    gettable,
     health,
     hud,
     inventory,
@@ -75,8 +79,8 @@ const ECS = {
     opaque,
     playerControlled,
     position,
+    race,
     removable,
-    gettable,
     target,
     track,
     trackable,
@@ -122,9 +126,10 @@ const ECS = {
 const canvas = document.querySelector("#canvas");
 
 canvas.onclick = e => {
+  const depth = ECS.game.depth;
   const [x, y] = pxToCell(e);
   const locId = `${x},${y}`;
-  const eIds = ECS.cache.entityLocations[locId];
+  const eIds = ECS.cache[depth].entityLocations[locId];
   eIds.forEach(id => ECS.entities[id].print());
 };
 

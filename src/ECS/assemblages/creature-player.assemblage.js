@@ -2,10 +2,17 @@ import { setCacheEntityAtLocation, setPlayerCacheId } from "../cache";
 import createCreature from "./creature.assemblage";
 import { chars, colors } from "../../lib/graphics";
 
+import { createCharacter } from "../../lib/character-creation";
+
+const charStats = createCharacter();
+
 const playerAssemblage = (x, y) => {
   const entity = createCreature();
 
   entity.components.labels.name = "player";
+
+  entity.components.abilityScores = charStats.abilityScores;
+  entity.components.race = charStats.race;
 
   entity.components.appearance.char = chars.player;
   entity.components.appearance.color = colors.player;
@@ -25,9 +32,6 @@ const playerAssemblage = (x, y) => {
     legs: "",
     feet: ""
   });
-
-  // entity.components.health.max = 500;
-  // entity.components.health.current = 500;
 
   setPlayerCacheId(entity.id);
   setCacheEntityAtLocation(entity.id, { x, y });
