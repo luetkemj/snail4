@@ -198,6 +198,16 @@ function processUserInput() {
     }
   }
 
+  // open character
+  if (ECS.game.userInput.key === "c" && ECS.game.mode !== "CHARACTER") {
+    ECS.game.paused = true;
+    ECS.game.mode = ECS.game.mode === "CHARACTER" ? "GAME" : "CHARACTER";
+    ECS.game.playerTurn = true;
+    ECS.game.userInput = null;
+
+    return;
+  }
+
   // open inventory
   if (ECS.game.userInput.key === "i" && ECS.game.mode !== "INVENTORY") {
     ECS.game.paused = true;

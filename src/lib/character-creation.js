@@ -75,7 +75,7 @@ const races = [
     }
   },
   {
-    name: "Humnan",
+    name: "Human",
     racialBonus: {
       charisma: 0,
       constitution: 0,

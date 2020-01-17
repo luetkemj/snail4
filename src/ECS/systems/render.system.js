@@ -19,7 +19,9 @@ import {
   writePlayerInventoryList,
   writeEntityDescription,
   writeEntityName,
-  writeAvailableEntityActions
+  writeAvailableEntityActions,
+  writeCharAbilities,
+  writeEquipped
 } from "../../lib/menus";
 
 const buildCharEntity = ({
@@ -384,6 +386,84 @@ const renderContainer = () => {
   drawSelectedItemDetails();
 };
 
+const renderCharacter = () => {
+  // render masks over non essential UI
+  drawRectangle({
+    x: 0,
+    y: 0,
+    width: ECS.game.grid.width,
+    height: ECS.game.grid.height,
+    color: updateHSLA(colors.defaultBGColor, { a: 60 })
+  });
+
+  const drawCharStats = () => {
+    // (left pane [0])
+    // char stats
+    drawRectangle({
+      x: ECS.game.grid.menu.x,
+      y: ECS.game.grid.menu.y,
+      width: ECS.game.grid.menu.width,
+      height: ECS.game.grid.menu.height,
+      color: colors.defaultBGColor
+    });
+    let x = ECS.game.grid.menu.x + 1;
+    let y = ECS.game.grid.menu.y + 1;
+
+    drawText(`-- CHARACTER --`, {
+      x,
+      y,
+      color: colors.hudText
+    });
+
+    y += 2;
+
+    // draw characterStats
+    drawScrollableText(
+      writeCharAbilities(getPlayer().id),
+      ECS.game.grid.menu.width - 2,
+      ECS.game.grid.menu.height - 5,
+      ECS.game.menu.paneOffset[0],
+      {
+        x,
+        y,
+        trim: false,
+        color: colors.hudText
+      }
+    );
+  };
+
+  const drawCharEquipment = () => {
+    // draw char equipment
+    // equipped
+    drawRectangle({
+      x: ECS.game.grid.menu2.x,
+      y: ECS.game.grid.menu2.y,
+      width: ECS.game.grid.menu2.width,
+      height: ECS.game.grid.menu2.height,
+      color: colors.defaultBGColor
+    });
+    let x = ECS.game.grid.menu2.x + 1;
+    let y = ECS.game.grid.menu2.y + 3;
+
+    // draw characterStats
+    drawScrollableText(
+      writeEquipped(getPlayer().id),
+      ECS.game.grid.menu2.width - 2,
+      ECS.game.grid.menu2.height - 5,
+      ECS.game.menu.paneOffset[0],
+      {
+        x,
+        y,
+        trim: false,
+        color: colors.hudText
+      }
+    );
+  };
+
+  drawCharStats();
+  drawCharEquipment();
+};
+
 const renderInventory = () => {
   // render masks over non essential UI
   drawRectangle({
@@ -731,6 +811,10 @@ function render() {
   renderHud2();
   if (ECS.game.mode === "INVENTORY") {
     renderInventory();
+  }
+
+  if (ECS.game.mode === "CHARACTER") {
+    renderCharacter();
   }
 
   if (ECS.game.mode === "LOOT_CONTAINER") {

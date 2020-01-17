@@ -1,6 +1,7 @@
 import _ from "lodash";
 import ECS from "../ECS/ECS";
 import { getEntity, getPlayer } from "../lib/getters";
+import { abilityScoreMod } from "../lib/character-creation";
 
 export const writeItemList = (eIds, selectedId) => {
   const entities = eIds.map(eId => getEntity(eId));
@@ -161,5 +162,89 @@ export const writeEntityDescription = eId => {
   const entity = getEntity(eId);
   const description = entity.components.description.text;
   text += `${description}`;
+  return text;
+};
+
+export const writeCharAbilities = eId => {
+  const entity = getEntity(eId);
+  let text = "";
+
+  if (entity.components.abilityScores && entity.components.race) {
+    const {
+      abilityScores: {
+        charisma,
+        constitution,
+        dexterity,
+        intelligence,
+        strength,
+        wisdom
+      },
+      race
+    } = entity.components;
+
+    const writeMod = score => {
+      const modifier = abilityScoreMod(score);
+      if (modifier < 0) {
+        return `${modifier}`;
+      } else {
+        return `+${modifier}`;
+      }
+    };
+
+    const writeScore = score => {
+      if (score < 10) {
+        return ` ${score}`;
+      } else {
+        return score;
+      }
+    };
+
+    text = `Level 1 ${race}
+
+CHA: ${writeScore(charisma)}  ${writeMod(charisma)}
+CON: ${writeScore(constitution)}  ${writeMod(constitution)}
+DEX: ${writeScore(dexterity)}  ${writeMod(dexterity)}
+INT: ${writeScore(intelligence)}  ${writeMod(intelligence)}
+STR: ${writeScore(strength)}  ${writeMod(strength)}
+WIS: ${writeScore(wisdom)}  ${writeMod(wisdom)}
+`;
+
+    console.log(text);
+  }
+
+  return text;
+};
+
+export const writeEquipped = eId => {
+  const entity = getEntity(eId);
+  let text;
+
+  const { armor, wielding } = entity.components;
+
+  const getArmorName = armorId => {
+    const armorEntity = getEntity(armorId) || {};
+
+    if (armorEntity.components) {
+      console.log(armorEntity);
+      return armorEntity.components.labels.name;
+    }
+
+    return "";
+  };
+
+  if (armor) {
+    text = `
+        head: ${getArmorName(armor.head)}
+   shoulders: ${getArmorName(armor.shoulders)}
+       torso: ${getArmorName(armor.torso)}
+      wrists: ${getArmorName(armor.wrists)}
+       hands: ${getArmorName(armor.hands)}
+        legs: ${getArmorName(armor.legs)}
+        feet: ${getArmorName(armor.feet)}
+`;
+  }
+
+  console.log(text);
+
   return text;
 };
