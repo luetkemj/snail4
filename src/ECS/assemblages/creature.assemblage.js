@@ -29,6 +29,8 @@ const creatureAssemblage = () => {
 
   entity.addComponent("type", componentTypes.MISC);
 
+  entity.addComponent("anatomy", { type: "humanoid" });
+
   return entity;
 };
 

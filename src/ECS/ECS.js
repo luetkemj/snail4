@@ -3,6 +3,7 @@ import { cache } from "./cache";
 import { grid, pxToCell } from "../lib/canvas";
 
 // components
+import anatomy from "./components/anatomy/anatomy.component";
 import appearance from "./components/appearance.component";
 import armor from "./components/armor.component";
 import ascend from "./components/ascend.component";
@@ -54,6 +55,7 @@ const ECS = {
   },
   entities: {},
   components: {
+    anatomy,
     appearance,
     armor,
     ascend,
