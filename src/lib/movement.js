@@ -1,4 +1,4 @@
-import { compact, sample } from "lodash";
+import { sample, times } from "lodash";
 import ECS from "../ECS/ECS";
 import {
   readCacheEntitiesAtLocation,
@@ -8,6 +8,7 @@ import {
 } from "../ECS/cache";
 import { printToLog } from "./gui";
 import { layers } from "../lib/canvas";
+import { damageAnatomy } from "../lib/damage";
 
 import createTrack from "../ECS/assemblages/track.assemblage";
 
@@ -26,53 +27,60 @@ export const bump = (entity, targetId) => {
 export const attack = (entity, targetId) => {
   const targetEntity = ECS.entities[targetId];
 
-  // todo: move this whole thing (attack and damage dealing) into a library
-  // calculateDamage
-  let damage = 1;
-  let weapon = "";
   // if entity is wielding a weapon add the weapon damage to damage
-  if (entity.components.wielding) {
-    weapon = ECS.entities[entity.components.wielding];
-    damage += weapon.components.damage.dmg;
-  }
-
-  if (targetEntity.components.armor) {
-    compact(Object.values(targetEntity.components.armor)).forEach(eId => {
-      if (ECS.entities[eId].components.damageReduction) {
-        if (damage - ECS.entities[eId].components.damageReduction.dr < 0) {
-          damage = 0;
-        } else {
-          damage = damage - ECS.entities[eId].components.damageReduction.dr;
-        }
+  const weapon = ECS.entities[entity.components.wielding] || {
+    components: {
+      damage: {
+        dmg: 2,
+        type: "slash"
+      },
+      labels: {
+        name: "claws"
       }
-    });
-  }
+    }
+  };
+  const damage = weapon.components.damage.dmg;
+  // }
 
-  // if player is target and invincible cheat is on take no damage
-  if (getPlayer().id === targetEntity.id && ECS.cheats.invincible) {
-    damage = 0;
-  }
+  damageAnatomy(entity, targetEntity, weapon);
 
-  // if player is entity and berzerk mode is on take mega damage
-  if (getPlayer().id === entity.id && ECS.cheats.berserk) {
-    damage = 10000000;
-  }
+  // if (targetEntity.components.armor) {
+  //   compact(Object.values(targetEntity.components.armor)).forEach(eId => {
+  //     if (ECS.entities[eId].components.damageReduction) {
+  //       if (damage - ECS.entities[eId].components.damageReduction.dr < 0) {
+  //         damage = 0;
+  //       } else {
+  //         damage = damage - ECS.entities[eId].components.damageReduction.dr;
+  //       }
+  //     }
+  //   });
+  // }
 
-  targetEntity.components.health.current -= damage;
+  // // if player is target and invincible cheat is on take no damage
+  // if (getPlayer().id === targetEntity.id && ECS.cheats.invincible) {
+  //   damage = 0;
+  // }
+
+  // // if player is entity and berzerk mode is on take mega damage
+  // if (getPlayer().id === entity.id && ECS.cheats.berserk) {
+  //   damage = 10000000;
+  // }
+
+  // targetEntity.components.health.current -= damage;
 
   // only print attacks if the player is involved
-  if (getPlayer().id === entity.id || getPlayer().id === targetId) {
-    const withWeapon = weapon ? ` with ${weapon.components.labels.name}` : "";
-    printToLog(
-      `${entity.components.labels.name} attacks ${targetEntity.components.labels.name}${withWeapon} for ${damage} damage.`
-    );
-  }
+  // if (getPlayer().id === entity.id || getPlayer().id === targetId) {
+  //   const withWeapon = weapon ? ` with ${weapon.components.labels.name}` : "";
+  //   printToLog(
+  //     `${entity.components.labels.name} attacks ${targetEntity.components.labels.name}${withWeapon} for ${damage} damage.`
+  //   );
+  // }
 
   if (targetEntity.components.health.current <= 0) {
     // only print deaths if the player is involved
-    if (getPlayer().id === entity.id || getPlayer().id === targetId) {
-      printToLog(`${targetEntity.components.labels.name} is dead.`);
-    }
+    // if (getPlayer().id === entity.id || getPlayer().id === targetId) {
+    printToLog(`${targetEntity.components.labels.name} is dead.`);
+    // }
 
     targetEntity.addComponent("dead", { timeOfDeath: ECS.game.turn });
     targetEntity.components.labels.name =

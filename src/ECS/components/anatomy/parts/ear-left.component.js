@@ -1,11 +1,13 @@
 const componentAnatomyEarLeft = (
   params = {
-    hp: 10,
-    ifDestroyed: "deaf"
+    ifDestroyed: "deaf",
+    max: 10,
+    current: 10
   }
 ) => {
   return {
-    hp: params.hp,
+    max: params.max,
+    current: params.current,
     ifDestroyed: params.ifDestroyed
   };
 };

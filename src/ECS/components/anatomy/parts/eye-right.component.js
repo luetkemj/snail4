@@ -1,11 +1,13 @@
 const componentAnatomyEyeRight = (
   params = {
-    hp: 10,
-    ifDestroyed: "blind"
+    ifDestroyed: "blind",
+    max: 10,
+    current: 10
   }
 ) => {
   return {
-    hp: params.hp,
+    max: params.max,
+    current: params.current,
     ifDestroyed: params.ifDestroyed
   };
 };

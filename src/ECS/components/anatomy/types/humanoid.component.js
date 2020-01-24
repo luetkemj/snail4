@@ -11,6 +11,10 @@ const componentAnatomyHumanoid = () =>
   // params for making some stronger than other
   {
     return {
+      groups: {
+        face: ["eyeLeft", "eyeRight", "jaw", "nose", "skull"],
+        head: ["brain", "earLeft", "earRight", "skull"]
+      },
       brain: brain(),
       earLeft: earLeft(),
       earRight: earRight(),

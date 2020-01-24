@@ -1,11 +1,13 @@
 const componentAnatomySkull = (
   params = {
-    hp: 30,
-    ifDestroyed: "death"
+    ifDestroyed: "death",
+    max: 30,
+    current: 30
   }
 ) => {
   return {
-    hp: params.hp,
+    max: params.max,
+    current: params.current,
     ifDestroyed: params.ifDestroyed
   };
 };

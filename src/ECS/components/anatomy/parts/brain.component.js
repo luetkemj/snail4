@@ -1,13 +1,15 @@
-const componentAnatomySkull = (
+const componentAnatomyBrain = (
   params = {
-    hp: 10,
-    ifDestroyed: "death"
+    ifDestroyed: "death",
+    max: 10,
+    current: 10
   }
 ) => {
   return {
-    hp: params.hp,
+    max: params.max,
+    current: params.current,
     ifDestroyed: params.ifDestroyed
   };
 };
 
-export default componentAnatomySkull;
+export default componentAnatomyBrain;
