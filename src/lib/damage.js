@@ -50,7 +50,7 @@ export const damageAnatomy = (entity, target, weapon) => {
 
   const groupName = _.sample(Object.keys(anatomy.groups));
   const group = anatomy.groups[groupName];
-  const partsDamage = divvyDamage(group, dmg);
+  const partsDamage = divvyDamage(group.parts, dmg);
 
   const eName = entity.components.labels.name;
   const tName = target.components.labels.name;
