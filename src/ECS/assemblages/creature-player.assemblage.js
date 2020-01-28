@@ -1,6 +1,7 @@
 import { setCacheEntityAtLocation, setPlayerCacheId } from "../cache";
 import createCreature from "./creature.assemblage";
 import { chars, colors } from "../../lib/graphics";
+import humanAnatomy from "../components/anatomy/types/humanoid.component";
 
 import { createCharacter } from "../../lib/character-creation";
 
@@ -23,15 +24,7 @@ const playerAssemblage = (x, y) => {
   entity.addComponent("playerControlled");
 
   entity.addComponent("description", { text: "You" });
-  entity.addComponent("armor", {
-    head: "",
-    torso: "",
-    shoulders: "",
-    wrists: "",
-    hands: "",
-    legs: "",
-    feet: ""
-  });
+  entity.addComponent("armor", entity.components.anatomy.armorSlots);
 
   setPlayerCacheId(entity.id);
   setCacheEntityAtLocation(entity.id, { x, y });

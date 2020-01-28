@@ -274,7 +274,12 @@ export const wear = (actor, wearable) => {
     // ensure actor has an inventory
     actor.components.inventory &&
     // ensure wearable is in actor's inventory
-    actor.components.inventory.items.includes(wearable.id)
+    actor.components.inventory.items.includes(wearable.id) &&
+    // ensure actor has at least one slot item requires
+    _.intersection(
+      Object.keys(actor.components.armor),
+      wearable.components.wearable.slots
+    ).length
   ) {
     // TODO: bug - You can wear and wield the SAME THING!
     // check if it's already being worn
