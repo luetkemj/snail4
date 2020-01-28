@@ -8,7 +8,7 @@ import {
 } from "../ECS/cache";
 import { printToLog } from "./gui";
 import { layers } from "../lib/canvas";
-import { damageAnatomy } from "../lib/damage";
+import { attackTarget, damageAnatomy } from "../lib/damage";
 
 import createTrack from "../ECS/assemblages/track.assemblage";
 
@@ -42,6 +42,7 @@ export const attack = (entity, targetId) => {
   const damage = weapon.components.damage.dmg;
   // }
 
+  attackTarget(entity, targetEntity, weapon);
   damageAnatomy(entity, targetEntity, weapon);
 
   // if (targetEntity.components.armor) {

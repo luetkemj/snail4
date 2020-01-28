@@ -1,3 +1,4 @@
+import _ from "lodash";
 import ECS from "../ECS/ECS";
 import { playerId, readCacheEntitiesAtLocation } from "../ECS/cache";
 
@@ -21,3 +22,6 @@ export const getGettableEntitiesAtLoc = ({ x, y }) => {
 
   return entities;
 };
+
+export const getEntityName = entity =>
+  _.get(entity, "components.labels.name", "");
