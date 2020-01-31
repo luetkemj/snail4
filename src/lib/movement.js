@@ -39,43 +39,18 @@ export const attack = (entity, targetId) => {
       }
     }
   };
-  const damage = weapon.components.damage.dmg;
-  // }
 
   attackTarget(entity, targetEntity, weapon);
-  damageAnatomy(entity, targetEntity, weapon);
 
-  // if (targetEntity.components.armor) {
-  //   compact(Object.values(targetEntity.components.armor)).forEach(eId => {
-  //     if (ECS.entities[eId].components.damageReduction) {
-  //       if (damage - ECS.entities[eId].components.damageReduction.dr < 0) {
-  //         damage = 0;
-  //       } else {
-  //         damage = damage - ECS.entities[eId].components.damageReduction.dr;
-  //       }
-  //     }
-  //   });
-  // }
+  // if player is target and invincible cheat is on take no damage
+  if (getPlayer().id === targetEntity.id && ECS.cheats.invincible) {
+    targetEntity.components.health.current = targetEntity.components.health.max;
+  }
 
-  // // if player is target and invincible cheat is on take no damage
-  // if (getPlayer().id === targetEntity.id && ECS.cheats.invincible) {
-  //   damage = 0;
-  // }
-
-  // // if player is entity and berzerk mode is on take mega damage
-  // if (getPlayer().id === entity.id && ECS.cheats.berserk) {
-  //   damage = 10000000;
-  // }
-
-  // targetEntity.components.health.current -= damage;
-
-  // only print attacks if the player is involved
-  // if (getPlayer().id === entity.id || getPlayer().id === targetId) {
-  //   const withWeapon = weapon ? ` with ${weapon.components.labels.name}` : "";
-  //   printToLog(
-  //     `${entity.components.labels.name} attacks ${targetEntity.components.labels.name}${withWeapon} for ${damage} damage.`
-  //   );
-  // }
+  // if player is entity and berzerk mode is on instakill target
+  if (getPlayer().id === entity.id && ECS.cheats.berserk) {
+    targetEntity.components.health.current = 0;
+  }
 
   if (targetEntity.components.health.current <= 0) {
     // only print deaths if the player is involved

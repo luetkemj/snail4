@@ -21,6 +21,8 @@ const armorAssemblage = () => {
   entity.addComponent("wearable", { slots: ["torso"] });
   entity.addComponent("description", { text: "armor" });
   entity.addComponent("type", componentTypes.ARMOR);
+  entity.addComponent("ar");
+  entity.addComponent("sdc");
 
   return entity;
 };

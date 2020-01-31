@@ -1,8 +1,19 @@
 import _ from "lodash";
 import { printToLog } from "./gui";
 import { sumRolls } from "./dice";
-import { getEntityName, getPlayer } from "./getters";
+import { getEntity, getEntityName, getPlayer } from "./getters";
 // import { abilityScoreMod } from "./character-creation";
+
+const attackLog = (msg, attacker, target) => {
+  const player = getPlayer();
+  const attackerIsPlayer = player.id === attacker.id;
+  const targetIsPlayer = player.id === target.id;
+  const playerIsInvolved = attackerIsPlayer || targetIsPlayer;
+
+  if (playerIsInvolved) {
+    printToLog(msg);
+  }
+};
 
 // splits damage across parts in a group based in the type of damage recieved
 export const divvyDamage = (group, damage) => {
@@ -15,7 +26,7 @@ export const divvyDamage = (group, damage) => {
   };
 
   const parts = [];
-  _.times(dmgTypeSampleSize[type], () => parts.push(_.sample(group)));
+  _.times(dmgTypeSampleSize[type], () => parts.push(_.sample(group.parts)));
 
   const partsDamage = [];
 
@@ -36,30 +47,66 @@ export const divvyDamage = (group, damage) => {
   }, {});
 };
 
-export const attackTarget = (attacker, target) => {
+const damageArmor = (armor, damage, attacker, target) => {
+  // todo provide some nuance in how this damage is dealt based on damage type
+  armor.components.sdc.current -= damage.dmg;
+
+  const halfSDC = Math.floor(armor.components.sdc.max / 2);
+  const quarterSDC = Math.floor(armor.components.sdc.max / 4);
+
+  if (armor.components.sdc.current < 1) {
+    armor.components.ar.current = 0;
+    attackLog(
+      `${getEntityName(target)}'s ${getEntityName(armor)} is destroyed!`,
+      attacker,
+      target
+    );
+  } else if (armor.components.sdc.current < quarterSDC) {
+    armor.components.ar.current = armor.components.ar.max - 4;
+    attackLog(
+      `${getEntityName(target)}'s ${getEntityName(armor)} is severly damaged!`,
+      attacker,
+      target
+    );
+  } else if (armor.components.sdc.current < halfSDC) {
+    armor.components.ar.current = armor.components.ar.max - 2;
+    attackLog(
+      `${getEntityName(target)}'s ${getEntityName(armor)} is damaged!`,
+      attacker,
+      target
+    );
+  }
+
+  if (armor.components.ar.current < 0) {
+    armor.components.ar.current = 0;
+  }
+};
+
+const damageAnatomy = (partsDamage, target) => {
+  const anatomy = target.components.anatomy;
+  Object.keys(partsDamage).forEach(part => {
+    anatomy[part].current -= Math.ceil(partsDamage[part]);
+
+    if (anatomy[part].current <= 0 && anatomy[part].ifDestroyed === "death") {
+      target.components.health.current = 0;
+    }
+  });
+};
+
+export const attackTarget = (attacker, target, weapon) => {
   // roll for attack (start with raw rolls - add bonuses later)
   let attackRoll = sumRolls(20, 1);
   const attackerName = getEntityName(attacker);
   const targetName = getEntityName(target);
-  const player = getPlayer();
-
-  const attackerIsPlayer = player.id === attacker.id;
-  const targetIsPlayer = player.id === attacker.id;
-  const playerIsInvolved = attackerIsPlayer || targetIsPlayer;
+  const weaponName = getEntityName(weapon);
 
   const anatomy = target.components.anatomy;
-
-  const attackLog = msg => {
-    if (playerIsInvolved) {
-      printToLog(msg);
-    }
-  };
 
   // todo: calc and add bonuses to attackRoll
 
   // if less than 5 it's a miss
   if (attackRoll < 5) {
-    return attackLog(`${attackerName} misses ${targetName}.`);
+    return attackLog(`${attackerName} misses ${targetName}.`, attacker, target);
   } else {
     // it's a hit!
     // determine anatomy group
@@ -67,76 +114,49 @@ export const attackTarget = (attacker, target) => {
     const groupName = _.sample(Object.keys(anatomy.groups));
     const partNames = anatomy.groups[groupName];
 
-    // check armor and AR for group
+    // check if there is armor on the hit group
+    const armorId = _.get(target, `components.armor.${groupName}`);
+    // if there is armor on the hit group
+    if (armorId) {
+      const armor = getEntity(armorId);
+      if (attackRoll > armor.components.ar.current) {
+        damageArmor(armor, weapon.components.damage, attacker, target);
+        // todo: divvy half the damage cause the armor did some good
+        const partsDamage = divvyDamage(
+          partNames,
+          weapon.components.damage / 2
+        );
+        damageAnatomy(partsDamage, target);
 
-    attackLog(`${attackerName} hits ${targetName}'s ${groupName}.`);
-  }
-};
-
-// Roll for anatomy group that was hit
-// Roll for damage (weapon / strength / mods? however that happens)
-// If attack roll is less than AR - armor SDC takes all the damage
-// If attack roll is more than AR - player and armor split damage within some range
-
-// damageAnatomyRules
-// entity must have anatomy
-// args: entity, dmg obj
-// dmg: { type, amount }
-// should deal the damage to entity
-// should return a string for logging to console
-
-export const damageAnatomy = (entity, target, weapon) => {
-  const { anatomy, health } = target.components;
-
-  const dmg = {
-    type: weapon.components.damage.type,
-    dmg: weapon.components.damage.dmg
-  };
-
-  const groupName = _.sample(Object.keys(anatomy.groups));
-  const group = anatomy.groups[groupName];
-  const partsDamage = divvyDamage(group.parts, dmg);
-
-  const eName = entity.components.labels.name;
-  const tName = target.components.labels.name;
-  const wName = weapon.components.labels.name;
-
-  if (dmg.type === "pierce") {
-    // printToLog(`${eName} pierces ${tName}'s ${groupName} with a ${wName}.`);
-  }
-
-  if (dmg.type === "bludgeon") {
-    // printToLog(`${eName} bludgeons ${tName}'s ${groupName} with a ${wName}.`);
-  }
-
-  if (dmg.type === "slash") {
-    // printToLog(`${eName} slashes ${tName}'s ${groupName} with a ${wName}.`);
-  }
-
-  Object.keys(partsDamage).forEach(part => {
-    anatomy[part].current -= partsDamage[part];
-
-    if (anatomy[part].current <= 0 && anatomy[part].ifDestroyed !== "death") {
-      if (dmg.type === "pierce") {
-        // printToLog(`${tName}'s ${part} is pierced through entirely!`);
+        if (armor.components.ar > 0) {
+          attackLog(
+            `${attackerName} hits ${targetName}'s ${groupName} through their ${getEntityName(
+              armor
+            )}.`,
+            attacker,
+            target
+          );
+        } else {
+          attackLog(
+            `${attackerName} hits ${targetName}'s ${groupName}.`,
+            attacker,
+            target
+          );
+        }
+      } else {
+        // if it did not pierce the armor dump all damage into armor directly
+        damageArmor(armor, weapon.components.damage, attacker, target);
       }
+    } else {
+      // No armor! Just divvy the damage directly
+      const partsDamage = divvyDamage(partNames, weapon.components.damage);
+      damageAnatomy(partsDamage, target);
 
-      if (dmg.type === "bludgeon") {
-        // printToLog(`${tName}'s ${part} is mashed to a pulp!`);
-      }
-
-      if (dmg.type === "slash") {
-        // printToLog(`${tName}'s ${part} is in ribbons!`);
-      }
+      attackLog(
+        `${attackerName} hits ${targetName}'s ${groupName}.`,
+        attacker,
+        target
+      );
     }
-
-    if (anatomy[part].current <= 0 && anatomy[part].ifDestroyed === "death") {
-      // printToLog(
-      //   `${target.components.labels.name}'s ${part} is destroyed, killing it!`
-      // );
-      health.current = 0;
-    }
-  });
-
-  return { partsDamage, target };
+  }
 };

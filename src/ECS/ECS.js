@@ -6,6 +6,7 @@ import { grid, pxToCell } from "../lib/canvas";
 import anatomy from "./components/anatomy/anatomy.component";
 import appearance from "./components/appearance.component";
 import armor from "./components/armor.component";
+import ar from "./components/armor-rating.component";
 import ascend from "./components/ascend.component";
 import blocking from "./components/blocking.component";
 import consumable from "./components/consumable.component";
@@ -31,6 +32,7 @@ import playerControlled from "./components/player-controlled.component";
 import position from "./components/position.component";
 import race from "./components/race.component";
 import removable from "./components/removable.component";
+import sdc from "./components/structural-damage-capacity.component";
 import target from "./components/target.component";
 import track from "./components/track.component";
 import trackable from "./components/trackable.component";
@@ -58,6 +60,7 @@ const ECS = {
     anatomy,
     appearance,
     armor,
+    ar,
     ascend,
     blocking,
     consumable,
@@ -83,6 +86,7 @@ const ECS = {
     position,
     race,
     removable,
+    sdc,
     target,
     track,
     trackable,
