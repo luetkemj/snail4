@@ -1,6 +1,11 @@
 import _ from "lodash";
 import ECS from "../ECS/ECS";
-import { getEntity, getPlayer } from "../lib/getters";
+import {
+  getEntity,
+  getEntityCondition,
+  getEntityName,
+  getPlayer
+} from "../lib/getters";
 import { abilityScoreMod } from "../lib/character-creation";
 
 export const writeItemList = (eIds, selectedId) => {
@@ -157,9 +162,33 @@ export const writeEntityName = eId => {
   return `-- ${entity.components.labels.name} --`;
 };
 
+export const writeEntityCondition = eId => {
+  let text = ``;
+  const entity = getEntity(eId);
+
+  const { ar, sdc } = entity.components;
+
+  if (ar) {
+    text += `AR:${ar.current < 0 ? 0 : ar.current} `;
+  }
+
+  if (sdc) {
+    text += `SDC:${sdc.current < 0 ? 0 : sdc.current} `;
+
+    const condition = getEntityCondition(entity);
+
+    if (condition) text += `[${condition.replace("_", " ")}]`;
+  }
+
+  return text ? `${text}\n\n` : "";
+};
+
 export const writeEntityDescription = eId => {
   let text = ``;
   const entity = getEntity(eId);
+
+  text += writeEntityCondition(eId);
+
   const description = entity.components.description.text;
   text += `${description}`;
   return text;
@@ -217,31 +246,20 @@ WIS: ${writeScore(wisdom)}  ${writeMod(wisdom)}
 
 export const writeEquipped = eId => {
   const entity = getEntity(eId);
-  let text;
+  let text = "";
 
   const { armor, wielding } = entity.components;
 
   const getArmorName = armorId => {
-    const armorEntity = getEntity(armorId) || {};
-
-    if (armorEntity.components) {
-      console.log(armorEntity);
-      return armorEntity.components.labels.name;
-    }
-
-    return "";
+    return getEntityName(getEntity(armorId));
   };
 
   if (armor) {
-    text = `
-        head: ${getArmorName(armor.head)}
-   shoulders: ${getArmorName(armor.shoulders)}
-       torso: ${getArmorName(armor.torso)}
-      wrists: ${getArmorName(armor.wrists)}
-       hands: ${getArmorName(armor.hands)}
-        legs: ${getArmorName(armor.legs)}
-        feet: ${getArmorName(armor.feet)}
-`;
+    const length = Math.max(Object.keys(armor).map(x => x.length));
+
+    Object.keys(armor).forEach(key => {
+      text += `${_.padStart(key, length)}: ${getArmorName(armor[key])}\n`;
+    });
   }
 
   console.log(text);

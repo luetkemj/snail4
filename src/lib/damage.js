@@ -1,7 +1,12 @@
 import _ from "lodash";
 import { printToLog } from "./gui";
 import { sumRolls } from "./dice";
-import { getEntity, getEntityName, getPlayer } from "./getters";
+import {
+  getEntity,
+  getEntityName,
+  getEntityCondition,
+  getPlayer
+} from "./getters";
 // import { abilityScoreMod } from "./character-creation";
 
 const attackLog = (msg, attacker, target) => {
@@ -50,25 +55,23 @@ export const divvyDamage = (group, damage) => {
 const damageArmor = (armor, damage, attacker, target) => {
   // todo provide some nuance in how this damage is dealt based on damage type
   armor.components.sdc.current -= damage.dmg;
+  const condition = getEntityCondition(armor);
 
-  const halfSDC = Math.floor(armor.components.sdc.max / 2);
-  const quarterSDC = Math.floor(armor.components.sdc.max / 4);
-
-  if (armor.components.sdc.current < 1) {
+  if (condition === "DESTROYED") {
     armor.components.ar.current = 0;
     attackLog(
       `${getEntityName(target)}'s ${getEntityName(armor)} is destroyed!`,
       attacker,
       target
     );
-  } else if (armor.components.sdc.current < quarterSDC) {
+  } else if (condition === "SEVERLY_DAMAGED") {
     armor.components.ar.current = armor.components.ar.max - 4;
     attackLog(
       `${getEntityName(target)}'s ${getEntityName(armor)} is severly damaged!`,
       attacker,
       target
     );
-  } else if (armor.components.sdc.current < halfSDC) {
+  } else if (condition === "DAMAGED2") {
     armor.components.ar.current = armor.components.ar.max - 2;
     attackLog(
       `${getEntityName(target)}'s ${getEntityName(armor)} is damaged!`,
