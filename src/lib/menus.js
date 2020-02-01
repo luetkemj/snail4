@@ -237,8 +237,30 @@ INT: ${writeScore(intelligence)}  ${writeMod(intelligence)}
 STR: ${writeScore(strength)}  ${writeMod(strength)}
 WIS: ${writeScore(wisdom)}  ${writeMod(wisdom)}
 `;
+  }
 
-    console.log(text);
+  return text;
+};
+
+export const writeCharInjuries = eId => {
+  const entity = getEntity(eId);
+  const { anatomy } = entity.components;
+
+  let text = "Injuries\n\n";
+  let uninjured = true;
+
+  Object.keys(anatomy).forEach(x => {
+    if ("max" in anatomy[x] && "current" in anatomy[x]) {
+      if (anatomy[x].max !== anatomy[x].current) {
+        text += `${x} is injured.\n`;
+
+        uninjured = false;
+      }
+    }
+  });
+
+  if (uninjured) {
+    text += "None";
   }
 
   return text;
@@ -246,7 +268,7 @@ WIS: ${writeScore(wisdom)}  ${writeMod(wisdom)}
 
 export const writeEquipped = eId => {
   const entity = getEntity(eId);
-  let text = "";
+  let text = "Equipped Armor\n\n";
 
   const { armor, wielding } = entity.components;
 
@@ -258,11 +280,16 @@ export const writeEquipped = eId => {
     const length = Math.max(Object.keys(armor).map(x => x.length));
 
     Object.keys(armor).forEach(key => {
-      text += `${_.padStart(key, length)}: ${getArmorName(armor[key])}\n`;
+      const armorEntity = getEntity(armor[key]);
+      const armorCondition = armorEntity
+        ? `[${getEntityCondition(armorEntity).replace("_", " ")}]`
+        : "";
+
+      text += `${_.padStart(key, length)}: ${getArmorName(
+        armor[key]
+      )} ${armorCondition}\n`;
     });
   }
-
-  console.log(text);
 
   return text;
 };

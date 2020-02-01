@@ -21,6 +21,7 @@ import {
   writeEntityName,
   writeAvailableEntityActions,
   writeCharAbilities,
+  writeCharInjuries,
   writeEquipped
 } from "../../lib/menus";
 
@@ -419,7 +420,9 @@ const renderCharacter = () => {
 
     // draw characterStats
     drawScrollableText(
-      writeCharAbilities(getPlayer().id),
+      `${writeCharAbilities(getPlayer().id)} 
+
+${writeCharInjuries(getPlayer().id)}`,
       ECS.game.grid.menu.width - 2,
       ECS.game.grid.menu.height - 5,
       ECS.game.menu.paneOffset[0],
