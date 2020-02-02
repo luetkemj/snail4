@@ -22,14 +22,17 @@ const slots = [
     arCurrent: 10,
     sdcMax: 20,
     sdcCurrent: 20
+  },
+  {
+    name: "Leather Jerkin",
+    slot: "torso",
+    text: "A sleeveless leather jerkin.",
+    dr: 1,
+    arMax: 10,
+    arCurrent: 10,
+    sdcMax: 20,
+    sdcCurrent: 20
   }
-  // {
-  //   name: "Leather Jerkin",
-  //   slot: "torso",
-  //   text: "A sleeveless leather jerkin.",
-  //   dr: 1,
-  //   ar: 10
-  // },
   // {
   //   name: "Leather Pauldrons",
   //   slot: "shoulders",
