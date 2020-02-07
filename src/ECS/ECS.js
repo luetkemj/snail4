@@ -8,7 +8,9 @@ import appearance from "./components/appearance.component";
 import armor from "./components/armor.component";
 import ar from "./components/armor-rating.component";
 import ascend from "./components/ascend.component";
+import bleeding from "./components/bleeding.component";
 import blocking from "./components/blocking.component";
+import blood from "./components/blood.component";
 import consumable from "./components/consumable.component";
 import abilityScores from "./components/ability-scores.component";
 import currency from "./components/currency.component";
@@ -45,6 +47,7 @@ import wielding from "./components/wielding.component";
 
 // systems
 import brainSystem from "./systems/brain.system";
+import bleedingSystem from "./systems/bleeding.system";
 import fovSystem from "./systems/fov.system";
 import garbageSystem from "./systems/garbage.system";
 import renderSystem from "./systems/render.system";
@@ -62,7 +65,9 @@ const ECS = {
     armor,
     ar,
     ascend,
+    bleeding,
     blocking,
+    blood,
     consumable,
     abilityScores,
     currency,
@@ -97,7 +102,13 @@ const ECS = {
     wieldable,
     wielding
   },
-  systems: [garbageSystem, brainSystem, fovSystem, renderSystem],
+  systems: [
+    garbageSystem,
+    bleedingSystem,
+    brainSystem,
+    fovSystem,
+    renderSystem
+  ],
   game: {
     mode: "GAME", // [GAME | INVENTORY | HELP]
     paused: false,

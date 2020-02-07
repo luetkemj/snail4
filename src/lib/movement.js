@@ -1,4 +1,4 @@
-import { sample, times } from "lodash";
+import { sample } from "lodash";
 import ECS from "../ECS/ECS";
 import {
   readCacheEntitiesAtLocation,
@@ -7,8 +7,8 @@ import {
   readCacheKeyAtId
 } from "../ECS/cache";
 import { printToLog } from "./gui";
-import { layers } from "../lib/canvas";
-import { attackTarget, damageAnatomy } from "../lib/damage";
+import { attackTarget } from "./damage";
+import { kill } from "./death";
 
 import createTrack from "../ECS/assemblages/track.assemblage";
 
@@ -53,25 +53,7 @@ export const attack = (entity, targetId) => {
   }
 
   if (targetEntity.components.health.current <= 0) {
-    // only print deaths if the player is involved
-    // if (getPlayer().id === entity.id || getPlayer().id === targetId) {
-    printToLog(`${targetEntity.components.labels.name} is dead.`);
-    // }
-
-    targetEntity.addComponent("dead", { timeOfDeath: ECS.game.turn });
-    targetEntity.components.labels.name =
-      targetEntity.components.labels.name + " corpse";
-
-    if (targetEntity.components.description) {
-      targetEntity.components.description.text = `You see a crumpled ${targetEntity.components.labels.name} on the floor.`;
-    }
-
-    targetEntity.addComponent("gettable");
-    targetEntity.components.appearance.layer = layers.items;
-    targetEntity.components.appearance.char = "%";
-    targetEntity.removeComponent("moveToPlayer");
-    targetEntity.removeComponent("playerControlled");
-    targetEntity.removeComponent("blocking");
+    kill(targetEntity);
   }
 };
 

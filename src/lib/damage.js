@@ -5,7 +5,8 @@ import {
   getEntity,
   getEntityName,
   getEntityCondition,
-  getPlayer
+  getPlayer,
+  getTurnNumber
 } from "./getters";
 // import { abilityScoreMod } from "./character-creation";
 
@@ -71,7 +72,7 @@ const damageArmor = (armor, damage, attacker, target) => {
       attacker,
       target
     );
-  } else if (condition === "DAMAGED2") {
+  } else if (condition === "DAMAGED") {
     armor.components.ar.current = armor.components.ar.max - 2;
     attackLog(
       `${getEntityName(target)}'s ${getEntityName(armor)} is damaged!`,
@@ -89,6 +90,11 @@ const damageAnatomy = (partsDamage, target) => {
   const anatomy = target.components.anatomy;
   Object.keys(partsDamage).forEach(part => {
     anatomy[part].current -= Math.ceil(partsDamage[part]);
+
+    target.components.bleeding[part] = {
+      start: getTurnNumber,
+      severity: 0.1
+    };
 
     if (anatomy[part].current <= 0 && anatomy[part].ifDestroyed === "death") {
       target.components.health.current = 0;

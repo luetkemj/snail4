@@ -168,7 +168,7 @@ const renderHud = entities => {
       y += 1;
     }
 
-    if (entity.components.health) {
+    if (entity.components.blood) {
       drawBar(
         ECS.game.grid.hud.width,
         ECS.game.grid.hud.width,
@@ -177,8 +177,8 @@ const renderHud = entities => {
       );
 
       drawBar(
-        entity.components.health.current,
-        entity.components.health.max,
+        entity.components.blood.current,
+        entity.components.blood.max,
         colors.healthBar,
         y
       );

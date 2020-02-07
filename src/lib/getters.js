@@ -2,6 +2,10 @@ import _ from "lodash";
 import ECS from "../ECS/ECS";
 import { playerId, readCacheEntitiesAtLocation } from "../ECS/cache";
 
+export const getTurnNumber = () => {
+  return ECS.game.turn;
+};
+
 export const getPlayer = () => {
   return ECS.entities[playerId()];
 };
