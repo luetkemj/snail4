@@ -93,7 +93,7 @@ const damageAnatomy = (partsDamage, target) => {
 
     target.components.bleeding[part] = {
       start: getTurnNumber,
-      severity: 0.1
+      severity: 0.5
     };
 
     if (anatomy[part].current <= 0 && anatomy[part].ifDestroyed === "death") {

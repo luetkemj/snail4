@@ -11,6 +11,8 @@ const bleedingSystem = entities => {
     if (entity.components.dead) return;
 
     const { bleeding, blood, anatomy, health } = entity.components;
+    if (blood.current < blood.max) blood.current++; // regen one ml per turn (should be based on constitution)
+
     if (bleeding && blood && anatomy && health) {
       Object.keys(bleeding).forEach(part => {
         if (entity.components.dead) return false;

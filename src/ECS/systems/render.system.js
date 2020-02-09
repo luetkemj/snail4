@@ -183,7 +183,27 @@ const renderHud = entities => {
         y
       );
 
-      const status = entity.components.dead ? "Dead" : "Health";
+      const bleeding = () => {
+        let severity = 0;
+        const wounds = entity.components.bleeding;
+
+        if (Object.keys(wounds).length) {
+          severity = Object.keys(wounds).reduce((acc, val) => {
+            acc += wounds[val].severity;
+            return acc;
+          }, 0);
+        }
+
+        if (severity > 1) return "major bleeding";
+        if (severity > 0.5) return "minor bleeding";
+        if (severity > 0) return "bleeding";
+        return "";
+      };
+      // const bleeding = Object.keys(entity.components.bleeding).length
+      //   ? "Bleeding"
+      //   : "";
+
+      const status = entity.components.dead ? "Dead" : bleeding();
       drawTextHud(status, y);
       y += 2;
     } else {
