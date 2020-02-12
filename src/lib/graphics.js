@@ -8,11 +8,12 @@ export const colors = {
 
   // items:
   armor: hexToHSLA("#DAA520"),
-  potion: hexToHSLA("#DAA520"),
-  weapon: hexToHSLA("#DAA520"),
-  multipleItems: hexToHSLA("#DAA520"),
+  bandage: hexToHSLA("#F7DC6F"),
   chest: hexToHSLA("#DAA520"),
   currency: hexToHSLA("#DAA520"),
+  multipleItems: hexToHSLA("#DAA520"),
+  potion: hexToHSLA("#DAA520"),
+  weapon: hexToHSLA("#DAA520"),
   // log
   hudText: hexToHSLA("#fff"),
   healthBar: hexToHSLA("#B91906"),
@@ -40,6 +41,7 @@ export const chars = {
   currency: "*",
   potion: "!",
   multipleItems: "&",
+  item: "~",
   // maps
   wall: "#",
   floor: "•",
