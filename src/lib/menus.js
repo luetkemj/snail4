@@ -1,6 +1,11 @@
 import _ from "lodash";
 import ECS from "../ECS/ECS";
-import { getEntity, getPlayer } from "../lib/getters";
+import {
+  getEntity,
+  getEntityCondition,
+  getEntityName,
+  getPlayer
+} from "../lib/getters";
 import { abilityScoreMod } from "../lib/character-creation";
 
 export const writeItemList = (eIds, selectedId) => {
@@ -157,9 +162,33 @@ export const writeEntityName = eId => {
   return `-- ${entity.components.labels.name} --`;
 };
 
+export const writeEntityCondition = eId => {
+  let text = ``;
+  const entity = getEntity(eId);
+
+  const { ar, sdc } = entity.components;
+
+  if (ar) {
+    text += `AR:${ar.current < 0 ? 0 : ar.current} `;
+  }
+
+  if (sdc) {
+    text += `SDC:${sdc.current < 0 ? 0 : sdc.current} `;
+
+    const condition = getEntityCondition(entity);
+
+    if (condition) text += `[${condition.replace("_", " ")}]`;
+  }
+
+  return text ? `${text}\n\n` : "";
+};
+
 export const writeEntityDescription = eId => {
   let text = ``;
   const entity = getEntity(eId);
+
+  text += writeEntityCondition(eId);
+
   const description = entity.components.description.text;
   text += `${description}`;
   return text;
@@ -208,8 +237,30 @@ INT: ${writeScore(intelligence)}  ${writeMod(intelligence)}
 STR: ${writeScore(strength)}  ${writeMod(strength)}
 WIS: ${writeScore(wisdom)}  ${writeMod(wisdom)}
 `;
+  }
 
-    console.log(text);
+  return text;
+};
+
+export const writeCharInjuries = eId => {
+  const entity = getEntity(eId);
+  const { anatomy } = entity.components;
+
+  let text = "Injuries\n\n";
+  let uninjured = true;
+
+  Object.keys(anatomy).forEach(x => {
+    if ("max" in anatomy[x] && "current" in anatomy[x]) {
+      if (anatomy[x].max !== anatomy[x].current) {
+        text += `${x} is injured.\n`;
+
+        uninjured = false;
+      }
+    }
+  });
+
+  if (uninjured) {
+    text += "None";
   }
 
   return text;
@@ -217,34 +268,28 @@ WIS: ${writeScore(wisdom)}  ${writeMod(wisdom)}
 
 export const writeEquipped = eId => {
   const entity = getEntity(eId);
-  let text;
+  let text = "Equipped Armor\n\n";
 
   const { armor, wielding } = entity.components;
 
   const getArmorName = armorId => {
-    const armorEntity = getEntity(armorId) || {};
-
-    if (armorEntity.components) {
-      console.log(armorEntity);
-      return armorEntity.components.labels.name;
-    }
-
-    return "";
+    return getEntityName(getEntity(armorId));
   };
 
   if (armor) {
-    text = `
-        head: ${getArmorName(armor.head)}
-   shoulders: ${getArmorName(armor.shoulders)}
-       torso: ${getArmorName(armor.torso)}
-      wrists: ${getArmorName(armor.wrists)}
-       hands: ${getArmorName(armor.hands)}
-        legs: ${getArmorName(armor.legs)}
-        feet: ${getArmorName(armor.feet)}
-`;
-  }
+    const length = Math.max(Object.keys(armor).map(x => x.length));
 
-  console.log(text);
+    Object.keys(armor).forEach(key => {
+      const armorEntity = getEntity(armor[key]);
+      const armorCondition = armorEntity
+        ? `[${getEntityCondition(armorEntity).replace("_", " ")}]`
+        : "";
+
+      text += `${_.padStart(key, length)}: ${getArmorName(
+        armor[key]
+      )} ${armorCondition}\n`;
+    });
+  }
 
   return text;
 };

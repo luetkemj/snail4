@@ -3,10 +3,14 @@ import { cache } from "./cache";
 import { grid, pxToCell } from "../lib/canvas";
 
 // components
+import anatomy from "./components/anatomy/anatomy.component";
 import appearance from "./components/appearance.component";
 import armor from "./components/armor.component";
+import ar from "./components/armor-rating.component";
 import ascend from "./components/ascend.component";
+import bleeding from "./components/bleeding.component";
 import blocking from "./components/blocking.component";
+import blood from "./components/blood.component";
 import consumable from "./components/consumable.component";
 import abilityScores from "./components/ability-scores.component";
 import currency from "./components/currency.component";
@@ -30,6 +34,7 @@ import playerControlled from "./components/player-controlled.component";
 import position from "./components/position.component";
 import race from "./components/race.component";
 import removable from "./components/removable.component";
+import sdc from "./components/structural-damage-capacity.component";
 import target from "./components/target.component";
 import track from "./components/track.component";
 import trackable from "./components/trackable.component";
@@ -42,6 +47,7 @@ import wielding from "./components/wielding.component";
 
 // systems
 import brainSystem from "./systems/brain.system";
+import bleedingSystem from "./systems/bleeding.system";
 import fovSystem from "./systems/fov.system";
 import garbageSystem from "./systems/garbage.system";
 import renderSystem from "./systems/render.system";
@@ -54,10 +60,14 @@ const ECS = {
   },
   entities: {},
   components: {
+    anatomy,
     appearance,
     armor,
+    ar,
     ascend,
+    bleeding,
     blocking,
+    blood,
     consumable,
     abilityScores,
     currency,
@@ -81,6 +91,7 @@ const ECS = {
     position,
     race,
     removable,
+    sdc,
     target,
     track,
     trackable,
@@ -91,7 +102,13 @@ const ECS = {
     wieldable,
     wielding
   },
-  systems: [garbageSystem, brainSystem, fovSystem, renderSystem],
+  systems: [
+    garbageSystem,
+    bleedingSystem,
+    brainSystem,
+    fovSystem,
+    renderSystem
+  ],
   game: {
     mode: "GAME", // [GAME | INVENTORY | HELP]
     paused: false,

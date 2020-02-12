@@ -20,6 +20,7 @@ import createRandomWeapon from "../ECS/assemblages/weapon-random.assemblage";
 import createChest from "../ECS/assemblages/chest.assemblage";
 import createCoins from "../ECS/assemblages/coins.assemblage";
 import createStairs from "../ECS/assemblages/stairs.assemblage";
+import createBandage from "../ECS/assemblages/bandage.assemblage";
 
 import { generateDungeon } from "../lib/dungeon";
 import { dijkstra } from "../lib/dijkstra";
@@ -140,6 +141,13 @@ const initDungeonLevel = () => {
     createRandomWeapon(position.x, position.y);
   });
 
+  // drop bandages
+  times(3, () => {
+    const id = sample(readCacheKey("openTiles"));
+    const { position } = ECS.entities[id].components;
+    createBandage(position.x, position.y);
+  });
+
   // drop chest
   times(2, () => {
     const id = sample(readCacheKey("openTiles"));
@@ -147,10 +155,10 @@ const initDungeonLevel = () => {
 
     const armor = createLeatherArmor();
     const weapon = createRandomWeapon();
+    const bandage = createBandage();
     const chest = createChest();
     chest.components.position = { ...position };
-    chest.components.inventory.items.push(armor.id);
-    chest.components.inventory.items.push(weapon.id);
+    chest.components.inventory.items.push(armor.id, bandage.id, weapon.id);
 
     setCacheEntityAtLocation(chest.id, position);
   });

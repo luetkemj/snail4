@@ -29,6 +29,10 @@ const creatureAssemblage = () => {
 
   entity.addComponent("type", componentTypes.MISC);
 
+  entity.addComponent("anatomy", { type: "humanoid" });
+  entity.addComponent("blood", { current: 5700, max: 5700 });
+  entity.addComponent("bleeding");
+
   return entity;
 };
 

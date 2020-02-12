@@ -6,22 +6,32 @@ const slots = [
   {
     name: "Dagger",
     text: "A bit dull.",
-    dmg: 1
+    dmg: 10,
+    type: "pierce"
   },
   {
     name: "Knife",
     text: "Small but sharp.",
-    dmg: 2
+    dmg: 12,
+    type: "slash"
   },
   {
     name: "Axe",
     text: "For cutting logs and splitting skulls. And we're all out of logs...",
-    dmg: 5
+    dmg: 20,
+    type: "slash"
   },
   {
     name: "Sword",
     text: "A large heavy sword for cleaving enemies in twain.",
-    dmg: 5
+    dmg: 20,
+    type: "slash"
+  },
+  {
+    name: "Club",
+    text: "A crudely shaped peice of wood with teeth and bone embedded in it.",
+    dmg: 15,
+    type: "bludgeon"
   }
 ];
 
@@ -31,7 +41,7 @@ const randomWeaponAssemblage = (x, y) => {
   const details = sample(slots);
 
   entity.components.labels.name = details.name;
-  entity.addComponent("damage", { dmg: details.dmg });
+  entity.addComponent("damage", { dmg: details.dmg, type: details.type });
   entity.addComponent("description", { text: details.text });
 
   if (x && y) {
