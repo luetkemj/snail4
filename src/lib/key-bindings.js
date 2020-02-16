@@ -18,6 +18,10 @@ export default function input(key) {
       ECS.game.userInput = { key, type: "TOGGLE_BERSERK", payload: {} };
       break;
     }
+    case "a": {
+      ECS.game.userInput = { key, type: "APPLY", payload: {} };
+      break;
+    }
     case "c": {
       ECS.game.userInput = { key, type: "CONSUME", payload: {} };
       break;

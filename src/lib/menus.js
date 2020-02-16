@@ -130,6 +130,10 @@ export const writeAvailableEntityActions = eId => {
   const entity = getEntity(eId);
   let text = "";
 
+  if (entity.components.apply) {
+    text = `${text}(a)Apply `;
+  }
+
   if (entity.components.droppable) {
     text = `${text}(d)Drop `;
   }

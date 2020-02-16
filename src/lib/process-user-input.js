@@ -1,4 +1,4 @@
-import { findIndex, flatten, groupBy, some } from "lodash";
+import { findIndex, flatten, groupBy, pull, some } from "lodash";
 import ECS from "../ECS/ECS";
 import {
   readCacheEntitiesAtLocation,
@@ -6,7 +6,13 @@ import {
   setCacheId,
   setCacheAtPath
 } from "../ECS/cache";
-import { getPlayer, getEntity } from "./getters";
+import {
+  getPlayer,
+  getEntity,
+  getEntitiesAtLoc,
+  getEntityName
+} from "./getters";
+import { getNeighbors } from "./grid";
 import { printToLog } from "./gui";
 import actions from "./actions";
 import initDungeonLevel from "../initializers/dungeon-level.init";
@@ -74,6 +80,9 @@ const setNextSelectedInventoryItem = () => {
   const { inventory } = player.components;
   const { items } = inventory;
 
+  // disable apply menu
+  ECS.game.menu.applyMenu.show = false;
+
   if (!items.length) {
     ECS.game.menu.inventoryMenu.currentSelected = "";
     return;
@@ -101,6 +110,9 @@ const setPreviousSelectedInventoryItem = () => {
   const player = getPlayer();
   const { inventory } = player.components;
   const { items } = inventory;
+
+  // disable apply menu
+  ECS.game.menu.applyMenu.show = false;
 
   if (!items.length) {
     ECS.game.menu.inventoryMenu.currentSelected = "";
@@ -263,6 +275,11 @@ function processUserInput() {
         setNextSelectedItem();
         return;
       }
+
+      if (ECS.game.menu.currentPane === 1 && ECS.game.menu.applyMenu.show) {
+        setNextRelevantEntity();
+        return;
+      }
     }
 
     // select previous item
@@ -272,6 +289,58 @@ function processUserInput() {
       if (ECS.game.menu.currentPane === 0) {
         setPreviousSelectedItem();
         return;
+      }
+
+      if (ECS.game.menu.currentPane === 1 && ECS.game.menu.applyMenu.show) {
+        setPreviousRelevantEntity();
+        return;
+      }
+    }
+
+    // apply item
+    if (ECS.game.userInput.key === "a") {
+      if (!entity.components.apply) return;
+
+      if (entity.components.apply.uses < 1) {
+        return printToLog(`${getEntityName(entity)} has already been used up!`);
+      }
+
+      ECS.game.menu.applyMenu.show = true;
+
+      // get all nearby entities
+      const { x, y } = getPlayer().components.position;
+      const locs = [{ x, y }, ...getNeighbors(x, y)];
+      const entities = locs.map(getEntitiesAtLoc).flat();
+
+      // filter to those with required components
+      ECS.game.menu.applyMenu.relevantEntities = entities
+        .filter(x =>
+          entity.components.apply.required.every(
+            requirement => x.components[requirement]
+          )
+        )
+        .map(x => x.id);
+
+      ECS.game.menu.applyMenu.currentSelected =
+        ECS.game.menu.applyMenu.relevantEntities[0];
+
+      console.log(ECS.game.menu.applyMenu);
+
+      // actually select the target with a menu!
+      // const msg = entity.components.apply.func(getPlayer());
+
+      // entity.components.apply.uses;
+
+      // entity.components.apply.uses -= 1;
+
+      // printToLog(msg);
+
+      // check if in chest? don't let users use directly from a chest. Must get the item first!
+      if (entity.components.apply.uses < 1) {
+        ECS.game.menu.applyMenu.show = false;
+        setNextSelectedInventoryItem();
+        pull(getPlayer().components.inventory.items, entity.id);
+        printToLog(`${getEntityName(entity)} has been used up!`);
       }
     }
 

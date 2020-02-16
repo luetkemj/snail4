@@ -607,8 +607,52 @@ const renderInventory = () => {
     }
   };
 
+  const drawApplyMenu = () => {
+    // draw relevant entities to apply entity to (right pane [1])
+    // selected item background
+    drawRectangle({
+      x: ECS.game.grid.menu2.x,
+      y: ECS.game.grid.menu2.y,
+      width: ECS.game.grid.menu2.width,
+      height: ECS.game.grid.menu2.height,
+      color: colors.defaultBGColor
+    });
+
+    const color =
+      ECS.game.menu.currentPane === 1
+        ? colors.hudText
+        : updateHSLA(colors.hudText, { l: 60 });
+
+    const { relevantEntities } = ECS.game.menu.applyMenu;
+    const selectedRelevantEntity = ECS.game.menu.applyMenu.currentSelected;
+
+    // draw selected item details
+    if (relevantEntities.length) {
+      let y = ECS.game.grid.menu2.y + 1;
+      let x = ECS.game.grid.menu2.x + 1;
+
+      // draw description
+      drawScrollableText(
+        writeItemList(relevantEntities, selectedRelevantEntity),
+        ECS.game.grid.menu2.width - 2,
+        ECS.game.grid.menu2.height - 5,
+        ECS.game.menu.paneOffset[1],
+        {
+          x,
+          y,
+          trim: true,
+          color
+        }
+      );
+    }
+  };
+
   drawInventoryList();
   drawSelectedItemDetails();
+
+  if (ECS.game.menu.applyMenu.show) {
+    drawApplyMenu();
+  }
 };
 
 const renderHelp = () => {

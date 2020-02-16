@@ -5,6 +5,7 @@ import { grid, pxToCell } from "../lib/canvas";
 // components
 import anatomy from "./components/anatomy/anatomy.component";
 import appearance from "./components/appearance.component";
+import apply from "./components/apply.components";
 import armor from "./components/armor.component";
 import ar from "./components/armor-rating.component";
 import ascend from "./components/ascend.component";
@@ -62,6 +63,7 @@ const ECS = {
   components: {
     anatomy,
     appearance,
+    apply,
     armor,
     ar,
     ascend,
@@ -122,6 +124,11 @@ const ECS = {
       paneOffset: [0, 0],
       contentHeight: [0, 0],
       visibleHeight: [27, 27],
+      applyMenu: {
+        show: false,
+        currentSelected: "",
+        relevantEntities: []
+      },
       inventoryMenu: {
         currentSelected: ""
       },
