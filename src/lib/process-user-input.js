@@ -278,13 +278,21 @@ function processUserInput() {
       const entities = locs.map(getEntitiesAtLoc).flat();
 
       // filter to those with required components
-      ECS.game.menu.applyMenu.relevantEntities = entities
+      const relevantEntities = entities
         .filter(x =>
           entity.components.apply.required.every(
             requirement => x.components[requirement]
           )
         )
         .map(x => x.id);
+
+      const playerId = getPlayer().id;
+      if (relevantEntities.includes(playerId)) {
+        pull(relevantEntities, playerId);
+        relevantEntities.unshift(playerId);
+      }
+
+      ECS.game.menu.applyMenu.relevantEntities = relevantEntities;
 
       // we are showing the menu so something has been selected...
       if (ECS.game.menu.applyMenu.currentSelected) {
