@@ -49,147 +49,106 @@ const scrollPaneIfNeeded = dir => {
   }
 };
 
-const setNextSelectedContainerItem = () => {
-  const { items } = ECS.game.menu.containerMenu;
-
+const setSelectedMenuItem = ({
+  items,
+  menuName,
+  nextPrev,
+  hideApplyMenu = true
+}) => {
   if (!items.length) {
-    ECS.game.menu.containerMenu.currentSelected = "";
+    ECS.game.menu[menuName].currentSelected = "";
     return;
+  }
+
+  if (hideApplyMenu) {
+    ECS.game.menu.applyMenu.show = false;
   }
 
   const index = findIndex(
     items,
-    eId => eId === ECS.game.menu.containerMenu.currentSelected
+    eId => eId === ECS.game.menu[menuName].currentSelected
   );
 
-  // if we are at the last item set to first
-  if (index === items.length - 1) {
-    ECS.game.menu.containerMenu.currentSelected = items[0];
-    // reset the offset so that we scroll back to top
-    const currentPane = ECS.game.menu.currentPane;
-    ECS.game.menu.paneOffset[currentPane] = 0;
-  } else {
-    ECS.game.menu.containerMenu.currentSelected = items[index + 1];
-  }
-
-  ECS.game.menu.paneOffset[1] = 0;
-};
-
-const setNextSelectedInventoryItem = () => {
-  const player = getPlayer();
-  const { inventory } = player.components;
-  const { items } = inventory;
-
-  // disable apply menu
-  ECS.game.menu.applyMenu.show = false;
-
-  if (!items.length) {
-    ECS.game.menu.inventoryMenu.currentSelected = "";
-    return;
-  }
-
-  const index = findIndex(
-    items,
-    eId => eId === ECS.game.menu.inventoryMenu.currentSelected
-  );
-
-  // if we are at the last item set to first
-  if (index === items.length - 1) {
-    ECS.game.menu.inventoryMenu.currentSelected = items[0];
-    // reset the offset so that we scroll back to top
-    const currentPane = ECS.game.menu.currentPane;
-    ECS.game.menu.paneOffset[currentPane] = 0;
-  } else {
-    ECS.game.menu.inventoryMenu.currentSelected = items[index + 1];
-  }
-
-  ECS.game.menu.paneOffset[1] = 0;
-};
-
-const setPreviousSelectedInventoryItem = () => {
-  const player = getPlayer();
-  const { inventory } = player.components;
-  const { items } = inventory;
-
-  // disable apply menu
-  ECS.game.menu.applyMenu.show = false;
-
-  if (!items.length) {
-    ECS.game.menu.inventoryMenu.currentSelected = "";
-    return;
-  }
-
-  const index = findIndex(
-    items,
-    eId => eId === ECS.game.menu.inventoryMenu.currentSelected
-  );
-
-  // if we are at the first item set to last
-  if (index === 0) {
-    ECS.game.menu.inventoryMenu.currentSelected = items[items.length - 1];
-    // set the offset so that we scroll to the bottom
-    const currentPane = ECS.game.menu.currentPane;
-
-    if (ECS.game.menu.contentHeight > ECS.game.menu.visibleHeight) {
-      ECS.game.menu.paneOffset[currentPane] =
-        ECS.game.menu.contentHeight[currentPane] -
-        ECS.game.menu.visibleHeight[currentPane];
+  if (nextPrev === "NEXT") {
+    // if we are at the last item set to first
+    if (index === items.length - 1) {
+      ECS.game.menu[menuName].currentSelected = items[0];
+      // reset the offset so that we scroll back to top
+      const currentPane = ECS.game.menu.currentPane;
+      ECS.game.menu.paneOffset[currentPane] = 0;
+    } else {
+      ECS.game.menu[menuName].currentSelected = items[index + 1];
     }
-  } else {
-    ECS.game.menu.inventoryMenu.currentSelected = items[index - 1];
   }
 
-  ECS.game.menu.paneOffset[1] = 0;
-};
+  if (nextPrev === "PREV") {
+    // if we are at the first item set to last
+    if (index === 0) {
+      ECS.game.menu[menuName].currentSelected = items[items.length - 1];
+      // set the offset so that we scroll to the bottom
+      const currentPane = ECS.game.menu.currentPane;
 
-const setPreviousSelectedContainerItem = () => {
-  const { items } = ECS.game.menu.containerMenu;
-
-  if (!items.length) {
-    ECS.game.menu.containerMenu.currentSelected = "";
-    return;
-  }
-
-  const index = findIndex(
-    items,
-    eId => eId === ECS.game.menu.containerMenu.currentSelected
-  );
-
-  // if we are at the first item set to last
-  if (index === 0) {
-    ECS.game.menu.containerMenu.currentSelected = items[items.length - 1];
-    // set the offset so that we scroll to the bottom
-    const currentPane = ECS.game.menu.currentPane;
-
-    if (ECS.game.menu.contentHeight > ECS.game.menu.visibleHeight) {
-      ECS.game.menu.paneOffset[currentPane] =
-        ECS.game.menu.contentHeight[currentPane] -
-        ECS.game.menu.visibleHeight[currentPane];
+      if (ECS.game.menu.contentHeight > ECS.game.menu.visibleHeight) {
+        ECS.game.menu.paneOffset[currentPane] =
+          ECS.game.menu.contentHeight[currentPane] -
+          ECS.game.menu.visibleHeight[currentPane];
+      }
+    } else {
+      ECS.game.menu[menuName].currentSelected = items[index - 1];
     }
-  } else {
-    ECS.game.menu.containerMenu.currentSelected = items[index - 1];
   }
 
+  // probably don't want to always do this...
   ECS.game.menu.paneOffset[1] = 0;
 };
 
 const setNextSelectedItem = () => {
   if (ECS.game.mode === "INVENTORY") {
-    return setNextSelectedInventoryItem();
+    if (ECS.game.menu.applyMenu.show && ECS.game.menu.currentPane === 1) {
+      const items = ECS.game.menu.applyMenu.relevantEntities;
+      const menuName = "applyMenu";
+      return setSelectedMenuItem({
+        items,
+        menuName,
+        nextPrev: "NEXT",
+        hideApplyMenu: false
+      });
+    } else {
+      const { items } = getPlayer().components.inventory;
+      const menuName = "inventoryMenu";
+      return setSelectedMenuItem({ items, menuName, nextPrev: "NEXT" });
+    }
   }
 
   if (ECS.game.mode === "LOOT_CONTAINER") {
-    return setNextSelectedContainerItem();
+    const { items } = ECS.game.menu.containerMenu;
+    const menuName = "containerMenu";
+    return setSelectedMenuItem({ items, menuName, nextPrev: "NEXT" });
   }
 };
 
 const setPreviousSelectedItem = () => {
   if (ECS.game.mode === "INVENTORY") {
-    return setPreviousSelectedInventoryItem();
+    if (ECS.game.menu.applyMenu.show && ECS.game.menu.currentPane === 1) {
+      const items = ECS.game.menu.applyMenu.relevantEntities;
+      const menuName = "applyMenu";
+      return setSelectedMenuItem({
+        items,
+        menuName,
+        nextPrev: "PREV",
+        hideApplyMenu: false
+      });
+    } else {
+      const { items } = getPlayer().components.inventory;
+      const menuName = "inventoryMenu";
+      return setSelectedMenuItem({ items, menuName, nextPrev: "PREV" });
+    }
   }
 
   if (ECS.game.mode === "LOOT_CONTAINER") {
-    return setPreviousSelectedContainerItem();
+    const { items } = ECS.game.menu.containerMenu;
+    const menuName = "containerMenu";
+    return setSelectedMenuItem({ items, menuName, nextPrev: "PREV" });
   }
 };
 
@@ -232,6 +191,12 @@ function processUserInput() {
     const player = getPlayer();
     ECS.game.menu.inventoryMenu.currentSelected =
       player.components.inventory.items[0] || "";
+    // reset apply menu
+    ECS.game.menu.applyMenu = {
+      show: false,
+      currentSelected: "",
+      relevantEntities: []
+    };
 
     return;
   }
@@ -277,7 +242,7 @@ function processUserInput() {
       }
 
       if (ECS.game.menu.currentPane === 1 && ECS.game.menu.applyMenu.show) {
-        setNextRelevantEntity();
+        setNextSelectedItem();
         return;
       }
     }
@@ -292,7 +257,7 @@ function processUserInput() {
       }
 
       if (ECS.game.menu.currentPane === 1 && ECS.game.menu.applyMenu.show) {
-        setPreviousRelevantEntity();
+        setPreviousSelectedItem();
         return;
       }
     }
@@ -321,26 +286,30 @@ function processUserInput() {
         )
         .map(x => x.id);
 
-      ECS.game.menu.applyMenu.currentSelected =
-        ECS.game.menu.applyMenu.relevantEntities[0];
+      // we are showing the menu so something has been selected...
+      if (ECS.game.menu.applyMenu.currentSelected) {
+        const msg = entity.components.apply.func(
+          getEntity(ECS.game.menu.applyMenu.currentSelected)
+        );
 
-      console.log(ECS.game.menu.applyMenu);
+        entity.components.apply.uses -= 1;
 
-      // actually select the target with a menu!
-      // const msg = entity.components.apply.func(getPlayer());
+        printToLog(msg);
 
-      // entity.components.apply.uses;
+        // we have used up the item so we need to reset a bunch of stuff and go back to inventory
+        if (entity.components.apply.uses < 1) {
+          ECS.game.menu.applyMenu = {
+            show: false,
+            currentSelected: "",
+            relevantEntities: []
+          };
+          // switch back to left pane (inventory) to select the next item
+          ECS.game.menu.currentPane = 0;
+          setNextSelectedItem();
 
-      // entity.components.apply.uses -= 1;
-
-      // printToLog(msg);
-
-      // check if in chest? don't let users use directly from a chest. Must get the item first!
-      if (entity.components.apply.uses < 1) {
-        ECS.game.menu.applyMenu.show = false;
-        setNextSelectedInventoryItem();
-        pull(getPlayer().components.inventory.items, entity.id);
-        printToLog(`${getEntityName(entity)} has been used up!`);
+          pull(getPlayer().components.inventory.items, entity.id);
+          printToLog(`${getEntityName(entity)} has been used up!`);
+        }
       }
     }
 
