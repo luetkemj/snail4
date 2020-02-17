@@ -7,6 +7,7 @@ import { updateHSLA } from "../../lib/hsla";
 import {
   getEntity,
   getEntitiesAtLoc,
+  getEntityName,
   getPlayer,
   getGettableEntitiesAtLoc
 } from "../../lib/getters";
@@ -22,7 +23,8 @@ import {
   writeAvailableEntityActions,
   writeCharAbilities,
   writeCharInjuries,
-  writeEquipped
+  writeEquipped,
+  writeNearbyEntitiesList
 } from "../../lib/menus";
 
 const buildCharEntity = ({
@@ -631,16 +633,28 @@ const renderInventory = () => {
       let y = ECS.game.grid.menu2.y + 1;
       let x = ECS.game.grid.menu2.x + 1;
 
+      const itemName = getEntityName(
+        getEntity(ECS.game.menu.inventoryMenu.currentSelected)
+      );
+      drawText(`-- Apply ${itemName} to --`, {
+        x,
+        y,
+        color
+      });
+
+      y += 2;
+
       // draw description
       drawScrollableText(
-        writeItemList(relevantEntities, selectedRelevantEntity),
+        // writeItemList(relevantEntities, selectedRelevantEntity),
+        writeNearbyEntitiesList(relevantEntities, selectedRelevantEntity),
         ECS.game.grid.menu2.width - 2,
         ECS.game.grid.menu2.height - 5,
         ECS.game.menu.paneOffset[1],
         {
           x,
           y,
-          trim: true,
+          trim: false,
           color
         }
       );

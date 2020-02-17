@@ -25,6 +25,13 @@ const sortInventory = () => {
   player.components.inventory.items = [...sortedInventory];
 };
 
+const resetApplyMenu = () =>
+  (ECS.game.menu.applyMenu = {
+    show: false,
+    currentSelected: "",
+    relevantEntities: []
+  });
+
 const scrollPaneIfNeeded = dir => {
   const currentPane = ECS.game.menu.currentPane;
   if (dir === "UP") {
@@ -116,6 +123,7 @@ const setNextSelectedItem = () => {
     } else {
       const { items } = getPlayer().components.inventory;
       const menuName = "inventoryMenu";
+      resetApplyMenu();
       return setSelectedMenuItem({ items, menuName, nextPrev: "NEXT" });
     }
   }
@@ -141,6 +149,7 @@ const setPreviousSelectedItem = () => {
     } else {
       const { items } = getPlayer().components.inventory;
       const menuName = "inventoryMenu";
+      resetApplyMenu();
       return setSelectedMenuItem({ items, menuName, nextPrev: "PREV" });
     }
   }
@@ -191,12 +200,8 @@ function processUserInput() {
     const player = getPlayer();
     ECS.game.menu.inventoryMenu.currentSelected =
       player.components.inventory.items[0] || "";
-    // reset apply menu
-    ECS.game.menu.applyMenu = {
-      show: false,
-      currentSelected: "",
-      relevantEntities: []
-    };
+    resetApplyMenu();
+    ECS.game.menu.currentPane = 0;
 
     return;
   }
@@ -294,6 +299,13 @@ function processUserInput() {
 
       ECS.game.menu.applyMenu.relevantEntities = relevantEntities;
 
+      // auto select first relevant entity and switch panes
+      if (!ECS.game.menu.applyMenu.currentSelected) {
+        ECS.game.menu.currentPane = 1;
+        ECS.game.menu.applyMenu.currentSelected = relevantEntities[0];
+        return;
+      }
+
       // we are showing the menu so something has been selected...
       if (ECS.game.menu.applyMenu.currentSelected) {
         const msg = entity.components.apply.func(
@@ -301,8 +313,6 @@ function processUserInput() {
         );
 
         entity.components.apply.uses -= 1;
-
-        printToLog(msg);
 
         // we have used up the item so we need to reset a bunch of stuff and go back to inventory
         if (entity.components.apply.uses < 1) {
@@ -318,6 +328,8 @@ function processUserInput() {
           pull(getPlayer().components.inventory.items, entity.id);
           printToLog(`${getEntityName(entity)} has been used up!`);
         }
+
+        printToLog(msg);
       }
     }
 

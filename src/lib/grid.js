@@ -2,10 +2,10 @@ import ECS from "../ECS/ECS";
 import { sample } from "lodash";
 
 export const CARDINAL = [
-  { x: -1, y: 0 },
-  { x: 1, y: 0 },
   { x: 0, y: -1 },
-  { x: 0, y: 1 }
+  { x: 1, y: 0 },
+  { x: 0, y: 1 },
+  { x: -1, y: 0 }
 ];
 
 export const rectangle = ({ x, y, width, height, hasWalls }, tileProps) => {
@@ -96,4 +96,13 @@ export const randomNeighbor = (startX, startY) => {
   const x = startX + direction.x;
   const y = startY + direction.y;
   return { x, y };
+};
+
+export const getNeighbor = (x, y, dir) => {
+  const dirMap = { N: 0, E: 1, S: 2, W: 3 };
+  const direction = CARDINAL[dirMap[dir]];
+  return {
+    x: x + direction.x,
+    y: y + direction.y
+  };
 };

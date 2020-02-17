@@ -5,8 +5,71 @@ import {
   getEntityCondition,
   getEntityName,
   getPlayer
-} from "../lib/getters";
-import { abilityScoreMod } from "../lib/character-creation";
+} from "./getters";
+import { abilityScoreMod } from "./character-creation";
+import { getNeighbor } from "./grid";
+
+export const writeNearbyEntitiesList = (eIds, selectedId) => {
+  const playerPos = getPlayer().components.position;
+  const entities = eIds.map(eId => getEntity(eId));
+  const dirMap = { N: "NORTH", E: "EAST", S: "SOUTH", W: "WEST" };
+  const directions = ["N", "E", "S", "W"];
+  // iterate over directions
+  // find entities at each direction and group
+  const schema = [];
+
+  const entitiesAtPlayerPosition = entities.filter(
+    entity =>
+      entity.components.position.x === playerPos.x &&
+      entity.components.position.y === playerPos.y
+  );
+
+  if (entitiesAtPlayerPosition.length) {
+    schema.push({
+      sectionHead: "LOCATION",
+      items: entitiesAtPlayerPosition.map(x => ({
+        id: x.id,
+        selected: x.id === selectedId,
+        text: `${x.components.labels.name}`
+      }))
+    });
+  }
+
+  directions.forEach(val => {
+    const position = getNeighbor(playerPos.x, playerPos.y, val);
+    const entitiesAtPosition = entities.filter(
+      entity =>
+        entity.components.position.x === position.x &&
+        entity.components.position.y === position.y
+    );
+
+    if (entitiesAtPosition.length) {
+      schema.push({
+        sectionHead: dirMap[val],
+        items: entitiesAtPosition.map(x => ({
+          id: x.id,
+          selected: x.id === selectedId,
+          text: `${x.components.labels.name}`
+        }))
+      });
+    }
+  });
+
+  let text = ``;
+  schema.forEach(section => {
+    text += `- ${section.sectionHead}\n`;
+    section.items.forEach(item => {
+      if (item.selected) {
+        text += `  *${item.text}\n`;
+      } else {
+        text += `   ${item.text}\n`;
+      }
+    });
+    text += `\n`;
+  });
+
+  return text;
+};
 
 export const writeItemList = (eIds, selectedId) => {
   const entities = eIds.map(eId => getEntity(eId));
